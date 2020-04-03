@@ -1,10 +1,8 @@
-
-// button base class
 class Button extends UIElement{
     constructor(parameterObject) {
         super(parameterObject);
 
-        this.width = this.width || 20;
+        this.width = this.parent.height/1.1;
         this.mouseOver = false;
         this.mouseOverColor = 'pink'; // testing
 
@@ -23,16 +21,16 @@ class Button extends UIElement{
 
     performClickFunctionality(){
         if (this.mouseClickfunc) {
-            this.mouseClickfunc();
+            return this.mouseClickfunc();
         }
     }
 
-    testForClick(clickLocation) {
-        if (mouseX > this.x
+    testForClick() {
+        if (mouseX > this.x - this.width
             && mouseX < this.x + this.width
-            && mouseY > this.y
-            && mouseY < this.y + this.height){
-            return true;
+            && mouseY > this.y - this.width
+            && mouseY < this.width + this.y){
+                return true;
         }
     }
 

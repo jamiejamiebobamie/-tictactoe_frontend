@@ -14,7 +14,10 @@ let autoRefreshOn = true;
 
 let opponentContainer;
 
-let boardSpacePointers = [];
+let boardSpacePointers;
+
+let clickValue = null;
+let turn = 'x';
 
 // p5.js built-in method
 function setup() {
@@ -38,6 +41,7 @@ function setup() {
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
     redrawElements();
+    console.log(boardSpacePointers)
 }
 
 // p5.js built-in method
@@ -85,81 +89,128 @@ function redrawElements(){
     let board = new Container(boardParams)
     uiElements.push(board)
 
-    let colorCount = 0;
+    let count = 0;
     let spaceColor;
     let blue = color(86,133,151)
     let red = color(165,67,68)
+    let previousSymbol = undefined;
+
+    let storeSymbols;
+    // if (boardSpacePointers){
+    //     storeSymbols = getBoardIconObjects();
+    //     console.log(storeSymbols)
+    // }
+
+    boardSpacePointers = [];
 
     for (let i = 0; i < 3; i++){
         boardRowParams = {row: true, len: 3, index: i, parent:board}
         let boardRow = new Container(boardRowParams)
         uiElements.push(boardRow)
         for (let j = 0; j < 3; j++){
-            colorCount % 2 ? spaceColor = blue : spaceColor = red;
+
+            count % 2 ? spaceColor = blue : spaceColor = red;
+            // storeSymbols ? previousSymbol = storeSymbols[count] : previousSymbol = undefined
+
             boardSpaceParams = {row: false, len: 3, index: j, color: spaceColor, parent:boardRow}
             let boardSpace = new TicTacToeSpace(boardSpaceParams)
+            // boardSpace.setSymbol(previousSymbol)
             uiElements.push(boardSpace)
             boardSpacePointers.push(boardSpace)
-        colorCount++;
+
+            count++;
     }
 }
 
     boardRowParams = {row: true, len:8, index:0, parent:boardContainer}
     rowAnchor = new Container(boardRowParams)
     uiElements.push(rowAnchor)
-    boardColParams = {row: false, len:3, index:1, parent:rowAnchor}
-    columnAnchor = new Container(boardColParams)
-    uiElements.push(columnAnchor)
 
-    submitBoardButtonContainerParams = {row: true, parent:columnAnchor, color:30}
-    let submitBoardButtonContainer = new Container(submitBoardButtonContainerParams)
-    uiElements.push(submitBoardButtonContainer)
+    for (let i = 0; i < 3; i++){
+        let testUIParams = {row: false, len:3, index:i, parent:rowAnchor}
+        let testUIElement = new Container(testUIParams)
+        uiElements.push(testUIElement)
 
-    submitBoardButtonParams = {row: true, parent:submitBoardButtonContainerParams, width:30, mouseClickfunc:getBoardState}
-    let submitBoardButton = new Button(submitBoardButtonContainerParams)
-    uiElements.push(submitBoardButton)
+        switch (i){
+            case 0:
+            let setTurnToXParams = {row: true, parent:testUIElement, mouseClickfunc:setTurnToX}
+            let setTurnToXButton = new Button(setTurnToXParams)
+            uiElements.push(setTurnToXButton)
+            break;
+            case 1:
+            submitBoardButtonParams = {row: true, parent:testUIElement, mouseClickfunc:getBoardState}
+            let submitBoardButton = new Button(submitBoardButtonParams)
+            uiElements.push(submitBoardButton)
+            break;
+
+            case 2:
+            let setTurnToOParams = {row: true, parent:testUIElement, mouseClickfunc:setTurnToO}
+            let setTurnToOButton = new Button(setTurnToOParams)
+            uiElements.push(setTurnToOButton)
+            break;
+
+        }
+
+    }
 
 
 
+    }
 
-        // for (let i=0; i < 8; i++){
-    // }
 
-    // let boardParams = {row: portrait, width:squareLength, height:squareLength, parent:boardContainer}
-    // let board = new Container(boardParams)
-    // uiElements.push(board)
-
-}
 
 // button functionality on click
 let nullFunction = () => "I do nothing!";
-let refresh = () => recreateCanvas();
-let togglefAutoRefresh = () => autoRefreshOn = !autoRefreshOn;
-let saveToComputer = () => {
-    let nums = Date.now()
-    let filename = nums.toString() + ".png"
-    let dimensions = grid.getGridDimensions()
-    let im = get(0, 0, dimensions[0], dimensions[1]);
-    im.save(filename);
-}
+let setTurnToX = () => turn = 'x';
+let setTurnToO = () => turn = 'o';
 let getBoardState = () => {
     let boardState = ""
-    console.log('hey')
     for (let i = 0; i < boardSpacePointers.length; i++){
-        boardState += boardSpacePointers[i].name
+        boardState += boardSpacePointers[i].currentSymbol.name
     }
-    console.log(boardState)
+    return boardState
 }
 
-// mouse interactivity should be handled on the top level.
-    // but uielements that have interactivity need to be added to the iterable
+// let getBoardIconObjects = () => {
+//     objects = []
+//     for (let i = 0; i < boardSpacePointers.length; i++){
+//         objects.push(boardSpacePointers[i].currentSymbol)
+//     }
+//     return objects
+// }
+
 
 // p5.js built-in method
 function mouseClicked() {
     for (let i = 0; i < uiElements.length; i++){
         if (uiElements[i].testForClick()){
-            uiElements[i].performClickFunctionality()
+            clickValue = uiElements[i].performClickFunctionality()
         }
+    }
+    if (turn && clickValue) {
+
+        $.ajax({
+                url: "http://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+clickValue,
+                beforeSend: function(xhr) {
+                     // xhr.setRequestHeader("Authorization", "Bearer 6QXNMEMFHNY4FJ5ELNFMP5KRW52WFXN5")
+                }, success: function(data){
+                    alert(data);
+                    console.log(data)
+                    //process the JSON data etc
+                }
+        })
+
+        //
+        //
+        // let request = require('request');
+        // request("http://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+clickValue, function (error, response, body) {
+        // console.error('error:', error); // Print the error if one occurred
+        // console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+        // console.log('body:', body); // Print the HTML for the Google homepage.
+        // info = JSON.parse(body)
+        // console.log(info)
+    // });
+
     }
 }
 

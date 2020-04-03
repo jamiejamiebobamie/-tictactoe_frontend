@@ -93,17 +93,20 @@ class TicTacToeSpace extends Container{
         this.symbols = [new NullIcon({parent: this}), new X({parent: this}), new O({parent: this})]
         this.index = 0;
 
-        this.mouseClickfunc = this.setSymbol
+        this.mouseClickfunc = this.incrementSymbol
     }
 
     performClickFunctionality(){
         this.mouseClickfunc()
     }
 
-    setSymbol(){
+    incrementSymbol(){
         this.index < 2 ? this.index++ : this.index = 0
         this.currentSymbol = this.symbols[this.index]
-        console.log(this.currentSymbol, this.symbols, this.index)
+    }
+
+    setSymbol(symbol){
+        symbol ? this.currentSymbol = symbol : this.currentSymbol = new NullIcon({parent: this})
     }
 
     userDrag(){}
