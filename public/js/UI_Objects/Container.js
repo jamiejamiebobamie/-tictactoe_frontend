@@ -23,8 +23,11 @@ class Container extends UIElement{
         }
     }
 
-    // subclasses implement click behavior
-    performClickFunctionality(){}
+    performClickFunctionality(){
+        if (this.mouseClickfunc){
+            this.mouseClickfunc()
+        }
+    }
 
     // containers can be clicked
     testForClick(){
@@ -94,10 +97,6 @@ class TicTacToeSpace extends Container{
         this.index = 0;
 
         this.mouseClickfunc = this.incrementSymbol
-    }
-
-    performClickFunctionality(){
-        this.mouseClickfunc()
     }
 
     incrementSymbol(){
