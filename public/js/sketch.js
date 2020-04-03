@@ -41,7 +41,6 @@ function setup() {
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
     redrawElements();
-    console.log(boardSpacePointers)
 }
 
 // p5.js built-in method
