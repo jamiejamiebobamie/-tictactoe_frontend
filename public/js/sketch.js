@@ -14,6 +14,8 @@ let autoRefreshOn = true;
 
 let opponentContainer;
 
+let boardSpacePointers = [];
+
 // p5.js built-in method
 function setup() {
     canvas = createCanvas(windowWidth, windowHeight);
@@ -69,27 +71,63 @@ function redrawElements(){
 
     let boardContainer = uiElements[1]
 
-    let squareLength;
-    let offsetX
-    let offsetY
-    if (portrait){
-        squareLength = boardContainer.width/2
-        offsetX = boardContainer.height/4
-        offsetY = boardContainer.height/4
+    let boardRowParams = {row: true, len:8, index:1, parent:boardContainer}
+    let rowAnchor = new Container(boardRowParams)
+    uiElements.push(rowAnchor)
+    let boardColParams = {row: false, len:8, index:1, parent:rowAnchor}
+    let columnAnchor = new Container(boardColParams)
+    uiElements.push(columnAnchor)
 
-    } else {
-        squareLength = boardContainer.height/2
-        offsetX = boardContainer.width/50
-        offsetY = boardContainer.width/4
-    }
+    let boardLength = 0 ;
+    boardContainer.height > boardContainer.width ? boardLength = boardContainer.width/1.3 : boardLength = boardContainer.height/1.3;
 
-    // let boardParams = {row: portrait, width:squareLength, height:squareLength, parent:boardContainer, offsetX:offsetX, offsetY:offsetY}
-    // let board = new Container(boardParams)
-    // uiElements.push(board)
-
-    let boardParams = {row: portrait, width:squareLength, height:squareLength, parent:boardContainer}
+    let boardParams = {row: true,  height: boardLength, width: boardLength, parent:columnAnchor}
     let board = new Container(boardParams)
     uiElements.push(board)
+
+    let colorCount = 0;
+    let spaceColor;
+    let blue = color(86,133,151)
+    let red = color(165,67,68)
+
+    for (let i = 0; i < 3; i++){
+        boardRowParams = {row: true, len: 3, index: i, parent:board}
+        let boardRow = new Container(boardRowParams)
+        uiElements.push(boardRow)
+        for (let j = 0; j < 3; j++){
+            colorCount % 2 ? spaceColor = blue : spaceColor = red;
+            boardSpaceParams = {row: false, len: 3, index: j, color: spaceColor, parent:boardRow}
+            let boardSpace = new TicTacToeSpace(boardSpaceParams)
+            uiElements.push(boardSpace)
+            boardSpacePointers.push(boardSpace)
+        colorCount++;
+    }
+}
+
+    boardRowParams = {row: true, len:8, index:0, parent:boardContainer}
+    rowAnchor = new Container(boardRowParams)
+    uiElements.push(rowAnchor)
+    boardColParams = {row: false, len:3, index:1, parent:rowAnchor}
+    columnAnchor = new Container(boardColParams)
+    uiElements.push(columnAnchor)
+
+    submitBoardButtonContainerParams = {row: true, parent:columnAnchor, color:30}
+    let submitBoardButtonContainer = new Container(submitBoardButtonContainerParams)
+    uiElements.push(submitBoardButtonContainer)
+
+    submitBoardButtonParams = {row: true, parent:submitBoardButtonContainerParams, width:30, mouseClickfunc:getBoardState}
+    let submitBoardButton = new Button(submitBoardButtonContainerParams)
+    uiElements.push(submitBoardButton)
+
+
+
+
+        // for (let i=0; i < 8; i++){
+    // }
+
+    // let boardParams = {row: portrait, width:squareLength, height:squareLength, parent:boardContainer}
+    // let board = new Container(boardParams)
+    // uiElements.push(board)
 
 }
 
@@ -104,15 +142,23 @@ let saveToComputer = () => {
     let im = get(0, 0, dimensions[0], dimensions[1]);
     im.save(filename);
 }
+let getBoardState = () => {
+    let boardState = ""
+    console.log('hey')
+    for (let i = 0; i < boardSpacePointers.length; i++){
+        boardState += boardSpacePointers[i].name
+    }
+    console.log(boardState)
+}
 
 // mouse interactivity should be handled on the top level.
     // but uielements that have interactivity need to be added to the iterable
 
 // p5.js built-in method
 function mouseClicked() {
-    for (let i = 0; i < interactives.length; i++){
-        if (interactives[i].testForClick()){
-            interactives[i].performClickFunctionality()
+    for (let i = 0; i < uiElements.length; i++){
+        if (uiElements[i].testForClick()){
+            uiElements[i].performClickFunctionality()
         }
     }
 }

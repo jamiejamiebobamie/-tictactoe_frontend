@@ -80,8 +80,38 @@ class Container extends UIElement{
         }
 
         // testing to show the bounds of the container
-        stroke(0);
+        stroke(30);
         fill(this.color);
         rect(this.x,this.y,this.width,this.height)
     }
+}
+
+class TicTacToeSpace extends Container{
+    constructor(parameterObject){
+        super(parameterObject)
+        this.currentSymbol = new NullIcon({parent: this})
+        this.symbols = [new NullIcon({parent: this}), new X({parent: this}), new O({parent: this})]
+        this.index = 0;
+
+        this.mouseClickfunc = this.setSymbol
+    }
+
+    performClickFunctionality(){
+        this.mouseClickfunc()
+    }
+
+    setSymbol(){
+        this.index < 2 ? this.index++ : this.index = 0
+        this.currentSymbol = this.symbols[this.index]
+        console.log(this.currentSymbol, this.symbols, this.index)
+    }
+
+    userDrag(){}
+
+    draw() {
+        super.draw()
+        // draw symbol / icon
+        this.symbols[this.index].draw()
+    }
+
 }

@@ -22,16 +22,16 @@ class Button extends UIElement{
     }
 
     performClickFunctionality(){
-        if (this.func) {
-            this.func();
+        if (this.mouseClickfunc) {
+            this.mouseClickfunc();
         }
     }
 
     testForClick(clickLocation) {
-        if (clickLocation.x > this.x - this.width
-            && clickLocation.x < this.x + this.width
-            && clickLocation.y > this.y - this.width
-            && clickLocation.y < this.width + this.y) {
+        if (mouseX > this.x
+            && mouseX < this.x + this.width
+            && mouseY > this.y
+            && mouseY < this.y + this.height){
             return true;
         }
     }
