@@ -46,11 +46,11 @@ class Slider extends UIElement{
         }
     }
 
-    testForClick(clickLocation){
-        if (mouseX > this.buttonX - this.borderRadius/2
-            && mouseX < this.buttonX + this.borderRadius/2
-            && mouseY > this.buttonY - this.borderRadius/2
-            && mouseY < this.borderRadius/2 + this.buttonY){
+    testForClick(){
+        if (mouseX > this.buttonX - this.width
+            && mouseX < this.buttonX + this.width
+            && mouseY > this.buttonY - this.width
+            && mouseY < this.width + this.buttonY){
             return true;
         }
     }
@@ -79,6 +79,12 @@ class Slider extends UIElement{
         }
     }
 
+    performDragFunctionality(){
+        if(this.mouseDragfunc){
+            return this.mouseDragfunc();
+        }
+    }
+
     draw(){
         if (this.isDragging){
             this.userDrag();
@@ -92,4 +98,20 @@ class Slider extends UIElement{
         ellipse(this.buttonX, this.buttonY, this.width);
     }
 
+}
+
+
+class DifficultySlider extends Slider{
+    constructor(parameterObject){
+        super(parameterObject)
+
+        this.mouseDragfunc = this.getDifficulty
+    }
+
+    getDifficulty(){
+        let difficulty = this.row ? this.buttonX / this.sliderWidth : this.buttonY / this.sliderHeight
+        difficulty *= 10
+        // scale of 0 to 10
+        return int(difficulty) - 1;
+    }
 }

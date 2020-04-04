@@ -88,8 +88,9 @@ class UIElement{
 
     // abstract methods for subclasses
     performClickFunctionality(){}
-    testForClick(clickLocation) {}
-    testForMouseOver(mouseX, mouseY) {}
+    testForClick() {}
+    testForMouseOver() {}
+    performDragFunctionality(){}
     performValuesResetAfterDrag(){}
 
     getParentWidthAndHeight(){
