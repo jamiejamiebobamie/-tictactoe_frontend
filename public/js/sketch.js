@@ -20,12 +20,12 @@ let previousStatesObject = { boardArray:["!","!","!","!","!","!","!","!","!"],
 
 // url parameters to query the backend
 let boardString = "!!!!!!!!!"
-let turn = 'o';
+let turn = 'x';
 
 // mouseClicked() function does not work on mobile.
 // must use mousePressed() for all mouse events.
 // mousePressed() is called repeatedly each frame,
-// so doneOnce controls which events are called repeatedly (drag events)
+// so 'doneOnce' controls which events are called repeatedly (drag events)
 // and which are called once (click events)
 let doneOnce = false;
 
@@ -37,11 +37,12 @@ function setup() {
 
     frameRate(24);
 
+    let playWithAI = new SuggestionsView()
+    views.push(playWithAI)
 
     let playAgainstAI = new PlayView()
     views.push(playAgainstAI)
-    let playWithAI = new SuggestionsView()
-    views.push(playWithAI)
+
     menuButton = new Container({width:100, height:100, mouseClickfunc: cycleViews})
 
     // draw the elements on the canvas
@@ -90,7 +91,7 @@ function setTopLevelVariables(callBackValue){
             break;
         case 'getBoardString':
             boardString = previousStatesObject.boardArray.toString().replace(/,/g, '')
-            
+
             // testing.
             queryBackend()
 
