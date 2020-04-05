@@ -7,24 +7,37 @@ let menuButton;
 // without callbacks, I can't pass in the context/scope that I'm referring to
     // so... things are about to get real ugly.
     // these are variables that should be farther down the chain:
-let board;
-let turn;
-let aiDifficulty;
+
+// the return value from functions down the chain.
 let callBackValue;
+
+// parameterObject to pass in to redrawElements() method to reset the state
+let previousStatesObject = { boardArray:["!","!","!","!","!","!","!","!","!"],
+                            turn:'x',
+                            aiDifficulty:13
+                            }
+
+// url parameters to query the backend
+let boardString = "!!!!!!!!!"
+let turn = 'x';
 
 // p5.js built-in method
 function setup() {
     canvas = createCanvas(windowWidth, windowHeight);
+    // parent the canvas to the DOM element 'sketch-holder'
+    canvas.parent('sketch-holder');
+
     frameRate(24);
+
     let playWithAI = new SuggestionsView()
     views.push(playWithAI)
     let playAgainstAI = new PlayView()
     views.push(playAgainstAI)
     menuButton = new Container({width:100, height:100, mouseClickfunc: cycleViews})
+
     // draw the elements on the canvas
     views[viewIndex].redrawElements();
-    // parent the canvas to the DOM element 'sketch-holder'
-    canvas.parent('sketch-holder');
+
     // centers the canvas
     imageMode(CENTER);
 }
@@ -32,14 +45,14 @@ function setup() {
 // p5.js built-in method
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
-    views[viewIndex].redrawElements();
+    views[viewIndex].redrawElements(previousStatesObject);
 }
 
 // p5.js built-in method
 function draw () {
     background(256);
     views[viewIndex].draw()
-    
+
     // test
     menuButton.draw()
 }
@@ -51,27 +64,43 @@ function cycleViews(){
     } else {
         viewIndex = 0;
     }
-    views[viewIndex].redrawElements(windowWidth, windowHeight);
+    views[viewIndex].redrawElements(previousStatesObject);
 }
 
-// let getBoardIconObjects = () => {
-//     objects = []
-//     for (let i = 0; i < boardSpacePointers.length; i++){
-//         objects.push(boardSpacePointers[i].currentSymbol)
-//     }
-//     return objects
-// }
-
+function setTopLevelVariables(callBackValue){
+    switch (callBackValue) {
+        case 'x':
+            turn = 'x'
+            previousStatesObject.turn = turn
+            break;
+        case 'o':
+            turn = 'x'
+            previousStatesObject.turn = turn
+            break;
+        case 'getBoardString':
+            boardString = previousStatesObject.boardArray.toString()
+            break;
+        default:
+         if(typeof(callBackValue) === typeof(100)){
+             previousStatesObject.aiDifficulty = callBackValue
+         } else if (typeof(callBackValue) === typeof([0,'x'])){
+            index = callBackValue[0]
+            val = callBackValue[1]
+            previousStatesObject.boardArray[index] = val
+        }
+        break;
+    }
+}
 
 // p5.js built-in method
 function mouseClicked() {
     if (menuButton.testForClick()){
         menuButton.performClickFunctionality();
     }
-
     for (let i = 0; i < views[viewIndex].uiElements.length; i++){
         if (views[viewIndex].uiElements[i].testForClick()){
             callBackValue = views[viewIndex].uiElements[i].performClickFunctionality()
+            if (callBackValue){setTopLevelVariables(callBackValue)}
         }
     }
 
@@ -92,7 +121,6 @@ function mouseClicked() {
 //         // })
 //     }
 // }
-console.log(callBackValue)
 }
 //
 // p5.js built-in method
@@ -109,8 +137,8 @@ function mouseReleased() {
     for (let i = 0; i < views[viewIndex].uiElements.length; i++){
         if(views[viewIndex].uiElements[i].mouseDragfunc && views[viewIndex].uiElements[i].isDragging){
             callBackValue = views[viewIndex].uiElements[i].performDragFunctionality()
+            if (callBackValue){setTopLevelVariables(callBackValue)}
         }
         views[viewIndex].uiElements[i].isDragging = false;
     }
-    console.log(callBackValue)
 }

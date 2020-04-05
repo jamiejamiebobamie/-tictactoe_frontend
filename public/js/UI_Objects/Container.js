@@ -118,7 +118,11 @@ class TicTacToeSpaceSuggest extends Container{
     }
 
     setSymbol(symbol){
-        symbol ? this.currentSymbol = symbol : this.currentSymbol = new NullIcon({parent: this})
+        const LOOKUP = {'!':0,
+                        'x':1,
+                        'o':2}
+
+        symbol ? this.symbolIndex = LOOKUP[symbol] : this.symbolIndex = 0
     }
 
     userDrag(){}
