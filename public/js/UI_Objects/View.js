@@ -14,7 +14,7 @@ class View{
     }
 }
 
-class SuggestionsView extends View{
+class SuggestionView extends View{
     constructor(parameterObject){
         super(parameterObject)
         this.redrawElements()

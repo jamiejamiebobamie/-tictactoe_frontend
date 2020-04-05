@@ -4,18 +4,14 @@ let views = []
 let viewIndex = 0;
 let menuButton;
 
-// without callbacks, I can't pass in the context/scope that I'm referring to
-    // so... things are about to get real ugly.
-    // these are variables that should be farther down the chain:
-
-// the return value from functions down the chain.
+// the return value from functions nested UIElements.
 let callBackValue;
 
-// parameterObject to pass in to redrawElements() method to set the state
-// to its previous state. states are lost on windowResized
+// parameterObject to pass in to redrawElements() method to set the states
+// to its previous states. states are lost on window resize.
 let previousStatesObject = { boardArray:["!","!","!","!","!","!","!","!","!"],
                             turn:'x',
-                            aiDifficulty:13
+                            aiDifficulty:13 // slider range: 13 to 113
                             }
 
 // url parameters to query the backend
@@ -26,7 +22,8 @@ let turn = 'x';
 // must use mousePressed() for all mouse events.
 // mousePressed() is called repeatedly each frame,
 // so 'doneOnce' controls which events are called repeatedly (drag events)
-// and which are called once (click events)
+// and which are called once (click events).
+// boolean reset with mouseReleased() function.
 let doneOnce = false;
 
 // p5.js built-in method
@@ -37,7 +34,7 @@ function setup() {
 
     frameRate(24);
 
-    let playWithAI = new SuggestionsView()
+    let playWithAI = new SuggestionView()
     views.push(playWithAI)
 
     let playAgainstAI = new PlayView()
@@ -109,7 +106,7 @@ function setTopLevelVariables(callBackValue){
 }
 
 function queryBackend(){
-
+    console.log("http://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString)
     fetch("http://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString)
       .then((response) => {
           console.log(response.json())
@@ -118,17 +115,6 @@ function queryBackend(){
       .then((data) => {
         console.log(data);
       });
-    console.log("http://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString)
-    // $.ajax({
-    //         url: "http://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString,
-    //         beforeSend: function(xhr) {
-    //              // xhr.setRequestHeader("Authorization", "Bearer 6QXNMEMFHNY4FJ5ELNFMP5KRW52WFXN5")
-    //         }, success: function(data){
-    //             alert(data);
-    //             console.log(data)
-    //             //process the JSON data etc
-    //         }
-    // })
 }
 
 // p5.js built-in method
