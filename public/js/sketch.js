@@ -29,10 +29,11 @@ function setup() {
 
     frameRate(24);
 
-    let playWithAI = new SuggestionsView()
-    views.push(playWithAI)
+
     let playAgainstAI = new PlayView()
     views.push(playAgainstAI)
+    let playWithAI = new SuggestionsView()
+    views.push(playWithAI)
     menuButton = new Container({width:100, height:100, mouseClickfunc: cycleViews})
 
     // draw the elements on the canvas
