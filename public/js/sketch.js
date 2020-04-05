@@ -11,7 +11,8 @@ let menuButton;
 // the return value from functions down the chain.
 let callBackValue;
 
-// parameterObject to pass in to redrawElements() method to reset the state
+// parameterObject to pass in to redrawElements() method to set the state
+// to its previous state. states are lost on windowResized
 let previousStatesObject = { boardArray:["!","!","!","!","!","!","!","!","!"],
                             turn:'x',
                             aiDifficulty:13
@@ -20,6 +21,13 @@ let previousStatesObject = { boardArray:["!","!","!","!","!","!","!","!","!"],
 // url parameters to query the backend
 let boardString = "!!!!!!!!!"
 let turn = 'o';
+
+// mouseClicked() function does not work on mobile.
+// must use mousePressed() for all mouse events.
+// mousePressed() is called repeatedly each frame,
+// so doneOnce controls which events are called repeatedly (drag events)
+// and which are called once (click events)
+let doneOnce = false;
 
 // p5.js built-in method
 function setup() {
@@ -45,7 +53,9 @@ function setup() {
 
 // p5.js built-in method
 function windowResized() {
+    // p5.js built-in method
     resizeCanvas(windowWidth, windowHeight);
+
     views[viewIndex].redrawElements(previousStatesObject);
 }
 
@@ -79,7 +89,11 @@ function setTopLevelVariables(callBackValue){
             previousStatesObject.turn = turn
             break;
         case 'getBoardString':
-            boardString = previousStatesObject.boardArray.toString()
+            boardString = previousStatesObject.boardArray.toString().replace(/,/g, '')
+            
+            // testing.
+            queryBackend()
+
             break;
         default:
          if(typeof(callBackValue) === typeof(100)){
@@ -93,47 +107,49 @@ function setTopLevelVariables(callBackValue){
     }
 }
 
-// p5.js built-in method
-// mouseClicked() function does not seem to work on mobile so
-// will move below code to mousePressed. (will need a 'doOnce' boolean.)
-function mouseClicked() {
-    if (menuButton.testForClick()){
-        menuButton.performClickFunctionality();
-    }
-    for (let i = 0; i < views[viewIndex].uiElements.length; i++){
-        if (views[viewIndex].uiElements[i].testForClick()){
-            callBackValue = views[viewIndex].uiElements[i].performClickFunctionality()
-            if (callBackValue){setTopLevelVariables(callBackValue)}
-        }
-    }
-
-//     if (clickValue){
-//     if (clickValue.length == 2) {
-//         let turnString = clickValue[0]
-//         let boardString = clickValue[1]
-//         console.log("http://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+clickValue)
-//         // $.ajax({
-//         //         url: "http://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+clickValue,
-//         //         beforeSend: function(xhr) {
-//         //              // xhr.setRequestHeader("Authorization", "Bearer 6QXNMEMFHNY4FJ5ELNFMP5KRW52WFXN5")
-//         //         }, success: function(data){
-//         //             alert(data);
-//         //             console.log(data)
-//         //             //process the JSON data etc
-//         //         }
-//         // })
-//     }
-// }
-console.log(previousStatesObject, boardString, turn)
-
+function queryBackend(){
+    console.log("http://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString)
+    $.ajax({
+            url: "http://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString,
+            beforeSend: function(xhr) {
+                 // xhr.setRequestHeader("Authorization", "Bearer 6QXNMEMFHNY4FJ5ELNFMP5KRW52WFXN5")
+            }, success: function(data){
+                alert(data);
+                console.log(data)
+                //process the JSON data etc
+            }
+    })
 }
 
 // p5.js built-in method
+// mouseClicked() function does not seem to work on mobile so
+// will move below code to mousePressed. (will need a 'doOnce' boolean.)
+// function mouseClicked() {
+//     for (let i = 0; i < views[viewIndex].uiElements.length; i++){
+//         if (views[viewIndex].uiElements[i].testForClick()){
+//             callBackValue = views[viewIndex].uiElements[i].performClickFunctionality()
+//             if (callBackValue){setTopLevelVariables(callBackValue)}
+//         }
+//     }
+// console.log(previousStatesObject, boardString, turn)
+// }
+
+// p5.js built-in method
 function mousePressed() {
+    // do repeatedly
     for (let i = 0; i < views[viewIndex].uiElements.length; i++){
-        if (views[viewIndex].uiElements[i].testForClick() && views[viewIndex].uiElements[i].isDragging != undefined ){
-            views[viewIndex].uiElements[i].isDragging = true;
+
+        if (views[viewIndex].uiElements[i].testForClick() && !doneOnce){
+                views[viewIndex].uiElements[i].isDragging = true;
+                callBackValue = views[viewIndex].uiElements[i].performClickFunctionality()
+                if (callBackValue){setTopLevelVariables(callBackValue)}
+            }
         }
+    if (menuButton.testForClick() && !doneOnce){
+        menuButton.performClickFunctionality();
+    }
+    if (!doneOnce){
+        doneOnce = true;
     }
 }
 
@@ -146,4 +162,5 @@ function mouseReleased() {
         }
         views[viewIndex].uiElements[i].isDragging = false;
     }
+    doneOnce = false;
 }
