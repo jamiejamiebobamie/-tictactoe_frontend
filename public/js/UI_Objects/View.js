@@ -30,27 +30,22 @@ class SuggestionsView extends View{
             this.uiElements.push(container)
         }
 
-        let turnButtonContainer =  this.uiElements[0]
-
-        let turnbuttonAnchorParams = {row: true, len:4, index:3, parent: turnButtonContainer}
-        let turnButtonsAnchor = new Container(turnbuttonAnchorParams)
-        this.uiElements.push(turnButtonsAnchor)
-
-        let chooseXButtonParams = {row: false, len:4, index:1, parent: turnButtonsAnchor}
-        let chooseXButtonContainer = new Container(chooseXButtonParams)
-        this.uiElements.push(chooseXButtonContainer)
-
-        let chooseOButtonParams = {row: false, len:4, index:2, parent: turnButtonsAnchor}
-        let chooseOButtonContainer = new Container(chooseOButtonParams)
-        this.uiElements.push(chooseOButtonContainer)
-
-        let setTurnToXParams = {row: true, parent:chooseXButtonContainer, mouseClickfunc:this.setTurnToX}
-        let setTurnToXButton = new Button(setTurnToXParams)
-        this.uiElements.push(setTurnToXButton)
-
-        let setTurnToOParams = {row: true, parent:chooseOButtonContainer, mouseClickfunc:this.setTurnToO}
-        let setTurnToOButton = new Button(setTurnToOParams)
-        this.uiElements.push(setTurnToOButton)
+        //
+        // let chooseXButtonParams = {row: false, len:4, index:1, parent: turnButtonsAnchor}
+        // let chooseXButtonContainer = new Container(chooseXButtonParams)
+        // this.uiElements.push(chooseXButtonContainer)
+        //
+        // let chooseOButtonParams = {row: false, len:4, index:2, parent: turnButtonsAnchor}
+        // let chooseOButtonContainer = new Container(chooseOButtonParams)
+        // this.uiElements.push(chooseOButtonContainer)
+        //
+        // let setTurnToXParams = {row: true, parent:chooseXButtonContainer, mouseClickfunc:this.setTurnToX}
+        // let setTurnToXButton = new Button(setTurnToXParams)
+        // this.uiElements.push(setTurnToXButton)
+        //
+        // let setTurnToOParams = {row: true, parent:chooseOButtonContainer, mouseClickfunc:this.setTurnToO}
+        // let setTurnToOButton = new Button(setTurnToOParams)
+        // this.uiElements.push(setTurnToOButton)
 
         let boardContainer = this.uiElements[1]
 
@@ -68,7 +63,8 @@ class SuggestionsView extends View{
         let board = new Container(boardParams)
         this.uiElements.push(board)
 
-        let count = 0;
+        let boardSpace;
+        let boardCount = 0;
         let spaceColor;
         let blue = color(86,133,151)
         let red = color(165,67,68)
@@ -79,16 +75,27 @@ class SuggestionsView extends View{
             this.uiElements.push(boardRow)
 
             for (let j = 0; j < 3; j++){
-                count % 2 ? spaceColor = blue : spaceColor = red;
+                boardCount % 2 ? spaceColor = blue : spaceColor = red;
                 let boardSpaceParams = {row: false, len: 3, index: j, color: spaceColor, parent:boardRow}
-                let boardSpace = new TicTacToeSpaceSuggest(boardSpaceParams)
+                boardSpace = new TicTacToeSpace(boardSpaceParams)
                 if (previousStatesObject){
-                    boardSpace.setSymbol(previousStatesObject.boardArray[count])
+                    boardSpace.setSymbol(previousStatesObject.boardArray[boardCount])
                 }
                 this.uiElements.push(boardSpace)
-                count++;
+                boardCount++;
             }
         }
+
+        let turnButtonContainer =  this.uiElements[0]
+
+        let turnButtonAnchorParams = {row: true, len:4, index:3, parent: turnButtonContainer}
+        let turnButtonAnchor = new Container(turnButtonAnchorParams)
+        this.uiElements.push(turnButtonAnchor)
+
+        boardCount % 2 ? spaceColor = blue : spaceColor = red;
+        let chooseTurnParams = {row: false, color: spaceColor, width:boardSpace.width, height: boardSpace.height, parent:turnButtonAnchor}
+        let turnChoice = new TicTacToePlayerTurnSelector(chooseTurnParams)
+        this.uiElements.push(turnChoice)
 
         let submitContainer = this.uiElements[2]
 
@@ -166,7 +173,7 @@ class PlayView extends View{
             for (let j = 0; j < 3; j++){
                 count % 2 ? spaceColor = blue : spaceColor = red;
                 let boardSpaceParams = {row: false, len: 3, index: j, color: spaceColor, parent:boardRow}
-                let boardSpace = new TicTacToeSpaceSuggest(boardSpaceParams)
+                let boardSpace = new TicTacToeSpace(boardSpaceParams)
                 if (previousStatesObject){
                     boardSpace.setSymbol(previousStatesObject.boardArray[count])
                 }

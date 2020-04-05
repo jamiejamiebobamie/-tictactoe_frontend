@@ -94,31 +94,30 @@ class Container extends UIElement{
     }
 }
 
-class TicTacToeSpaceSuggest extends Container{
+class TicTacToeSpace extends Container{
     constructor(parameterObject){
         super(parameterObject)
         this.currentSymbol = new NullIcon({parent: this})
         this.symbols = [new NullIcon({parent: this}), new X({parent: this}), new O({parent: this})]
         this.symbolIndex = 0;
 
-        this.mouseClickfunc = this.incrementSymbol
+        this.mouseClickfunc = this.getSymbol
     }
 
     incrementSymbol(){
-        /*
-        parent(i):         0       1       2
-         index(j):         0       1       2
+        this.symbolIndex < 2 ? this.symbolIndex++ : this.symbolIndex = 0
+        this.currentSymbol = this.symbols[this.symbolIndex]
+    }
 
-        00 01 02 10 11 12 20 21 22
-        1  2  3  4  5  6   7  8  9
-        */
+    getSymbol(){
+        this.incrementSymbol();
+
         const LOOKUP = {'00':0, '01':1, '02':2,
                   '10':3, '11':4, '12':5,
                   '20':6, '21':7, '22':8}
 
-        this.symbolIndex < 2 ? this.symbolIndex++ : this.symbolIndex = 0
-        this.currentSymbol = this.symbols[this.symbolIndex]
         let boardIndex = str(this.parent.index) + str(this.index)
+
         return [LOOKUP[boardIndex], this.currentSymbol.name]
     }
 
@@ -128,6 +127,37 @@ class TicTacToeSpaceSuggest extends Container{
                         'o':2}
 
         symbol ? this.symbolIndex = LOOKUP[symbol] : this.symbolIndex = 0
+    }
+
+    userDrag(){}
+
+    draw() {
+        super.draw()
+        // draw symbol / icon
+        this.symbols[this.symbolIndex].draw()
+    }
+
+}
+
+class TicTacToePlayerTurnSelector extends TicTacToeSpace{
+    constructor(parameterObject){
+        super(parameterObject)
+        this.currentSymbol = new X({parent: this})
+        this.symbols = [new X({parent: this}), new O({parent: this})]
+        this.symbolIndex = 0;
+
+        this.mouseClickfunc = this.getSymbol
+    }
+
+    incrementSymbol(){
+        this.symbolIndex < 1 ? this.symbolIndex++ : this.symbolIndex = 0
+        this.currentSymbol = this.symbols[this.symbolIndex]
+    }
+
+    getSymbol(){
+        this.incrementSymbol();
+
+        return this.currentSymbol.name
     }
 
     userDrag(){}

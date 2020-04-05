@@ -100,40 +100,36 @@ function setTopLevelVariables(callBackValue){
          if(typeof(callBackValue) === typeof(100)){
              previousStatesObject.aiDifficulty = callBackValue
          } else if (typeof(callBackValue) === typeof([0,'x'])){
-            index = callBackValue[0]
-            val = callBackValue[1]
-            previousStatesObject.boardArray[index] = val
+                 index = callBackValue[0]
+                 val = callBackValue[1]
+                 previousStatesObject.boardArray[index] = val
         }
-        break;
+            break;
     }
 }
 
 function queryBackend(){
-    console.log("http://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString)
-    $.ajax({
-            url: "http://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString,
-            beforeSend: function(xhr) {
-                 // xhr.setRequestHeader("Authorization", "Bearer 6QXNMEMFHNY4FJ5ELNFMP5KRW52WFXN5")
-            }, success: function(data){
-                alert(data);
-                console.log(data)
-                //process the JSON data etc
-            }
-    })
-}
 
-// p5.js built-in method
-// mouseClicked() function does not seem to work on mobile so
-// will move below code to mousePressed. (will need a 'doOnce' boolean.)
-// function mouseClicked() {
-//     for (let i = 0; i < views[viewIndex].uiElements.length; i++){
-//         if (views[viewIndex].uiElements[i].testForClick()){
-//             callBackValue = views[viewIndex].uiElements[i].performClickFunctionality()
-//             if (callBackValue){setTopLevelVariables(callBackValue)}
-//         }
-//     }
-// console.log(previousStatesObject, boardString, turn)
-// }
+    fetch("http://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString)
+      .then((response) => {
+          console.log(response.json())
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+      });
+    console.log("http://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString)
+    // $.ajax({
+    //         url: "http://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString,
+    //         beforeSend: function(xhr) {
+    //              // xhr.setRequestHeader("Authorization", "Bearer 6QXNMEMFHNY4FJ5ELNFMP5KRW52WFXN5")
+    //         }, success: function(data){
+    //             alert(data);
+    //             console.log(data)
+    //             //process the JSON data etc
+    //         }
+    // })
+}
 
 // p5.js built-in method
 function mousePressed() {
@@ -164,4 +160,5 @@ function mouseReleased() {
         views[viewIndex].uiElements[i].isDragging = false;
     }
     doneOnce = false;
+    console.log(previousStatesObject, boardString, turn, callBackValue)
 }

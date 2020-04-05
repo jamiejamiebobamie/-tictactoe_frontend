@@ -36,7 +36,6 @@ class X extends TicTacToeIcon{
 
     draw(){
         super.draw()
-        // triangle(this.x, this.y, this.parent.width/2, this.parent.width/2, this.parent.width, this.parent.width)
         rect(this.x,this.y,this.parent.width/1.35, this.parent.height/1.35)
     }
 }
