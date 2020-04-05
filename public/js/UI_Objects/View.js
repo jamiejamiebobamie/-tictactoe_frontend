@@ -95,6 +95,9 @@ class SuggestionView extends View{
         boardCount % 2 ? spaceColor = blue : spaceColor = red;
         let chooseTurnParams = {row: false, color: spaceColor, width:boardSpace.width, height: boardSpace.height, parent:turnButtonAnchor}
         let turnChoice = new TicTacToePlayerTurnSelector(chooseTurnParams)
+        if (previousStatesObject){
+            turnChoice.setSymbol(previousStatesObject.turn);
+        }
         this.uiElements.push(turnChoice)
 
         let submitContainer = this.uiElements[2]
@@ -103,7 +106,7 @@ class SuggestionView extends View{
         let submitBoardButtonAnchor = new Container(submitBoardButtonAnchorParams)
         this.uiElements.push(submitBoardButtonAnchor)
 
-        let submitBoardButtonParams = {row: true, parent:submitBoardButtonAnchor, mouseClickfunc:this.getBoardString}
+        let submitBoardButtonParams = {row: true, parent:submitBoardButtonAnchor, mouseClickfunc:this.suggestMove}
         let submitBoardButton = new Button(submitBoardButtonParams)
         this.uiElements.push(submitBoardButton)
     }
@@ -111,7 +114,7 @@ class SuggestionView extends View{
     // mouse click functions.
     // can't set 'this' member variables without binding this,
     // which I'm not sure can be done outside of React.
-    getBoardString(){ return 'getBoardString'}
+    suggestMove(){ return 'suggestMove'}
     setTurnToX(){ return 'x' }
     setTurnToO(){ return 'o' }
 }
@@ -186,7 +189,7 @@ class PlayView extends View{
     // mouse click functions.
     // can't set 'this' member variables without binding this,
     // which I'm not sure can be done outside of React.
-    getBoardString(){return 'getBoardString'}
+    suggestMove(){return 'suggestMove'}
     setTurnToX(){ return 'x' }
     setTurnToO(){ return 'o' }
 }

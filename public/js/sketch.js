@@ -5,13 +5,14 @@ let viewIndex = 0;
 let menuButton;
 
 // the return value from functions nested UIElements.
-let callBackValue;
+let returnValueFromViews;
 
 // parameterObject to pass in to redrawElements() method to set the states
 // to its previous states. states are lost on window resize.
-let previousStatesObject = { boardArray:["!","!","!","!","!","!","!","!","!"],
-                            turn:'x',
-                            aiDifficulty:13 // slider range: 13 to 113
+let stateObject = { boardArray:["!","!","!","!","!","!","!","!","!"],
+                    turn:'x',
+                    aiDifficulty:13, // slider range: 13 to 113
+                    gameOver:false
                             }
 
 // url parameters to query the backend
@@ -25,6 +26,8 @@ let turn = 'x';
 // and which are called once (click events).
 // boolean reset with mouseReleased() function.
 let doneOnce = false;
+
+let apiReturnValue = null;
 
 // p5.js built-in method
 function setup() {
@@ -54,7 +57,7 @@ function windowResized() {
     // p5.js built-in method
     resizeCanvas(windowWidth, windowHeight);
 
-    views[viewIndex].redrawElements(previousStatesObject);
+    views[viewIndex].redrawElements(stateObject);
 }
 
 // p5.js built-in method
@@ -64,6 +67,22 @@ function draw () {
 
     // test
     menuButton.draw()
+    if (apiReturnValue != null){
+        console.log(apiReturnValue,stateObject)
+        setBoardAndTurn(apiReturnValue)
+        views[viewIndex].redrawElements(stateObject);
+        console.log(apiReturnValue,stateObject)
+        apiReturnValue = null;
+    }
+}
+
+function setBoardAndTurn(apiReturnValue){
+    const OPPONENT_LOOKUP = {'x':'o', 'o':'x'}
+    for (let i = 0; i < apiReturnValue.length; i++){
+        stateObject.boardArray[i] = apiReturnValue[i]
+    }
+    turn = OPPONENT_LOOKUP[turn]
+    stateObject.turn = turn
 }
 
 // testing
@@ -73,84 +92,59 @@ function cycleViews(){
     } else {
         viewIndex = 0;
     }
-    views[viewIndex].redrawElements(previousStatesObject);
+    views[viewIndex].redrawElements(stateObject);
 }
 
-function setTopLevelVariables(callBackValue){
-    switch (callBackValue) {
+function setTopLevelVariables(returnValueFromViews){
+    switch (returnValueFromViews) {
         case 'x':
             turn = 'x'
-            previousStatesObject.turn = turn
+            stateObject.turn = turn
             break;
         case 'o':
             turn = 'o'
-            previousStatesObject.turn = turn
+            stateObject.turn = turn
             break;
-        case 'getBoardString':
-            boardString = previousStatesObject.boardArray.toString().replace(/,/g, '')
-
-            // testing.
-            queryBackend()
-
+        case 'suggestMove':
+            boardString = stateObject.boardArray.toString().replace(/,/g, '')
+            // sets the 'apiReturnValue' top-level variable
+            queryBackend();
             break;
         default:
-         if(typeof(callBackValue) === typeof(100)){
-             previousStatesObject.aiDifficulty = callBackValue
-         } else if (typeof(callBackValue) === typeof([0,'x'])){
-                 index = callBackValue[0]
-                 val = callBackValue[1]
-                 previousStatesObject.boardArray[index] = val
+         if(typeof(returnValueFromViews) === typeof(100)){
+             stateObject.aiDifficulty = returnValueFromViews
+         } else if (typeof(returnValueFromViews) === typeof([0,'x'])){
+                 index = returnValueFromViews[0]
+                 val = returnValueFromViews[1]
+                 stateObject.boardArray[index] = val
         }
             break;
     }
 }
 
 function queryBackend(){
-
-    // const invocation = new XMLHttpRequest();
-    // const url = 'http://bar.other/resources/credentialed-content/';
-    // if (invocation) {
-    //     invocation.open('GET', url, true);
-    //     invocation.withCredentials = false;
-    //     invocation.onreadystatechange = handler;
-    //     invocation.send();
-    // }
-
+    let result;
     fetch("https://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString, {
-  // NEW - add a Content-Type header
         headers: { "Content-Type": "application/json" }
-    })
-  .then(async response => {
+    }).then(async response => {
     if (response.ok) {
       apiError = false;
       result = await response.json();
-      console.log(result)
+      apiReturnValue = result.board
     } else {
       apiError = true;
     }
-  })
-  .catch(() => (apiError = true));
-
-    // console.log("http://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString)
-    // fetch("http://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString)
-    //   .then((response) => {
-    //       console.log(response.json())
-    //     return response.json();
-    //   })
-    //   .then((data) => {
-    //     console.log(data);
-    //   });
+  }).catch(() => (apiError = true));
 }
 
 // p5.js built-in method
 function mousePressed() {
-    // do repeatedly
     for (let i = 0; i < views[viewIndex].uiElements.length; i++){
 
         if (views[viewIndex].uiElements[i].testForClick() && !doneOnce){
                 views[viewIndex].uiElements[i].isDragging = true;
-                callBackValue = views[viewIndex].uiElements[i].performClickFunctionality()
-                if (callBackValue){setTopLevelVariables(callBackValue)}
+                returnValueFromViews = views[viewIndex].uiElements[i].performClickFunctionality()
+                if (returnValueFromViews){setTopLevelVariables(returnValueFromViews)}
             }
         }
     if (menuButton.testForClick() && !doneOnce){
@@ -165,11 +159,11 @@ function mousePressed() {
 function mouseReleased() {
     for (let i = 0; i < views[viewIndex].uiElements.length; i++){
         if(views[viewIndex].uiElements[i].mouseDragfunc && views[viewIndex].uiElements[i].isDragging){
-            callBackValue = views[viewIndex].uiElements[i].performDragFunctionality()
-            if (callBackValue){setTopLevelVariables(callBackValue)}
+            returnValueFromViews = views[viewIndex].uiElements[i].performDragFunctionality()
+            if (returnValueFromViews){setTopLevelVariables(returnValueFromViews)}
         }
         views[viewIndex].uiElements[i].isDragging = false;
     }
     doneOnce = false;
-    // console.log(previousStatesObject, boardString, turn, callBackValue)
+    console.log(stateObject, boardString, turn, returnValueFromViews, apiReturnValue)
 }

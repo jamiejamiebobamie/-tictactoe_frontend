@@ -160,6 +160,13 @@ class TicTacToePlayerTurnSelector extends TicTacToeSpace{
         return this.currentSymbol.name
     }
 
+    setSymbol(symbol){
+        const LOOKUP = {'x':0,
+                        'o':1}
+
+        symbol ? this.symbolIndex = LOOKUP[symbol] : this.symbolIndex = 0
+    }
+
     userDrag(){}
 
     draw() {
