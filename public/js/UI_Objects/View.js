@@ -139,7 +139,6 @@ class PlayView extends View{
         this.uiElements.push(slider)
 
         let boardContainer = this.uiElements[1]
-
         let boardRowParams = {row: true, len:8, index:1, parent:boardContainer}
         let rowAnchor = new Container(boardRowParams)
         this.uiElements.push(rowAnchor)

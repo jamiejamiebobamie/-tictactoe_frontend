@@ -94,6 +94,8 @@ function setTopLevelVariables(callBackValue){
 }
 
 // p5.js built-in method
+// mouseClicked() function does not seem to work on mobile so
+// will move below code to mousePressed. (will need a 'doOnce' boolean.)
 function mouseClicked() {
     if (menuButton.testForClick()){
         menuButton.performClickFunctionality();

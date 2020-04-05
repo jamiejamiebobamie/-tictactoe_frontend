@@ -106,8 +106,8 @@ class TicTacToeSpaceSuggest extends Container{
 
     incrementSymbol(){
         /*
-        parent:         0       1       2
-        index           0       1       2
+        parent(i):         0       1       2
+         index(j):         0       1       2
 
         00 01 02 10 11 12 20 21 22
         1  2  3  4  5  6   7  8  9
