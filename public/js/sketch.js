@@ -106,15 +106,40 @@ function setTopLevelVariables(callBackValue){
 }
 
 function queryBackend(){
-    console.log("http://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString)
-    fetch("http://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString)
-      .then((response) => {
-          console.log(response.json())
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data);
-      });
+
+    // const invocation = new XMLHttpRequest();
+    // const url = 'http://bar.other/resources/credentialed-content/';
+    // if (invocation) {
+    //     invocation.open('GET', url, true);
+    //     invocation.withCredentials = false;
+    //     invocation.onreadystatechange = handler;
+    //     invocation.send();
+    // }
+
+    fetch("http://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString, {
+  // NEW - add a Content-Type header
+        headers: { "Content-Type": "application/json" }
+    })
+  .then(async response => {
+    if (response.ok) {
+      apiError = false;
+      result = await response.json();
+      console.log(result)
+    } else {
+      apiError = true;
+    }
+  })
+  .catch(() => (apiError = true));
+
+    // console.log("http://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString)
+    // fetch("http://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString)
+    //   .then((response) => {
+    //       console.log(response.json())
+    //     return response.json();
+    //   })
+    //   .then((data) => {
+    //     console.log(data);
+    //   });
 }
 
 // p5.js built-in method
