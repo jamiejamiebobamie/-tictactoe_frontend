@@ -9,6 +9,8 @@ class Container extends UIElement{
         this.dragOffsetX = undefined;
         this.dragOffsetY = undefined;
 
+        this.borderRadius = {topLeft:0, topRight:0, bottomRight:0, bottomLeft:0};
+
         // the x and y coordinates of all UI elements are anchored at the top left
             // corner.
             // when clicked, the element needs to take this into account.
@@ -85,7 +87,10 @@ class Container extends UIElement{
         // testing to show the bounds of the container
         stroke(30);
         fill(this.color);
-        rect(this.x,this.y,this.width,this.height)
+        // noFill();
+        rect(this.x,this.y,this.width,this.height,
+            this.borderRadius.topLeft,this.borderRadius.topRight,
+            this.borderRadius.bottomRight,this.borderRadius.bottomLeft)
     }
 }
 

@@ -24,33 +24,24 @@ class SuggestionsView extends View{
         let portrait = windowWidth < windowHeight;
 
         this.uiElements = []
-        for (let i = 0; i < 3; i++){
-            let containerParams = {row: portrait, len:3, index:i}
+        for (let i = 0; i < 2; i++){
+            let containerParams = {row: portrait, len:2, index:i}
             let container = new Container(containerParams)
             this.uiElements.push(container)
         }
 
-        let turnButtonContainer =  this.uiElements[0]
-
-        let turnbuttonAnchorParams = {row: true, len:4, index:3, parent: turnButtonContainer}
-        let turnButtonsAnchor = new Container(turnbuttonAnchorParams)
-        this.uiElements.push(turnButtonsAnchor)
-
-        let chooseXButtonParams = {row: false, len:4, index:1, parent: turnButtonsAnchor}
-        let chooseXButtonContainer = new Container(chooseXButtonParams)
-        this.uiElements.push(chooseXButtonContainer)
-
-        let chooseOButtonParams = {row: false, len:4, index:2, parent: turnButtonsAnchor}
-        let chooseOButtonContainer = new Container(chooseOButtonParams)
-        this.uiElements.push(chooseOButtonContainer)
-
-        let setTurnToXParams = {row: true, parent:chooseXButtonContainer, mouseClickfunc:this.setTurnToX}
-        let setTurnToXButton = new Button(setTurnToXParams)
-        this.uiElements.push(setTurnToXButton)
-
-        let setTurnToOParams = {row: true, parent:chooseOButtonContainer, mouseClickfunc:this.setTurnToO}
-        let setTurnToOButton = new Button(setTurnToOParams)
-        this.uiElements.push(setTurnToOButton)
+        let cartoonSliderContainer =  this.uiElements[0]
+        let cartoonImageContainerParams = {row: true, len:3, index:0, height:cartoonSliderContainer.height*(2/3), parent:cartoonSliderContainer}
+        let cartoonImageContainer = new Container(cartoonImageContainerParams)
+        this.uiElements.push(cartoonImageContainer)
+        let sliderContainerParams = {row: true, len:3, index:2, height:cartoonSliderContainer.height/3, parent:cartoonSliderContainer}
+        let sliderContainer = new Container(sliderContainerParams)
+        this.uiElements.push(sliderContainer)
+        let sliderParams = {row: true, parent:sliderContainer}
+        let slider = new DifficultySlider(sliderParams)
+        let difficulty = previousStatesObject ? previousStatesObject.aiDifficulty : 13;
+        slider.setDifficulty(difficulty)
+        this.uiElements.push(slider)
 
         let boardContainer = this.uiElements[1]
 
@@ -87,24 +78,44 @@ class SuggestionsView extends View{
                 }
                 this.uiElements.push(boardSpace)
                 count++;
+        }
+    }
+
+        let uiRowParams = {row: true, len:8, index:0, parent:boardContainer}
+        let uirowAnchor = new Container(uiRowParams)
+        this.uiElements.push(uirowAnchor)
+
+        for (let i = 0; i < 3; i++){
+            let testUIParams = {row: false, len:3, index:i, parent:uirowAnchor}
+            let testUIElement = new Container(testUIParams)
+            this.uiElements.push(testUIElement)
+
+            switch (i){
+                case 0:
+                let setTurnToXParams = {row: true, parent:testUIElement, mouseClickfunc:this.setTurnToX}
+                let setTurnToXButton = new Button(setTurnToXParams)
+                this.uiElements.push(setTurnToXButton)
+                break;
+
+                case 1:
+                let submitBoardButtonParams = {row: true, parent:testUIElement, mouseClickfunc:this.getBoardString}
+                let submitBoardButton = new Button(submitBoardButtonParams)
+                this.uiElements.push(submitBoardButton)
+                break;
+
+                case 2:
+                let setTurnToOParams = {row: true, parent:testUIElement, mouseClickfunc:this.setTurnToO}
+                let setTurnToOButton = new Button(setTurnToOParams)
+                this.uiElements.push(setTurnToOButton)
+                break;
             }
         }
-
-        let submitContainer = this.uiElements[2]
-
-        let submitBoardButtonAnchorParams = {row: true, len:3, index:1, parent: submitContainer}
-        let submitBoardButtonAnchor = new Container(submitBoardButtonAnchorParams)
-        this.uiElements.push(submitBoardButtonAnchor)
-
-        let submitBoardButtonParams = {row: true, parent:submitBoardButtonAnchor, mouseClickfunc:this.getBoardString}
-        let submitBoardButton = new Button(submitBoardButtonParams)
-        this.uiElements.push(submitBoardButton)
     }
 
     // mouse click functions.
     // can't set 'this' member variables without binding this,
     // which I'm not sure can be done outside of React.
-    getBoardString(){ return 'getBoardString'}
+    getBoardString(){return 'getBoardString'}
     setTurnToX(){ return 'x' }
     setTurnToO(){ return 'o' }
 }
@@ -173,6 +184,36 @@ class PlayView extends View{
                 }
                 this.uiElements.push(boardSpace)
                 count++;
+        }
+    }
+
+        let uiRowParams = {row: true, len:8, index:0, parent:boardContainer}
+        let uirowAnchor = new Container(uiRowParams)
+        this.uiElements.push(uirowAnchor)
+
+        for (let i = 0; i < 3; i++){
+            let testUIParams = {row: false, len:3, index:i, parent:uirowAnchor}
+            let testUIElement = new Container(testUIParams)
+            this.uiElements.push(testUIElement)
+
+            switch (i){
+                case 0:
+                let setTurnToXParams = {row: true, parent:testUIElement, mouseClickfunc:this.setTurnToX}
+                let setTurnToXButton = new Button(setTurnToXParams)
+                this.uiElements.push(setTurnToXButton)
+                break;
+
+                case 1:
+                let submitBoardButtonParams = {row: true, parent:testUIElement, mouseClickfunc:this.getBoardString}
+                let submitBoardButton = new Button(submitBoardButtonParams)
+                this.uiElements.push(submitBoardButton)
+                break;
+
+                case 2:
+                let setTurnToOParams = {row: true, parent:testUIElement, mouseClickfunc:this.setTurnToO}
+                let setTurnToOButton = new Button(setTurnToOParams)
+                this.uiElements.push(setTurnToOButton)
+                break;
             }
         }
     }

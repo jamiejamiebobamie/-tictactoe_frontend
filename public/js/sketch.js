@@ -19,7 +19,7 @@ let previousStatesObject = { boardArray:["!","!","!","!","!","!","!","!","!"],
 
 // url parameters to query the backend
 let boardString = "!!!!!!!!!"
-let turn = 'x';
+let turn = 'o';
 
 // p5.js built-in method
 function setup() {
@@ -74,7 +74,7 @@ function setTopLevelVariables(callBackValue){
             previousStatesObject.turn = turn
             break;
         case 'o':
-            turn = 'x'
+            turn = 'o'
             previousStatesObject.turn = turn
             break;
         case 'getBoardString':
@@ -121,8 +121,10 @@ function mouseClicked() {
 //         // })
 //     }
 // }
+console.log(previousStatesObject, boardString, turn)
+
 }
-//
+
 // p5.js built-in method
 function mousePressed() {
     for (let i = 0; i < views[viewIndex].uiElements.length; i++){
