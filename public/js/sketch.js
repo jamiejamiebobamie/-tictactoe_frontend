@@ -116,7 +116,7 @@ function queryBackend(){
     //     invocation.send();
     // }
 
-    fetch("http://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString, {
+    fetch("https://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString, {
   // NEW - add a Content-Type header
         headers: { "Content-Type": "application/json" }
     })
@@ -171,5 +171,5 @@ function mouseReleased() {
         views[viewIndex].uiElements[i].isDragging = false;
     }
     doneOnce = false;
-    console.log(previousStatesObject, boardString, turn, callBackValue)
+    // console.log(previousStatesObject, boardString, turn, callBackValue)
 }
