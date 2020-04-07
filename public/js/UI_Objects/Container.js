@@ -179,3 +179,31 @@ class TicTacToePlayerTurnSelector extends TicTacToeSpace{
     }
 
 }
+
+class ImageContainer extends Container{
+    constructor(paramsObject){
+        super(paramsObject)
+        this.loadedImg = undefined
+        this.imageWidth = undefined
+        this.imageHeight = undefined
+        this.imageX = this.parent ? this.parent.x + this.parent.width/2 : windowWidth/2
+        this.imageY = this.parent ? this.parent.y + this.parent.height/2 : windowHeight/2
+    }
+
+    setImageProps(loadedImg,imageWidth,imageHeight){
+        this.loadedImg = loadedImg
+        this.imageWidth = imageWidth
+        this.imageHeight = imageHeight
+    }
+
+    redrawImage(){
+        // console.log(this.imageX, this.imageY, this.imageWidth, this.imageHeight)
+        image(this.loadedImg, this.imageX, this.imageY, this.imageWidth, this.imageHeight);
+    }
+
+    draw(){
+        if (this.loadedImg){
+            this.redrawImage()
+        }
+    }
+}
