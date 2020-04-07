@@ -68,10 +68,8 @@ function draw () {
     // test
     menuButton.draw()
     if (apiReturnValue != null){
-        console.log(apiReturnValue,stateObject)
         setBoardAndTurn(apiReturnValue)
         views[viewIndex].redrawElements(stateObject);
-        console.log(apiReturnValue,stateObject)
         apiReturnValue = null;
     }
 }
@@ -124,6 +122,7 @@ function setTopLevelVariables(returnValueFromViews){
 
 function queryBackend(){
     let result;
+    // fetch("http://127.0.0.1:5000/api/v1/turn/"+turn+"/board/"+boardString, {
     fetch("https://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString, {
         headers: { "Content-Type": "application/json" }
     }).then(async response => {
@@ -165,5 +164,5 @@ function mouseReleased() {
         views[viewIndex].uiElements[i].isDragging = false;
     }
     doneOnce = false;
-    console.log(stateObject, boardString, turn, returnValueFromViews, apiReturnValue)
+    // console.log(stateObject, boardString, turn, returnValueFromViews, apiReturnValue)
 }
