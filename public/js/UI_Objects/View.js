@@ -24,28 +24,11 @@ class SuggestionView extends View{
         let portrait = windowWidth < windowHeight;
 
         this.uiElements = []
-        for (let i = 0; i < 3; i++){
-            let containerParams = {row: portrait, len:3, index:i}
+        for (let i = 0; i < 2; i++){
+            let containerParams = {row: portrait, len:2, index:i}
             let container = new Container(containerParams)
             this.uiElements.push(container)
         }
-
-        //
-        // let chooseXButtonParams = {row: false, len:4, index:1, parent: turnButtonsAnchor}
-        // let chooseXButtonContainer = new Container(chooseXButtonParams)
-        // this.uiElements.push(chooseXButtonContainer)
-        //
-        // let chooseOButtonParams = {row: false, len:4, index:2, parent: turnButtonsAnchor}
-        // let chooseOButtonContainer = new Container(chooseOButtonParams)
-        // this.uiElements.push(chooseOButtonContainer)
-        //
-        // let setTurnToXParams = {row: true, parent:chooseXButtonContainer, mouseClickfunc:this.setTurnToX}
-        // let setTurnToXButton = new Button(setTurnToXParams)
-        // this.uiElements.push(setTurnToXButton)
-        //
-        // let setTurnToOParams = {row: true, parent:chooseOButtonContainer, mouseClickfunc:this.setTurnToO}
-        // let setTurnToOButton = new Button(setTurnToOParams)
-        // this.uiElements.push(setTurnToOButton)
 
         let boardContainer = this.uiElements[1]
 
@@ -100,15 +83,15 @@ class SuggestionView extends View{
         }
         this.uiElements.push(turnChoice)
 
-        let submitContainer = this.uiElements[2]
-
-        let submitBoardButtonAnchorParams = {row: true, len:3, index:1, parent: submitContainer}
-        let submitBoardButtonAnchor = new Container(submitBoardButtonAnchorParams)
-        this.uiElements.push(submitBoardButtonAnchor)
-
-        let submitBoardButtonParams = {row: true, parent:submitBoardButtonAnchor, mouseClickfunc:this.suggestMove}
-        let submitBoardButton = new Button(submitBoardButtonParams)
-        this.uiElements.push(submitBoardButton)
+        // let submitContainer = this.uiElements[2]
+        //
+        // let submitBoardButtonAnchorParams = {row: true, len:3, index:1, parent: submitContainer}
+        // let submitBoardButtonAnchor = new Container(submitBoardButtonAnchorParams)
+        // this.uiElements.push(submitBoardButtonAnchor)
+        //
+        // let submitBoardButtonParams = {row: true, parent:submitBoardButtonAnchor, mouseClickfunc:this.suggestMove}
+        // let submitBoardButton = new Button(submitBoardButtonParams)
+        // this.uiElements.push(submitBoardButton)
     }
 
     // mouse click functions.
@@ -192,4 +175,87 @@ class PlayView extends View{
     suggestMove(){return 'suggestMove'}
     setTurnToX(){ return 'x' }
     setTurnToO(){ return 'o' }
+}
+
+class TestView1 extends View{
+    constructor(parameterObject){
+        super(parameterObject)
+        this.redrawElements()
+        this.translateViewX = 0;
+        this.translateViewY = 0;
+    }
+
+    redrawElements(){
+        push()
+        translate(this.translateViewX,this.translateViewY)
+        let base_container1_params = {row:false, len:7, index:0,width:windowWidth*6/7, color:'orange'}
+        let container = new Container(base_container1_params)
+        this.uiElements.push(container)
+
+        base_container1_params = {row:false, len:7, index:6, color:'green', mouseDragfunc:this.swipeLeft}
+        container = new Container(base_container1_params)
+        this.uiElements.push(container)
+
+        let params = {row: false, width: 200, height: 300, color: 'red'}
+        let cont = new Container(params)
+        this.uiElements.push(cont)
+        pop();
+    }
+
+    swipeLeft(){
+        console.log(windowWidth - mouseX)
+        for (let i = 0; i < this.uiElements.length; i++){
+            this.uiElements[i].swipeAmount = windowWidth - mouseX
+        }
+    }
+    draw(){
+        super.draw()
+        for (let i = 0; i < this.uiElements.length; i++){
+            if (this.uiElements[i].isDragging){
+                this.swipeLeft()
+            }
+        }
+    }
+
+}
+
+class TestView2 extends View{
+    constructor(parameterObject){
+        super(parameterObject)
+        this.img = loadImage('../imgs/brain_base.png');
+        this.redrawElements()
+        this.translateViewX = 0;
+        this.translateViewY = 0;
+    }
+
+    redrawElements(){
+
+        let base_container1_params = {row:false, len:7, index:0,width:windowWidth*6/7, color:'orange'}
+        let container = new Container(base_container1_params)
+        this.uiElements.push(container)
+
+        base_container1_params = {row:false, len:7, index:6, color:'green', mouseDragfunc:this.swipeLeft}
+        container = new Container(base_container1_params)
+        this.uiElements.push(container)
+
+        let params = {row: false, width: 200, height: 300, offsetX:400}
+        let contImg = new ImageContainer(params)
+        contImg.setImageProps(this.img, 382,279)
+        this.uiElements.push(contImg)
+    }
+
+    swipeLeft(){
+        console.log(windowWidth - mouseX)
+        for (let i = 0; i < this.uiElements.length; i++){
+            this.uiElements[i].swipeAmount = windowWidth - mouseX
+        }
+    }
+    draw(){
+        super.draw()
+        for (let i = 0; i < this.uiElements.length; i++){
+            if (this.uiElements[i].isDragging){
+                this.swipeLeft()
+            }
+        }
+    }
 }

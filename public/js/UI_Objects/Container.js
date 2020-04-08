@@ -2,8 +2,6 @@ class Container extends UIElement{
     constructor(parameterObject) {
         super(parameterObject);
         this.isDragging = false;
-        // this is true if the element has ever been dragged from its original position
-        this.hasBeenDragged = false;
         // this is the current amount the element has been dragged from
             // its original position
         this.dragOffsetX = undefined;
@@ -77,12 +75,21 @@ class Container extends UIElement{
         }
     }
 
+    performDragFunctionality(){
+        if(this.mouseDragfunc){
+            console.log(this.mouseDragfunc)
+            return this.mouseDragfunc();
+        }
+    }
+
     performValuesResetAfterDrag(){
         this.dragOffsetX = undefined;
         this.dragOffsetY = undefined;
     }
 
     draw() {
+        push()
+        translate(this.swipeAmount,0)
         if (this.isDragging){
             this.userDrag();
         }
@@ -91,10 +98,10 @@ class Container extends UIElement{
         stroke(30);
         fill(this.color);
         // noFill();
-        rect(this.x,this.y,this.width,this.height,
-            this.borderRadius.topLeft,this.borderRadius.topRight,
-            this.borderRadius.bottomRight,this.borderRadius.bottomLeft)
+        rect(this.x,this.y,this.width,this.height)
+        pop();
     }
+
 }
 
 class TicTacToeSpace extends Container{
@@ -197,7 +204,6 @@ class ImageContainer extends Container{
     }
 
     redrawImage(){
-        // console.log(this.imageX, this.imageY, this.imageWidth, this.imageHeight)
         image(this.loadedImg, this.imageX, this.imageY, this.imageWidth, this.imageHeight);
     }
 

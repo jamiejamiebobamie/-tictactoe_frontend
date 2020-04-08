@@ -76,6 +76,7 @@ class UIElement{
                 this.y = offsetY;
             }
         }
+        this.swipeAmount = 0
     }
 
     recreate(){

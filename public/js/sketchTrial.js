@@ -2,8 +2,9 @@
 let canvas;
 let returnValueFromViews;
 let doneOnce = false;
-let uiElements = [];
-let img;
+let views = [];
+let view_i = 0;
+let menuButton;
 
 
 // function preload() {
@@ -17,6 +18,8 @@ function setup() {
     // parent the canvas to the DOM element 'sketch-holder'
     canvas.parent('sketch-holder');
 
+    menuButton = new Container({width:100, height:100, mouseClickfunc: cycleViews})
+
     frameRate(24);
 
     // centers the canvas
@@ -26,16 +29,11 @@ function setup() {
 }
 
 function redrawn(){
-    uiElements = [];
-
-    let params = {width:200, height: 200, offsetX:300}
-    let container = new Container(params)
-    uiElements.push(container)
-
-    params = {width:200, height: 200, parent:container}
-    let imageContainer = new ImageContainer(params)
-    imageContainer.setImageProps(img,382,279)
-    uiElements.push(imageContainer)
+    views = [];
+    let view1 = new TestView1
+    views.push(view1)
+    let view2 = new TestView2
+    views.push(view2)
 }
 
 // p5.js built-in method
@@ -48,36 +46,54 @@ function windowResized() {
 // p5.js built-in method
 function draw () {
     background(256);
-        for (let i = 0; i < uiElements.length; i++){
-            uiElements[i].draw()
-        }
-
-    // redrawImage();
+    for (let i = 0; i < views[view_i].uiElements.length; i++){
+        views[view_i].uiElements[i].draw()
+    }
+    menuButton.draw()
 }
 
-// // p5.js built-in method
-// function mousePressed() {
-//     for (let i = 0; i < uiElements.length; i++){
-//
-//         if (uiElements[i].testForClick()){
-//                 uiElements[i].isDragging = true;
-//                 returnValueFromViews = uiElements[i].performClickFunctionality()
-//                 if (returnValueFromViews){setTopLevelVariables(returnValueFromViews)}
-//             }
-//         }
-//     if (!doneOnce){
-//         doneOnce = true;
-//     }
-// }
-//
-// // p5.js built-in method
-// function mouseReleased() {
-//     for (let i = 0; i < uiElements.length; i++){
-//         if(uiElements[i].mouseDragfunc && uiElements[i].isDragging){
-//             returnValueFromViews = uiElements[i].performDragFunctionality()
-//             if (returnValueFromViews){setTopLevelVariables(returnValueFromViews)}
-//         }
-//         uiElements[i].isDragging = false;
-//     }
-//     doneOnce = false;
-// }
+// p5.js built-in method
+function mousePressed() {
+    for (let i = 0; i < views[view_i].uiElements.length; i++){
+        if (views[view_i].uiElements[i].testForClick()){
+
+            views[view_i].uiElements[i].isDragging = true;
+            console.log(views[view_i].uiElements[i])
+            returnValueFromViews = views[view_i].uiElements[i].performClickFunctionality()
+
+            if (returnValueFromViews){
+                setTopLevelVariables(returnValueFromViews)
+            }
+        }
+    }
+    if (menuButton.testForClick() && !doneOnce){
+        menuButton.performClickFunctionality();
+    }
+    if (!doneOnce){
+        doneOnce = true;
+    }
+}
+
+// p5.js built-in method
+function mouseReleased() {
+    for (let i = 0; i < views[view_i].uiElements.length; i++){
+        if(views[view_i].uiElements[i].mouseDragfunc && views[view_i].uiElements[i].isDragging){
+            returnValueFromViews = views[view_i].uiElements[i].performDragFunctionality()
+            if (returnValueFromViews){setTopLevelVariables(returnValueFromViews)}
+        }
+        views[view_i].uiElements[i].isDragging = false;
+    }
+    doneOnce = false;
+}
+
+
+// testing
+function cycleViews(){
+    if (view_i < views.length-1){
+        view_i++;
+    } else {
+        view_i = 0;
+    }
+    console.log('hey')
+    views[view_i].redrawElements();
+}
