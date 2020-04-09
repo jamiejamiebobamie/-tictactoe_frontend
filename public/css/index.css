@@ -1,5 +1,5 @@
 
-body, html{height: 100%; position: relative}
+body, html{height: 100%; position: relative; overflow-x: hidden}
 
 div.wrap{height: 100%; overflow: hidden;}
 
@@ -19,4 +19,5 @@ body {
     align-self: center;
     margin-bottom: auto;
     height: 100%;
+    overflow-x: hidden;
 }
