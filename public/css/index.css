@@ -18,4 +18,5 @@ body {
     display: flex;
     align-self: center;
     margin-bottom: auto;
+    height: 100%;
 }
