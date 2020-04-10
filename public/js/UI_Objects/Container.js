@@ -1,30 +1,7 @@
 class Container extends UIElement{
     constructor(parameterObject) {
         super(parameterObject);
-        this.isDragging = false;
-        // this is the current amount the element has been dragged from
-            // its original position
-        this.dragOffsetX = undefined;
-        this.dragOffsetY = undefined;
-
-        this.borderRadius = {topLeft:0, topRight:0, bottomRight:0, bottomLeft:0};
-
-        // the x and y coordinates of all UI elements are anchored at the top left
-            // corner.
-            // when clicked, the element needs to take this into account.
-        if (!this.hasBeenDragged){
-            this.draggedX = undefined
-            this.draggedY = undefined
-            this.ratioX = 1
-            this.ratioY = 1
-        } else {
-            this.x = this.draggedX * displayWidth/this.ratioX
-            this.y = this.draggedY * displayHeight/this.ratioY
-        }
     }
-// https://p5js.org/learn/program-flow.html
-//     mouseOver() - Code inside this block is run once after every time a mouse moves onto the element.
-// mouseOut() - Code inside this block is run once after every time a mouse moves off the element
 
     performClickFunctionality(){
         if (this.mouseClickfunc){
@@ -42,7 +19,66 @@ class Container extends UIElement{
         }
     }
 
-    // containers can be clicked
+    draw() {
+        stroke(30);
+        this.color ? fill(this.color) : noFill();
+        rect(this.x,this.y,this.width,this.height)
+    }
+}
+
+class ImageContainer extends Container{
+    constructor(paramsObject){
+        super(paramsObject)
+        this.loadedImg = undefined
+        this.imageWidth = undefined
+        this.imageHeight = undefined
+        this.imageX = this.parent ? this.parent.x + this.parent.width/2 : windowWidth/2
+        this.imageY = this.parent ? this.parent.y + this.parent.height/2 : windowHeight/2
+    }
+
+    // images can exceed the bounds of the container
+    setImageProps(loadedImg,imageWidth,imageHeight){
+        this.loadedImg = loadedImg
+        this.imageWidth = imageWidth
+        this.imageHeight = imageHeight
+    }
+
+    redrawImage(){
+        image(this.loadedImg, this.imageX, this.imageY, this.imageWidth, this.imageHeight);
+    }
+
+    draw(){
+        if (this.loadedImg){
+            this.redrawImage()
+        }
+    }
+}
+
+class DraggableContainer extends Container{
+    constructor(parameterObject){
+        super(parameterObject)
+
+        this.isDragging = false;
+        this.hasBeenDragged = false; // this is doing nothing.
+
+        // this is the current amount the element has been dragged from
+            // its original position
+        this.dragOffsetX = undefined;
+        this.dragOffsetY = undefined;
+
+        // the x and y coordinates of all container are anchored at the top left
+        // corner. when clicked, the element needs to take this into account.
+        if (!this.hasBeenDragged){
+            this.draggedX = undefined
+            this.draggedY = undefined
+            this.ratioX = 1
+            this.ratioY = 1
+        } else {
+            this.x = this.draggedX * windowWidth/this.ratioX
+            this.y = this.draggedY * windowHeight/this.ratioY
+        }
+    }
+
     testForBounds(x,y,object){
         if (x + this.dragOffsetX > object.x
             && x + this.dragOffsetX < object.x + object.width - this.width
@@ -60,48 +96,101 @@ class Container extends UIElement{
         }
 
         // only drag the object within the bounds of its parent
-        let canvasObject = {x: 0, y: 0, width:displayWidth, height: displayHeight};
+        let canvasObject = {x: 0, y: 0, width:windowWidth, height: windowHeight};
         let parent = this.parent || canvasObject;
         if ( this.testForBounds(mouseX,mouseY,parent) ) {
             this.x = mouseX + this.dragOffsetX;
             this.y = mouseY + this.dragOffsetY;
             this.draggedX = this.x
             this.draggedY = this.y
-            let parentWidth = this.parent ? this.parent.width : displayWidth
-            let parentHeight = this.parent ? this.parent.height : displayHeight
+            let parentWidth = this.parent ? this.parent.width : windowWidth
+            let parentHeight = this.parent ? this.parent.height : windowHeight
             this.ratioX = this.x/parentWidth
             this.ratioY = this.y/parentHeight
             this.hasBeenDragged = true;
         }
     }
 
-    performDragFunctionality(){
-        if(this.mouseDragfunc){
-            console.log(this.mouseDragfunc)
-            return this.mouseDragfunc();
-        }
-    }
+    // performDragFunctionality(){
+    //     if(this.mouseDragfunc){
+    //         console.log(this.mouseDragfunc)
+    //         return this.mouseDragfunc();
+    //     }
+    // }
 
     performValuesResetAfterDrag(){
         this.dragOffsetX = undefined;
         this.dragOffsetY = undefined;
     }
 
-    draw() {
-        push()
-        translate(this.swipeAmount,0)
+    draw(){
+        super.draw()
         if (this.isDragging){
             this.userDrag();
         }
+    }
+}
 
-        // testing to show the bounds of the container
-        stroke(30);
-        fill(this.color);
-        // noFill();
-        rect(this.x,this.y,this.width,this.height)
-        pop();
+class ScalableContainer extends Container{
+    constructor(parameterObject){
+        super(parameterObject)
+        this.containerButtons = [];
+
+        let params = {offsetX:-this.width/2, offsetY: -this.height/2, width:15, parent:this, mouseDragfunc:this.topLeftButtonMouseDrag}
+        let topLeftButton = new Button(params);
+        this.containerButtons.push(topLeftButton)
+
+        params = {offsetX: this.x-this.width/2, offsetY:-this.height/2, width:15, parent:this, mouseDragfunc:this.topRightButtonMouseDrag}
+        let topRightButton = new Button(params);
+        this.containerButtons.push(topRightButton)
+        //
+        params = {offsetX:-this.width/2, offsetY:this.y-this.height/2, width:15, parent:this, mouseDragfunc:this.bottomLeftButtonMouseDrag}
+        let bottomLeftButton = new Button(params);
+        this.containerButtons.push(bottomLeftButton)
+        //
+        params = {offsetX: this.width-this.width/2, offsetY: this.height-this.height/2, width:15, parent:this, mouseDragfunc:this.bottomRightButtonMouseDrag}
+        let bottomRightButton = new Button(params);
+        this.containerButtons.push(bottomRightButton)
+
+        // this.color = undefined;
     }
 
+    // this isn't going to work how i want it to...
+    // this moves the entire container.
+    // i want the respective corners to be locked if
+    // the user is not decreasing the container along that axis
+    topLeftButtonMouseDrag(){
+        this.x = mouseX
+        this.y = mouseY
+    }
+
+    // mouseX, mouseY
+    topRightButtonMouseDrag(){
+        this.x = mouseX - this.x
+        this.y = mouseY
+        this.width = mouseX - this.x
+        this.height = this.y - this.height - mouseY
+    }
+
+    bottomLeftButtonMouseDrag(){
+        this.x = mouseX
+        this.height = mouseY - this.y
+    }
+
+    bottomRightButtonMouseDrag(){
+        this.width = mouseX - this.x
+        this.height = mouseY - this.y
+    }
+
+    draw(){
+        stroke(100);
+        noFill();
+        super.draw();
+        fill(256);
+        for (let i = 0; i < this.containerButtons.length; i++){
+            this.containerButtons[i].draw();
+        }
+    }
 }
 
 class TicTacToeSpace extends Container{
@@ -185,31 +274,4 @@ class TicTacToePlayerTurnSelector extends TicTacToeSpace{
         this.symbols[this.symbolIndex].draw()
     }
 
-}
-
-class ImageContainer extends Container{
-    constructor(paramsObject){
-        super(paramsObject)
-        this.loadedImg = undefined
-        this.imageWidth = undefined
-        this.imageHeight = undefined
-        this.imageX = this.parent ? this.parent.x + this.parent.width/2 : displayWidth/2
-        this.imageY = this.parent ? this.parent.y + this.parent.height/2 : displayHeight/2
-    }
-
-    setImageProps(loadedImg,imageWidth,imageHeight){
-        this.loadedImg = loadedImg
-        this.imageWidth = imageWidth
-        this.imageHeight = imageHeight
-    }
-
-    redrawImage(){
-        image(this.loadedImg, this.imageX, this.imageY, this.imageWidth, this.imageHeight);
-    }
-
-    draw(){
-        if (this.loadedImg){
-            this.redrawImage()
-        }
-    }
 }

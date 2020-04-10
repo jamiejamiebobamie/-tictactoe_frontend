@@ -19,12 +19,6 @@ let stateObject = { boardArray:["!","!","!","!","!","!","!","!","!"],
 let boardString = "!!!!!!!!!"
 let turn = 'x';
 
-// mouseClicked() function does not work on mobile.
-// must use mousePressed() for all mouse events.
-// mousePressed() is called repeatedly each frame,
-// so 'doneOnce' controls which events are called repeatedly (drag events)
-// and which are called once (click events).
-// boolean reset with mouseReleased() function.
 let doneOnce = false;
 
 let apiReturnValue = null;
@@ -136,6 +130,11 @@ function queryBackend(){
   }).catch(() => (apiError = true));
 }
 
+// mouseClicked() function does not work on mobile.
+// must use mousePressed() for all mouse events.
+// mousePressed() is called repeatedly each frame,
+// 'doneOnce' controls which events are called repeatedly (drag events)
+// and which are called once (click events).
 // p5.js built-in method
 function mousePressed() {
     for (let i = 0; i < views[viewIndex].uiElements.length; i++){
@@ -154,6 +153,7 @@ function mousePressed() {
     }
 }
 
+// 'doneOnce' is reset with mouseReleased() function.
 // p5.js built-in method
 function mouseReleased() {
     for (let i = 0; i < views[viewIndex].uiElements.length; i++){
@@ -161,6 +161,7 @@ function mouseReleased() {
             returnValueFromViews = views[viewIndex].uiElements[i].performDragFunctionality()
             if (returnValueFromViews){setTopLevelVariables(returnValueFromViews)}
         }
+        // views[viewIndex].uiElements[i].performValuesResetAfterDrag();
         views[viewIndex].uiElements[i].isDragging = false;
     }
     doneOnce = false;

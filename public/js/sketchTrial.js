@@ -30,9 +30,9 @@ function setup() {
 
 function redrawn(){
     views = [];
-    let view1 = new TestView1
+    let view1 = new TestView2
     views.push(view1)
-    let view2 = new TestView2
+    let view2 = new TestView1
     views.push(view2)
 }
 
@@ -58,7 +58,7 @@ function mousePressed() {
         if (views[view_i].uiElements[i].testForClick()){
 
             views[view_i].uiElements[i].isDragging = true;
-            console.log(views[view_i].uiElements[i])
+            // console.log(views[view_i].uiElements[i])
             returnValueFromViews = views[view_i].uiElements[i].performClickFunctionality()
 
             if (returnValueFromViews){
@@ -94,6 +94,6 @@ function cycleViews(){
     } else {
         view_i = 0;
     }
-    console.log('hey')
+    // console.log('hey')
     views[view_i].redrawElements();
 }

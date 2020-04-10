@@ -1,7 +1,10 @@
 class View{
     constructor(parameterObject){
-        // fill in with data objects that are shared among View subclasses.
+
         this.uiElements = []
+
+        // for drawing the UIElements the first time.
+        this.redrawElements();
     }
 
     // abstract method
@@ -17,11 +20,10 @@ class View{
 class SuggestionView extends View{
     constructor(parameterObject){
         super(parameterObject)
-        this.redrawElements()
     }
 
     redrawElements(previousStatesObject){
-        let portrait = displayWidth < displayHeight;
+        let portrait = windowWidth < windowHeight;
 
         this.uiElements = []
         for (let i = 0; i < 2; i++){
@@ -105,11 +107,10 @@ class SuggestionView extends View{
 class PlayView extends View{
     constructor(parameterObject){
         super(parameterObject)
-        this.redrawElements()
     }
 
     redrawElements(previousStatesObject){
-        let portrait = displayWidth < displayHeight;
+        let portrait = windowWidth < windowHeight;
 
         this.uiElements = []
         for (let i = 0; i < 2; i++){
@@ -181,14 +182,10 @@ class TestView1 extends View{
     constructor(parameterObject){
         super(parameterObject)
         this.redrawElements()
-        this.translateViewX = 0;
-        this.translateViewY = 0;
     }
 
     redrawElements(){
-        push()
-        translate(this.translateViewX,this.translateViewY)
-        let base_container1_params = {row:false, len:7, index:0,width:displayWidth*6/7, color:'orange'}
+        let base_container1_params = {row:false, len:7, index:0,width:windowWidth*6/7, color:'orange'}
         let container = new Container(base_container1_params)
         this.uiElements.push(container)
 
@@ -197,15 +194,14 @@ class TestView1 extends View{
         this.uiElements.push(container)
 
         let params = {row: false, width: 200, height: 300, color: 'red'}
-        let cont = new Container(params)
+        let cont = new DraggableContainer(params)
         this.uiElements.push(cont)
-        pop();
     }
 
     swipeLeft(){
-        console.log(displayWidth - mouseX)
+        console.log(windowWidth - mouseX)
         for (let i = 0; i < this.uiElements.length; i++){
-            this.uiElements[i].swipeAmount = displayWidth - mouseX
+            this.uiElements[i].swipeAmount = windowWidth - mouseX
         }
     }
     draw(){
@@ -224,13 +220,11 @@ class TestView2 extends View{
         super(parameterObject)
         this.img = loadImage('../imgs/brain_base.png');
         this.redrawElements()
-        this.translateViewX = 0;
-        this.translateViewY = 0;
     }
 
     redrawElements(){
 
-        let base_container1_params = {row:false, len:7, index:0,width:displayWidth*6/7, color:'orange'}
+        let base_container1_params = {row:false, len:7, index:0,width:windowWidth*6/7, color:'orange'}
         let container = new Container(base_container1_params)
         this.uiElements.push(container)
 
@@ -242,12 +236,16 @@ class TestView2 extends View{
         let contImg = new ImageContainer(params)
         contImg.setImageProps(this.img, 382,279)
         this.uiElements.push(contImg)
+
+        let hi = new ScalableContainer({width:200,height:300, offsetX:200, offsetY:300})
+        this.uiElements.push(hi)
+
     }
 
     swipeLeft(){
-        console.log(displayWidth - mouseX)
+        console.log(windowWidth - mouseX)
         for (let i = 0; i < this.uiElements.length; i++){
-            this.uiElements[i].swipeAmount = displayWidth - mouseX
+            this.uiElements[i].swipeAmount = windowWidth - mouseX
         }
     }
     draw(){

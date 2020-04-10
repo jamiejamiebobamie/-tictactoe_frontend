@@ -29,8 +29,8 @@ class Button extends UIElement{
             this.ratioX = 1
             this.ratioY = 1
         } else {
-            this.x = this.draggedX * displayWidth/this.ratioX
-            this.y = this.draggedY * displayHeight/this.ratioY
+            this.x = this.draggedX * windowWidth/this.ratioX
+            this.y = this.draggedY * windowHeight/this.ratioY
         }
     }
 
@@ -64,7 +64,7 @@ class Button extends UIElement{
     }
 
     draw() {
-        this.mouseOver ? fill(this.mouseOverColor) : fill(this.color);
+        // this.mouseOver ? fill(this.mouseOverColor) : fill(this.color);
         ellipse(this.x, this.y, this.width)
     }
 }

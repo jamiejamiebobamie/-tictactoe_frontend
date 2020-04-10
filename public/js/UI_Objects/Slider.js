@@ -13,8 +13,8 @@ class Slider extends UIElement{
 
         // the placement of the button on the canvas based on the orientation
             //  and the bounds of the container.
-        let widthOfContainer = this.parent ? this.parent.width : displayWidth;
-        let heightOfContainer = this.parent ? this.parent.height : displayHeight;
+        let widthOfContainer = this.parent ? this.parent.width : windowWidth;
+        let heightOfContainer = this.parent ? this.parent.height : windowHeight;
         let userDragButton;
 
         if (this.row){
