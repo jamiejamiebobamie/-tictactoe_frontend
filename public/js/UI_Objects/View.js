@@ -21,7 +21,7 @@ class SuggestionView extends View{
     }
 
     redrawElements(previousStatesObject){
-        let portrait = windowWidth < windowHeight;
+        let portrait = displayWidth < displayHeight;
 
         this.uiElements = []
         for (let i = 0; i < 2; i++){
@@ -109,7 +109,7 @@ class PlayView extends View{
     }
 
     redrawElements(previousStatesObject){
-        let portrait = windowWidth < windowHeight;
+        let portrait = displayWidth < displayHeight;
 
         this.uiElements = []
         for (let i = 0; i < 2; i++){
@@ -188,7 +188,7 @@ class TestView1 extends View{
     redrawElements(){
         push()
         translate(this.translateViewX,this.translateViewY)
-        let base_container1_params = {row:false, len:7, index:0,width:windowWidth*6/7, color:'orange'}
+        let base_container1_params = {row:false, len:7, index:0,width:displayWidth*6/7, color:'orange'}
         let container = new Container(base_container1_params)
         this.uiElements.push(container)
 
@@ -203,9 +203,9 @@ class TestView1 extends View{
     }
 
     swipeLeft(){
-        console.log(windowWidth - mouseX)
+        console.log(displayWidth - mouseX)
         for (let i = 0; i < this.uiElements.length; i++){
-            this.uiElements[i].swipeAmount = windowWidth - mouseX
+            this.uiElements[i].swipeAmount = displayWidth - mouseX
         }
     }
     draw(){
@@ -230,7 +230,7 @@ class TestView2 extends View{
 
     redrawElements(){
 
-        let base_container1_params = {row:false, len:7, index:0,width:windowWidth*6/7, color:'orange'}
+        let base_container1_params = {row:false, len:7, index:0,width:displayWidth*6/7, color:'orange'}
         let container = new Container(base_container1_params)
         this.uiElements.push(container)
 
@@ -245,9 +245,9 @@ class TestView2 extends View{
     }
 
     swipeLeft(){
-        console.log(windowWidth - mouseX)
+        console.log(displayWidth - mouseX)
         for (let i = 0; i < this.uiElements.length; i++){
-            this.uiElements[i].swipeAmount = windowWidth - mouseX
+            this.uiElements[i].swipeAmount = displayWidth - mouseX
         }
     }
     draw(){

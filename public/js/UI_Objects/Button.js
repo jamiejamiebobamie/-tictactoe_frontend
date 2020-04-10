@@ -29,8 +29,8 @@ class Button extends UIElement{
             this.ratioX = 1
             this.ratioY = 1
         } else {
-            this.x = this.draggedX * windowWidth/this.ratioX
-            this.y = this.draggedY * windowHeight/this.ratioY
+            this.x = this.draggedX * displayWidth/this.ratioX
+            this.y = this.draggedY * displayHeight/this.ratioY
         }
     }
 

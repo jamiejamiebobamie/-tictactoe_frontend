@@ -18,8 +18,8 @@ class Container extends UIElement{
             this.ratioX = 1
             this.ratioY = 1
         } else {
-            this.x = this.draggedX * windowWidth/this.ratioX
-            this.y = this.draggedY * windowHeight/this.ratioY
+            this.x = this.draggedX * displayWidth/this.ratioX
+            this.y = this.draggedY * displayHeight/this.ratioY
         }
     }
 // https://p5js.org/learn/program-flow.html
@@ -60,15 +60,15 @@ class Container extends UIElement{
         }
 
         // only drag the object within the bounds of its parent
-        let canvasObject = {x: 0, y: 0, width:windowWidth, height: windowHeight};
+        let canvasObject = {x: 0, y: 0, width:displayWidth, height: displayHeight};
         let parent = this.parent || canvasObject;
         if ( this.testForBounds(mouseX,mouseY,parent) ) {
             this.x = mouseX + this.dragOffsetX;
             this.y = mouseY + this.dragOffsetY;
             this.draggedX = this.x
             this.draggedY = this.y
-            let parentWidth = this.parent ? this.parent.width : windowWidth
-            let parentHeight = this.parent ? this.parent.height : windowHeight
+            let parentWidth = this.parent ? this.parent.width : displayWidth
+            let parentHeight = this.parent ? this.parent.height : displayHeight
             this.ratioX = this.x/parentWidth
             this.ratioY = this.y/parentHeight
             this.hasBeenDragged = true;
@@ -193,8 +193,8 @@ class ImageContainer extends Container{
         this.loadedImg = undefined
         this.imageWidth = undefined
         this.imageHeight = undefined
-        this.imageX = this.parent ? this.parent.x + this.parent.width/2 : windowWidth/2
-        this.imageY = this.parent ? this.parent.y + this.parent.height/2 : windowHeight/2
+        this.imageX = this.parent ? this.parent.x + this.parent.width/2 : displayWidth/2
+        this.imageY = this.parent ? this.parent.y + this.parent.height/2 : displayHeight/2
     }
 
     setImageProps(loadedImg,imageWidth,imageHeight){

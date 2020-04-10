@@ -43,7 +43,7 @@ class UIElement{
         offsetX = offsetX != undefined ? offsetX : 0;
         offsetY = offsetY != undefined ? offsetY : 0;
 
-        this.row = row != undefined ? row : windowWidth < windowHeight;
+        this.row = row != undefined ? row : displayWidth < displayHeight;
 
         if (this.row) {
             if (parent){
@@ -55,10 +55,10 @@ class UIElement{
                 this.y = this.index * this.parent.height / this.len + this.parent.y + offsetY;
             } else {
                 // if portrait mode and no parent
-                this.width = width || windowWidth;
-                this.height = height || windowHeight / this.len;
+                this.width = width || displayWidth;
+                this.height = height || displayHeight / this.len;
                 this.x = offsetX;
-                this.y = this.index * windowHeight / this.len + offsetY;
+                this.y = this.index * displayHeight / this.len + offsetY;
             }
         } else {
             if (parent) {
@@ -70,9 +70,9 @@ class UIElement{
                 this.y = this.parent.y + offsetY;
             } else {
                 // if landscape and no parent
-                this.width = width || windowWidth / this.len;
-                this.height = height || windowHeight;
-                this.x = offsetX + this.index * windowWidth / this.len;
+                this.width = width || displayWidth / this.len;
+                this.height = height || displayHeight;
+                this.x = offsetX + this.index * displayWidth / this.len;
                 this.y = offsetY;
             }
         }
@@ -109,16 +109,16 @@ class UIElement{
     // incorrect. will edit when parameters are finalized.
     getParameterList(){
          let parameters = {
-            offsetX: "the offset of the container's left corner along the X-axis. if none, index * windowWidth / len",
-            offsetY: "the offset of the container's left corner along the Y-axis. if none, index * windowHeight / len",
-            widthOfParent: "the width of the parent container, if none, the windowWidth of the canvas",
-            heightOfParent: "the height of the parent container, if none, the windowHeight of the canvas",
-            orientation: "the orientation of the container: row or column, if none, windowWidth < windowHeight of the canvas",
+            offsetX: "the offset of the container's left corner along the X-axis. if none, index * displayWidth / len",
+            offsetY: "the offset of the container's left corner along the Y-axis. if none, index * displayHeight / len",
+            widthOfParent: "the width of the parent container, if none, the displayWidth of the canvas",
+            heightOfParent: "the height of the parent container, if none, the displayHeight of the canvas",
+            orientation: "the orientation of the container: row or column, if none, displayWidth < displayHeight of the canvas",
             index: "the index of the container in the parent object, if none, 0",
             len: "the number of siblings contained in the parent container. if none, 1.",
             func: "a wildcard function. if none, nullFunction.",
-            width: "the width of the container. if none, the windowWidth / len.",
-            height: "the height of the container. if none, the windowHeight / len.",
+            width: "the width of the container. if none, the displayWidth / len.",
+            height: "the height of the container. if none, the displayHeight / len.",
         };
         return parameters
     }
