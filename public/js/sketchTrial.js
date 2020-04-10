@@ -44,12 +44,57 @@ function windowResized() {
 }
 
 // p5.js built-in method
-function draw () {
+// function draw () {
+//     background(256);
+//     for (let i = 0; i < views[view_i].uiElements.length; i++){
+//         views[view_i].uiElements[i].draw()
+//     }
+//     menuButton.draw()
+// }
+
+/*
+PROBLEM:
+    I've created a ScalableContainer class with buttons that have click/drag
+    capabilities. I cannot click them, because testing for click and all
+    mouse functionality is top-level in 'sketchTrial.js' and 'sketchTrial.js'
+    is not aware of uiElements that are nested three levels deep:
+        uiElements[i].uiElements[j].uiElements[k]
+        views -> the uiElements of views -> the uiElements of uiElements of views
+
+    the *composite pattern* allows you to iterate over a tree structure
+        that is composed of both 'things' and 'containers of things'
+
+    to allow for infinitely nested uiElements, i need to write a function that
+        can be passed a 'root' node and iterate through the composite-tree structure,
+        calling the appopriate method(s) on the elements
+*/
+
+function draw(){
     background(256);
-    for (let i = 0; i < views[view_i].uiElements.length; i++){
-        views[view_i].uiElements[i].draw()
-    }
+    console.log(draw)
+    recurseDownTreeDraw(views[view_i])
     menuButton.draw()
+}
+
+// composite pattern:
+// uiElements[i].uiElements[j].uiElements[k]...
+function recurseDownTreeDraw(uiElement){
+    // check to see we're at a leaf. if we're not...
+    if (uiElement.uiElements) {
+        for (let i = 0; i < uiElement.uiElements.length; i++){
+            recurseDownTreeDraw(uiElement.uiElements[i])
+        }
+    }
+
+    // TESTING
+    // console.log(uiElement)
+
+    // check to see if the uiElement at this level,
+        // the one passed in as a parameter, has
+        // the function to call. if it does, call it.
+    if (uiElement.draw){
+        uiElement.draw();
+    }
 }
 
 // p5.js built-in method

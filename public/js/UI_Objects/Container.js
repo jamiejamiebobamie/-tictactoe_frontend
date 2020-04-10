@@ -134,23 +134,23 @@ class DraggableContainer extends Container{
 class ScalableContainer extends Container{
     constructor(parameterObject){
         super(parameterObject)
-        this.containerButtons = [];
+        this.uiElements = [];
 
         let params = {offsetX:-this.width/2, offsetY: -this.height/2, width:15, parent:this, mouseDragfunc:this.topLeftButtonMouseDrag}
-        let topLeftButton = new Button(params);
-        this.containerButtons.push(topLeftButton)
+        let topLeftButton = new DraggableButton(params);
+        this.uiElements.push(topLeftButton)
 
         params = {offsetX: this.x-this.width/2, offsetY:-this.height/2, width:15, parent:this, mouseDragfunc:this.topRightButtonMouseDrag}
-        let topRightButton = new Button(params);
-        this.containerButtons.push(topRightButton)
+        let topRightButton = new DraggableButton(params);
+        this.uiElements.push(topRightButton)
         //
         params = {offsetX:-this.width/2, offsetY:this.y-this.height/2, width:15, parent:this, mouseDragfunc:this.bottomLeftButtonMouseDrag}
-        let bottomLeftButton = new Button(params);
-        this.containerButtons.push(bottomLeftButton)
+        let bottomLeftButton = new DraggableButton(params);
+        this.uiElements.push(bottomLeftButton)
         //
         params = {offsetX: this.width-this.width/2, offsetY: this.height-this.height/2, width:15, parent:this, mouseDragfunc:this.bottomRightButtonMouseDrag}
-        let bottomRightButton = new Button(params);
-        this.containerButtons.push(bottomRightButton)
+        let bottomRightButton = new DraggableButton(params);
+        this.uiElements.push(bottomRightButton)
 
         // this.color = undefined;
     }
@@ -160,16 +160,17 @@ class ScalableContainer extends Container{
     // i want the respective corners to be locked if
     // the user is not decreasing the container along that axis
     topLeftButtonMouseDrag(){
+        this.width -= this.x - mouseX
+        this.height -= this.y - mouseY
         this.x = mouseX
         this.y = mouseY
     }
 
-    // mouseX, mouseY
     topRightButtonMouseDrag(){
-        this.x = mouseX - this.x
+        // this.x = mouseX - this.x
         this.y = mouseY
-        this.width = mouseX - this.x
-        this.height = this.y - this.height - mouseY
+        this.width -= mouseX - this.x
+        this.height -= this.y + mouseY
     }
 
     bottomLeftButtonMouseDrag(){
@@ -182,13 +183,33 @@ class ScalableContainer extends Container{
         this.height = mouseY - this.y
     }
 
+    mouseReleased(){
+        console.log('hey')
+        for (let i = 0; i < this.uiElements.length; i++){
+            this.uiElements[i].isDragging = false;
+        }
+    }
+
+    mousePressed(){
+        for (let i = 0; i < this.uiElements.length; i++){
+            if (this.uiElements[i].testForClick()){
+                this.uiElements[i].isDragging = true;
+            }
+        }
+        return true
+    }
+
+    hello(){
+        console.log('hello')
+    }
+
     draw(){
         stroke(100);
         noFill();
         super.draw();
         fill(256);
-        for (let i = 0; i < this.containerButtons.length; i++){
-            this.containerButtons[i].draw();
+        for (let i = 0; i < this.uiElements.length; i++){
+            this.uiElements[i].draw();
         }
     }
 }
