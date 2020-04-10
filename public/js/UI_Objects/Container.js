@@ -208,6 +208,8 @@ class ScalableContainer extends Container{
         noFill();
         super.draw();
         fill(256);
+        // if the composite patter was working... i wouln't need this:
+        // makes me think mousePressed and mouseReleased aren't going to work..
         for (let i = 0; i < this.uiElements.length; i++){
             this.uiElements[i].draw();
         }

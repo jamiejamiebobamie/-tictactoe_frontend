@@ -30,9 +30,9 @@ function setup() {
 
 function redrawn(){
     views = [];
-    let view1 = new TestView2
+    let view1 = new TestView1
     views.push(view1)
-    let view2 = new TestView1
+    let view2 = new TestView2
     views.push(view2)
 }
 
@@ -71,13 +71,15 @@ PROBLEM:
 
 function draw(){
     background(256);
-    console.log(draw)
+    // console.log(draw)
     recurseDownTreeDraw(views[view_i])
     menuButton.draw()
 }
 
 // composite pattern:
 // uiElements[i].uiElements[j].uiElements[k]...
+// i tried to pass in the function to call as a parameter, but javascript
+// didn't know what i was referring to so i can't make it that abstract.
 function recurseDownTreeDraw(uiElement){
     // check to see we're at a leaf. if we're not...
     if (uiElement.uiElements) {
@@ -85,37 +87,70 @@ function recurseDownTreeDraw(uiElement){
             recurseDownTreeDraw(uiElement.uiElements[i])
         }
     }
-
-    // TESTING
-    // console.log(uiElement)
-
     // check to see if the uiElement at this level,
         // the one passed in as a parameter, has
         // the function to call. if it does, call it.
     if (uiElement.draw){
         uiElement.draw();
+        // console.log(uiElement)
     }
 }
 
 // p5.js built-in method
+// function mousePressed() {
+//     for (let i = 0; i < views[view_i].uiElements.length; i++){
+//         if (views[view_i].uiElements[i].testForClick()){
+//
+//             views[view_i].uiElements[i].isDragging = true;
+//             // console.log(views[view_i].uiElements[i])
+//             returnValueFromViews = views[view_i].uiElements[i].performClickFunctionality()
+//
+//             if (returnValueFromViews){
+//                 setTopLevelVariables(returnValueFromViews)
+//             }
+//         }
+//     }
+//     if (menuButton.testForClick() && !doneOnce){
+//         menuButton.performClickFunctionality();
+//     }
+//     if (!doneOnce){
+//         doneOnce = true;
+//     }
+// }
+
 function mousePressed() {
-    for (let i = 0; i < views[view_i].uiElements.length; i++){
-        if (views[view_i].uiElements[i].testForClick()){
+    // this works...
+    returnValueFromViews = recurseDownTreeClick(views[view_i])
 
-            views[view_i].uiElements[i].isDragging = true;
-            // console.log(views[view_i].uiElements[i])
-            returnValueFromViews = views[view_i].uiElements[i].performClickFunctionality()
-
-            if (returnValueFromViews){
-                setTopLevelVariables(returnValueFromViews)
-            }
-        }
+    if (returnValueFromViews){
+        setTopLevelVariables(returnValueFromViews)
     }
+
+    // no longer works...
     if (menuButton.testForClick() && !doneOnce){
         menuButton.performClickFunctionality();
     }
+
     if (!doneOnce){
         doneOnce = true;
+    }
+}
+
+
+function recurseDownTreeClick(uiElement){
+    // check to see we're at a leaf. if we're not...
+    if (uiElement.uiElements) {
+        for (let i = 0; i < uiElement.uiElements.length; i++){
+            recurseDownTreeClick(uiElement.uiElements[i])
+        }
+    }
+    console.log('hey')
+    if (uiElement.testForClick()){
+        uiElement.isDragging = true;
+        if (uiElement.performClickFunctionality){
+            returnValueFromViews = uiElement.performClickFunctionality()
+            return returnValueFromViews
+        }
     }
 }
 
