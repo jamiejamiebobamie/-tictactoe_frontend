@@ -32,6 +32,7 @@ class Button extends UIElement{
             this.x = this.draggedX * windowWidth/this.ratioX
             this.y = this.draggedY * windowHeight/this.ratioY
         }
+        this.width = this.parent ? this.parent.height : windowHeight / 2
     }
 
     performClickFunctionality(){

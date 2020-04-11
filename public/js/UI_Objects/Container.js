@@ -54,6 +54,75 @@ class ImageContainer extends Container{
     }
 }
 
+class TextBox extends Container{
+    constructor(parameterObject){
+        super(parameterObject)
+
+        this.align = [CENTER,CENTER]
+
+        // this.row determines the orientation of the font.
+        // use the orientation of the parent container for aligning
+            // normally-oriented text, vertically.
+
+        if (this.row){
+            // draws text horizontally
+            this.textSize = this.width / 20
+        } else {
+            // draws text vertically
+            this.textSize = this.height / 20
+        }
+
+        this.text = undefined
+        this.textColor = undefined;
+
+        textSize(this.textSize);
+        textAlign(this.align[0],this.align[1]);
+
+        // not using...
+        this.chars = 1
+        this.valuesChanged = false
+    }
+
+    setString(s){
+        this.chars += s.length
+        this.text = s
+    }
+
+    setTextColor(color){
+        this.textColor = color
+    }
+
+    drawRotatedTextBox(){
+        push();
+            super.draw()
+            translate(this.x,this.y)
+            rotate(radians(90))
+            if (this.text){
+                if (this.textColor){
+                    fill(this.textColor)
+                }
+                text(this.text, 0, -this.width, this.height, this.width)
+            }
+        pop();
+    }
+    drawNormalTextBox(){
+        super.draw()
+        if (this.text){
+            if (this.textColor){
+                fill(this.textColor)
+            }
+            text(this.text, this.x, this.y, this.width, this.height)
+        }
+    }
+    draw(){
+        if (this.row){
+            this.drawNormalTextBox();
+        } else {
+            this.drawRotatedTextBox()
+        }
+    }
+}
+
 class DraggableContainer extends Container{
     constructor(parameterObject){
         super(parameterObject)
@@ -79,6 +148,8 @@ class DraggableContainer extends Container{
         }
     }
 
+    // containers can only move around inside the bounds of their parent
+        // containers.
     testForBounds(x,y,object){
         if (x + this.dragOffsetX > object.x
             && x + this.dragOffsetX < object.x + object.width - this.width
@@ -131,28 +202,39 @@ class DraggableContainer extends Container{
     }
 }
 
+// not working... in progress.
 class ScalableContainer extends Container{
     constructor(parameterObject){
         super(parameterObject)
         this.uiElements = [];
 
-        let params = {offsetX:-this.width/2, offsetY: -this.height/2, width:15, parent:this, mouseDragfunc:this.topLeftButtonMouseDrag}
+        let lol = ScalableContainer.prototype.topLeftButtonMouseDrag.bind(this);
+        let hey = ScalableContainer.prototype.topLeftButtonMouseDrag.call(this);
+
+        let params = {offsetX:-this.width/2, offsetY: -this.height/2, width:15, parent:this, mouseClickfunc:hey}
         let topLeftButton = new DraggableButton(params);
         this.uiElements.push(topLeftButton)
 
-        params = {offsetX: this.x-this.width/2, offsetY:-this.height/2, width:15, parent:this, mouseDragfunc:this.topRightButtonMouseDrag}
+        params = {offsetX: this.x-this.width/2, offsetY:-this.height/2, width:15, parent:this, mouseClickfunc:lol}
         let topRightButton = new DraggableButton(params);
         this.uiElements.push(topRightButton)
         //
-        params = {offsetX:-this.width/2, offsetY:this.y-this.height/2, width:15, parent:this, mouseDragfunc:this.bottomLeftButtonMouseDrag}
+        params = {offsetX:-this.width/2, offsetY:this.y-this.height/2, width:15, parent:this, mouseClickfunc:this.bottomLeftButtonMouseDrag}
         let bottomLeftButton = new DraggableButton(params);
         this.uiElements.push(bottomLeftButton)
         //
-        params = {offsetX: this.width-this.width/2, offsetY: this.height-this.height/2, width:15, parent:this, mouseDragfunc:this.bottomRightButtonMouseDrag}
+        params = {offsetX: this.width-this.width/2, offsetY: this.height-this.height/2, width:15, parent:this, mouseClickfunc:this.bottomRightButtonMouseDrag}
         let bottomRightButton = new DraggableButton(params);
         this.uiElements.push(bottomRightButton)
 
         // this.color = undefined;
+
+        // https://gist.github.com/zcaceres/2a4ac91f9f42ec0ef9cd0d18e4e71262
+
+        // This binding is necessary to make `this` work in the callback
+        // var runner = { name: 'John', myFavoriteActivity: 'running' };
+
+        // console.log(topLeftButton)
     }
 
     // this isn't going to work how i want it to...
@@ -160,10 +242,12 @@ class ScalableContainer extends Container{
     // i want the respective corners to be locked if
     // the user is not decreasing the container along that axis
     topLeftButtonMouseDrag(){
-        this.width -= this.x - mouseX
-        this.height -= this.y - mouseY
-        this.x = mouseX
-        this.y = mouseY
+        this.width= 300// -= this.x - mouseX
+        this.height=600// -= this.y - mouseY
+        // this.x = mouseX
+        // this.y = mouseY
+        console.log(this)
+        // return 'hey'
     }
 
     topRightButtonMouseDrag(){
@@ -183,35 +267,35 @@ class ScalableContainer extends Container{
         this.height = mouseY - this.y
     }
 
-    mouseReleased(){
-        console.log('hey')
-        for (let i = 0; i < this.uiElements.length; i++){
-            this.uiElements[i].isDragging = false;
-        }
-    }
-
-    mousePressed(){
-        for (let i = 0; i < this.uiElements.length; i++){
-            if (this.uiElements[i].testForClick()){
-                this.uiElements[i].isDragging = true;
-            }
-        }
-        return true
-    }
-
-    hello(){
-        console.log('hello')
-    }
+    // mouseReleased(){
+    //     console.log('hey')
+    //     for (let i = 0; i < this.uiElements.length; i++){
+    //         this.uiElements[i].isDragging = false;
+    //     }
+    // }
+    //
+    // mousePressed(){
+    //     for (let i = 0; i < this.uiElements.length; i++){
+    //         if (this.uiElements[i].testForClick()){
+    //             this.uiElements[i].isDragging = true;
+    //         }
+    //     }
+    //     return true
+    // }
 
     draw(){
         stroke(100);
         noFill();
         super.draw();
         fill(256);
-        // if the composite patter was working... i wouln't need this:
-        // makes me think mousePressed and mouseReleased aren't going to work..
         for (let i = 0; i < this.uiElements.length; i++){
             this.uiElements[i].draw();
+            let hey = this.uiElements[i].performClickFunctionality()
+            if (hey){
+                console.log(hey)
+                // this.uiElements[i].performClickFunctionality()
+                // this.uiElements[i].isDragging = false;
+            }
         }
     }
 }

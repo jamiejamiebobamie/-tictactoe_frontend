@@ -34,6 +34,8 @@ function redrawn(){
     views.push(view1)
     let view2 = new TestView2
     views.push(view2)
+
+    views[view_i].redrawElements()
 }
 
 // p5.js built-in method
@@ -44,128 +46,84 @@ function windowResized() {
 }
 
 // p5.js built-in method
-// function draw () {
-//     background(256);
-//     for (let i = 0; i < views[view_i].uiElements.length; i++){
-//         views[view_i].uiElements[i].draw()
-//     }
-//     menuButton.draw()
-// }
-
-/*
-PROBLEM:
-    I've created a ScalableContainer class with buttons that have click/drag
-    capabilities. I cannot click them, because testing for click and all
-    mouse functionality is top-level in 'sketchTrial.js' and 'sketchTrial.js'
-    is not aware of uiElements that are nested three levels deep:
-        uiElements[i].uiElements[j].uiElements[k]
-        views -> the uiElements of views -> the uiElements of uiElements of views
-
-    the *composite pattern* allows you to iterate over a tree structure
-        that is composed of both 'things' and 'containers of things'
-
-    to allow for infinitely nested uiElements, i need to write a function that
-        can be passed a 'root' node and iterate through the composite-tree structure,
-        calling the appopriate method(s) on the elements
-*/
-
 function draw(){
     background(256);
-    // console.log(draw)
-    recurseDownTreeDraw(views[view_i])
+    drawRecursive(views[view_i])
     menuButton.draw()
 }
 
-// composite pattern:
-// uiElements[i].uiElements[j].uiElements[k]...
-// i tried to pass in the function to call as a parameter, but javascript
-// didn't know what i was referring to so i can't make it that abstract.
-function recurseDownTreeDraw(uiElement){
-    // check to see we're at a leaf. if we're not...
+// these recursive functions allow uiElements to be nested.
+function drawRecursive(uiElement){
     if (uiElement.uiElements) {
         for (let i = 0; i < uiElement.uiElements.length; i++){
-            recurseDownTreeDraw(uiElement.uiElements[i])
+            drawRecursive(uiElement.uiElements[i])
         }
     }
-    // check to see if the uiElement at this level,
-        // the one passed in as a parameter, has
-        // the function to call. if it does, call it.
     if (uiElement.draw){
         uiElement.draw();
-        // console.log(uiElement)
     }
 }
 
+// the built-in p5.js function mouseClicked() does not work on mobile.
+// must use mousePressed() for all mouse events.
+// mousePressed() is called repeatedly each frame,
+// 'doneOnce' controls which events are called repeatedly (drag events)
+// and which are called once (click events).
 // p5.js built-in method
-// function mousePressed() {
-//     for (let i = 0; i < views[view_i].uiElements.length; i++){
-//         if (views[view_i].uiElements[i].testForClick()){
-//
-//             views[view_i].uiElements[i].isDragging = true;
-//             // console.log(views[view_i].uiElements[i])
-//             returnValueFromViews = views[view_i].uiElements[i].performClickFunctionality()
-//
-//             if (returnValueFromViews){
-//                 setTopLevelVariables(returnValueFromViews)
-//             }
-//         }
-//     }
-//     if (menuButton.testForClick() && !doneOnce){
-//         menuButton.performClickFunctionality();
-//     }
-//     if (!doneOnce){
-//         doneOnce = true;
-//     }
-// }
-
 function mousePressed() {
-    // this works...
-    returnValueFromViews = recurseDownTreeClick(views[view_i])
-
+    returnValueFromViews = clickRecursive(views[view_i])
+    // the state of the app is stored in the top-level 'sketch.js'
     if (returnValueFromViews){
         setTopLevelVariables(returnValueFromViews)
     }
-
     // no longer works...
     if (menuButton.testForClick() && !doneOnce){
         menuButton.performClickFunctionality();
     }
-
     if (!doneOnce){
         doneOnce = true;
     }
 }
 
-
-function recurseDownTreeClick(uiElement){
+function clickRecursive(uiElement){
     // check to see we're at a leaf. if we're not...
     if (uiElement.uiElements) {
         for (let i = 0; i < uiElement.uiElements.length; i++){
-            recurseDownTreeClick(uiElement.uiElements[i])
+            clickRecursive(uiElement.uiElements[i])
         }
     }
-    console.log('hey')
-    if (uiElement.testForClick()){
-        uiElement.isDragging = true;
-        if (uiElement.performClickFunctionality){
-            returnValueFromViews = uiElement.performClickFunctionality()
-            return returnValueFromViews
+    if (uiElement.testForClick){
+        if (uiElement.testForClick()){
+            uiElement.isDragging = true;
+            if (uiElement.performClickFunctionality){
+                returnValueFromViews = uiElement.performClickFunctionality()
+                return returnValueFromViews
+            }
         }
     }
 }
 
+// 'doneOnce' is reset with mouseReleased() function.
 // p5.js built-in method
 function mouseReleased() {
-    for (let i = 0; i < views[view_i].uiElements.length; i++){
-        if(views[view_i].uiElements[i].mouseDragfunc && views[view_i].uiElements[i].isDragging){
-            returnValueFromViews = views[view_i].uiElements[i].performDragFunctionality()
-            if (returnValueFromViews){setTopLevelVariables(returnValueFromViews)}
-        }
-        views[view_i].uiElements[i].isDragging = false;
-    }
+    returnValueFromViews = clickReleasedRecrusive(views[view_i])
+    if (returnValueFromViews){setTopLevelVariables(returnValueFromViews)}
     doneOnce = false;
 }
 
+function clickReleasedRecrusive(uiElement){
+    // check to see we're at a leaf. if we're not...
+    if (uiElement.uiElements) {
+        for (let i = 0; i < uiElement.uiElements.length; i++){
+            clickReleasedRecrusive(uiElement.uiElements[i])
+        }
+    }
+    if (uiElement.isDragging){
+        returnValueFromViews = uiElement.performDragFunctionality() // need to change this to performDragFunctionality
+        uiElement.isDragging = false;
+        return returnValueFromViews
+    }
+}
 
 // testing
 function cycleViews(){
@@ -174,6 +132,5 @@ function cycleViews(){
     } else {
         view_i = 0;
     }
-    // console.log('hey')
     views[view_i].redrawElements();
 }

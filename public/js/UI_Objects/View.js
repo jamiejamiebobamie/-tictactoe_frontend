@@ -73,7 +73,7 @@ class SuggestionView extends View{
 
         let turnButtonContainer =  this.uiElements[0]
 
-        let turnButtonAnchorParams = {row: true, len:4, index:3, parent: turnButtonContainer}
+        let turnButtonAnchorParams = {row: true, len:5, index:2, parent: turnButtonContainer}
         let turnButtonAnchor = new Container(turnButtonAnchorParams)
         this.uiElements.push(turnButtonAnchor)
 
@@ -85,15 +85,15 @@ class SuggestionView extends View{
         }
         this.uiElements.push(turnChoice)
 
-        // let submitContainer = this.uiElements[2]
-        //
-        // let submitBoardButtonAnchorParams = {row: true, len:3, index:1, parent: submitContainer}
-        // let submitBoardButtonAnchor = new Container(submitBoardButtonAnchorParams)
-        // this.uiElements.push(submitBoardButtonAnchor)
-        //
-        // let submitBoardButtonParams = {row: true, parent:submitBoardButtonAnchor, mouseClickfunc:this.suggestMove}
-        // let submitBoardButton = new Button(submitBoardButtonParams)
-        // this.uiElements.push(submitBoardButton)
+        let submitContainer = this.uiElements[1]
+
+        let submitBoardButtonAnchorParams = {row: true, len:8, index:0, parent: submitContainer}
+        let submitBoardButtonAnchor = new Container(submitBoardButtonAnchorParams)
+        this.uiElements.push(submitBoardButtonAnchor)
+
+        let submitBoardButtonParams = {row: true, parent:submitBoardButtonAnchor, mouseClickfunc:this.suggestMove}
+        let submitBoardButton = new Button(submitBoardButtonParams)
+        this.uiElements.push(submitBoardButton)
     }
 
     // mouse click functions.
@@ -193,6 +193,11 @@ class TestView1 extends View{
         container = new Container(base_container1_params)
         this.uiElements.push(container)
 
+        let textbox = new TextBox({row:false, len:7, index:6})
+        textbox.setString('SWIPE LEFT FOR SUGGESTION')
+        textbox.setTextColor('orange')
+        this.uiElements.push(textbox)
+
         let params = {row: false, width: 200, height: 300, color: 'red'}
         let cont = new DraggableContainer(params)
         this.uiElements.push(cont)
@@ -204,6 +209,7 @@ class TestView1 extends View{
             this.uiElements[i].swipeAmount = windowWidth - mouseX
         }
     }
+
     draw(){
         super.draw()
         for (let i = 0; i < this.uiElements.length; i++){
@@ -237,13 +243,17 @@ class TestView2 extends View{
         contImg.setImageProps(this.img, 382,279)
         this.uiElements.push(contImg)
 
-        let hi = new ScalableContainer({width:200,height:300, offsetX:200, offsetY:300})
-        this.uiElements.push(hi)
+        // let hi = new ScalableContainer({width:200,height:300, offsetX:200, offsetY:300})
+        // this.uiElements.push(hi)
 
+        let textbox = new TextBox({row:false, len:7, index:6})
+        textbox.setString('SWIPE LEFT TO PLAY')
+        textbox.setTextColor('orange')
+        this.uiElements.push(textbox)
     }
 
     swipeLeft(){
-        console.log(windowWidth - mouseX)
+        // console.log(windowWidth - mouseX)
         for (let i = 0; i < this.uiElements.length; i++){
             this.uiElements[i].swipeAmount = windowWidth - mouseX
         }

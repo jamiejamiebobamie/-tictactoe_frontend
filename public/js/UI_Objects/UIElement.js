@@ -23,8 +23,8 @@ class UIElement{
             parameters = parameterObject;
         }
 
-        // destructure the object to get at the its fields.
-            // begin to set the uiElements data members to 'parameters' field values
+        // destructure the object to get at the fields.
+            // begin to set the uiElements data members to field values
         let {
             offsetX: offsetX,
             offsetY: offsetY,
@@ -40,17 +40,22 @@ class UIElement{
         } = parameters;
 
         // performed on mousePressed()
+        // used for when you want to grab the value of something after having
+            // clicked it or to set a draggable's 'isDragging' boolean to true.
         this.mouseClickfunc = mouseClickfunc;
 
         // performed on mouseReleased()
+        // used for when you want to grab the value of something after having
+            // finished dragging it or to set a draggable's 'isDragging' boolean to false.
         this.mouseDragfunc = mouseDragfunc;
 
         // the UIElement's index within the parent UIElement
         this.index = index != undefined ? index : 0;
 
         // the number of elements that are siblings to this UIElement in the
-            // parent. (index:0, len:2 = UIElement is the first element of
-            //                              two in the parent)
+            // parent.
+        // EXAMPLE:
+            // index:0, len:2 = a UIElement that is the first element of two in the parent.
         this.len = len || 1;
 
         // mostly used for testing / to see the bounds of the UIELement
