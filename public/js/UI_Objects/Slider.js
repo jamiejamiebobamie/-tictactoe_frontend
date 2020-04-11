@@ -2,6 +2,7 @@ class Slider extends UIElement{
     constructor(parameterObject){
         super(parameterObject);
 
+        this.parent ? this.parent : this.parent = new Container({row: this.row, width:this.width, height: this.height})
         this.width = 20;
         this.mouseOver = false;
         this.isDragging = false;
@@ -98,26 +99,4 @@ class Slider extends UIElement{
         ellipse(this.buttonX, this.buttonY, this.width);
     }
 
-}
-
-class DifficultySlider extends Slider{
-    constructor(parameterObject){
-        super(parameterObject)
-        this.mouseDragfunc = this.getDifficulty
-    }
-
-    setDifficulty(difficulty){
-        if (this.row){
-            this.buttonX = this.sliderWidth * float(difficulty/100)
-        } else {
-            this.buttonY = this.sliderHeight * float(difficulty/100)
-        }
-    }
-
-    getDifficulty(){
-        let difficulty = this.row ? this.buttonX / this.sliderWidth : this.buttonY / this.sliderHeight
-        difficulty *= 100 // the slider is shifted up by 13 so the range needs to be adjusted to 0-100
-        // scale of 0 to 10
-        return int(difficulty);
-    }
 }

@@ -1,12 +1,9 @@
 class Container extends UIElement{
     constructor(parameterObject) {
         super(parameterObject);
-    }
 
-    performClickFunctionality(){
-        if (this.mouseClickfunc){
-            return this.mouseClickfunc()
-        }
+
+     this.mouseClickfunc = () => {console.log('test')}
     }
 
     // containers can be clicked
@@ -16,6 +13,12 @@ class Container extends UIElement{
             && mouseY > this.y
             && mouseY < this.y + this.height){
             return true;
+        }
+    }
+
+    performClickFunctionality(){
+        if (this.mouseClickfunc){
+            return this.mouseClickfunc()
         }
     }
 
@@ -29,69 +32,56 @@ class Container extends UIElement{
 class ImageContainer extends Container{
     constructor(paramsObject){
         super(paramsObject)
+
+        // set with member functions.
         this.loadedImg = undefined
         this.imageWidth = undefined
         this.imageHeight = undefined
+
+        // maybe change. the placement of the image is reliant on the parent's
+            // dimensions and centers the image in the middle of the parent
+            // height and width.
         this.imageX = this.parent ? this.parent.x + this.parent.width/2 : windowWidth/2
         this.imageY = this.parent ? this.parent.y + this.parent.height/2 : windowHeight/2
     }
-
     // images can exceed the bounds of the container
     setImageProps(loadedImg,imageWidth,imageHeight){
         this.loadedImg = loadedImg
         this.imageWidth = imageWidth
         this.imageHeight = imageHeight
     }
-
+    // needs to be called every frame.
     redrawImage(){
         image(this.loadedImg, this.imageX, this.imageY, this.imageWidth, this.imageHeight);
     }
-
-    draw(){
-        if (this.loadedImg){
-            this.redrawImage()
-        }
-    }
+    draw() { if (this.loadedImg) { this.redrawImage() } }
 }
 
 class TextBox extends Container{
     constructor(parameterObject){
         super(parameterObject)
 
-        this.align = [CENTER,CENTER]
+        // set with member functions.
+        this.text = undefined
+        this.textColor = undefined;
 
         // this.row determines the orientation of the font.
         // use the orientation of the parent container for aligning
             // normally-oriented text, vertically.
-
-        if (this.row){
-            // draws text horizontally
-            this.textSize = this.width / 20
-        } else {
-            // draws text vertically
-            this.textSize = this.height / 20
-        }
-
-        this.text = undefined
-        this.textColor = undefined;
-
+        this.row ? this.textSize = this.width / 20 : this.textSize = this.height / 20
         textSize(this.textSize);
+
+        // alignement options cannot be set after instantiation.
+            // subclass to change the alignment:
+            // ( horizAlign: LEFT, CENTER, or RIGHT,
+            //   vertAlign:  TOP, BOTTOM, CENTER, or BASELINE )
+        this.align = [CENTER,CENTER]
         textAlign(this.align[0],this.align[1]);
-
-        // not using...
-        this.chars = 1
-        this.valuesChanged = false
     }
-
-    setString(s){
-        this.chars += s.length
-        this.text = s
-    }
-
-    setTextColor(color){
-        this.textColor = color
-    }
-
+    // call this after instantiating the object to set the text
+    setString(s) { this.text = s }
+    // call this after instantiating the object to set the text color
+    setTextColor(color) { this.textColor = color }
     drawRotatedTextBox(){
         push();
             super.draw()
@@ -114,81 +104,91 @@ class TextBox extends Container{
             text(this.text, this.x, this.y, this.width, this.height)
         }
     }
-    draw(){
-        if (this.row){
-            this.drawNormalTextBox();
-        } else {
-            this.drawRotatedTextBox()
-        }
-    }
+    draw() { this.row ? this.drawNormalTextBox() : this.drawRotatedTextBox() }
 }
 
 class DraggableContainer extends Container{
     constructor(parameterObject){
         super(parameterObject)
 
+        // controls the userDrag
         this.isDragging = false;
-        this.hasBeenDragged = false; // this is doing nothing.
 
-        // this is the current amount the element has been dragged from
-            // its original position
+        // set the parent object
+        let canvasObject = {x: 0, y: 0, width:windowWidth, height: windowHeight};
+        this.parent = this.parent || canvasObject;
+
+        // stores where on the container you have clicked relative to the container's
+            // this.x and this.y (the top-left corner)
         this.dragOffsetX = undefined;
         this.dragOffsetY = undefined;
 
-        // the x and y coordinates of all container are anchored at the top left
-        // corner. when clicked, the element needs to take this into account.
-        if (!this.hasBeenDragged){
-            this.draggedX = undefined
-            this.draggedY = undefined
-            this.ratioX = 1
-            this.ratioY = 1
-        } else {
-            this.x = this.draggedX * windowWidth/this.ratioX
-            this.y = this.draggedY * windowHeight/this.ratioY
-        }
+        // the ratio of the container's position (this.x,this.y)
+            // relative to the bounds of its parent
+        this.ratioX = this.x/parent.width
+        this.ratioY = this.y/parent.height
+
+        // return the container's placement within its parent as a ratio
+        this.mouseDragfunc = () => { return { ratioX:this.ratioX, ratioY:this.ratioY }; }
     }
 
-    // containers can only move around inside the bounds of their parent
-        // containers.
-    testForBounds(x,y,object){
-        if (x + this.dragOffsetX > object.x
-            && x + this.dragOffsetX < object.x + object.width - this.width
-            && y + this.dragOffsetY > object.y
-            && y + this.dragOffsetY < object.y + object.height - this.height){
+    // containers can only move around inside the bounds of their parent.
+    testForBounds(x,y){
+        if (x + this.dragOffsetX > this.parent.x
+            && x + this.dragOffsetX < this.parent.x + this.parent.width - this.width
+            && y + this.dragOffsetY > this.parent.y
+            && y + this.dragOffsetY < this.parent.y + this.parent.height - this.height){
             return true;
         }
     }
 
-    // containers can be dragged to change their position
+    // drag functionality.
     userDrag(){
+        // stores where you're grabbing the container relative to the container's
+            // top-left corner (top-left corner = this.x, this.y)
         if (this.dragOffsetX == undefined){
             this.dragOffsetX = this.x - mouseX;
             this.dragOffsetY = this.y - mouseY;
         }
 
-        // only drag the object within the bounds of its parent
-        let canvasObject = {x: 0, y: 0, width:windowWidth, height: windowHeight};
-        let parent = this.parent || canvasObject;
-        if ( this.testForBounds(mouseX,mouseY,parent) ) {
+        // drag the container within the bounds of the parent
+        if ( this.testForBounds(mouseX, mouseY, parent) ) {
             this.x = mouseX + this.dragOffsetX;
             this.y = mouseY + this.dragOffsetY;
-            this.draggedX = this.x
-            this.draggedY = this.y
-            let parentWidth = this.parent ? this.parent.width : windowWidth
-            let parentHeight = this.parent ? this.parent.height : windowHeight
-            this.ratioX = this.x/parentWidth
-            this.ratioY = this.y/parentHeight
-            this.hasBeenDragged = true;
         }
     }
 
-    // performDragFunctionality(){
-    //     if(this.mouseDragfunc){
-    //         console.log(this.mouseDragfunc)
-    //         return this.mouseDragfunc();
-    //     }
-    // }
+    // update the ratio when user is finished dragging.
+    updateRatio(){
+        this.ratioX = this.x/parent.width
+        this.ratioY = this.y/parent.height
+    }
 
+    // a slider within a draggable container isn't going to work...
+    performClickFunctionality(){
+        this.isDragging = true;
+    }
+
+    // on mouseReleased(), stop dragging the container, update the ratio,
+        // reset the dragOffsets, and return the ratio to be stored on the top-level.
+    performDragFunctionality(){
+        this.isDragging = false;
+        this.updateRatio();
+        this.performValuesResetAfterDrag();
+        if(this.mouseDragfunc){
+            return this.mouseDragfunc();
+        }
+    }
+
+    // call this method to set the state (the dragged position) after it is lost
+        // when you resize the window or change the view.
+    setContainerPositionFromRatio(ratioX, ratioY){
+        this.x = windowWidth/ratioX
+        this.y = windowHeight/ratioY
+    }
+
+    // erases the grab offset from the last time you grabbed it,
+        // allowing you to grab the container at different places each time.
     performValuesResetAfterDrag(){
         this.dragOffsetX = undefined;
         this.dragOffsetY = undefined;
@@ -200,6 +200,26 @@ class DraggableContainer extends Container{
             this.userDrag();
         }
     }
+}
+
+class SwipableContainer extends DraggableContainer{
+    constructor(parameterObject){
+        super(parameterObject)
+    }
+    /*
+    two types:
+        "slideshow"
+            user drags the element. it moves along the x axis.
+            when the user releases the element, if it is beyond some amount (start_mouseX - end_mouseX)
+            that is relative to the size of the container (1/3 width) it will activate the mouseDragfunc
+            (in tictactoe case: cycleView)*
+            * will need an ending and beginning animation so the views slide on and off the screen.
+        "dating app"
+            user drags the element.
+            it rotates -/+ (left/right) around a point at the center and below the current view.
+            when the user releases the element, if it has rotated beyond some amount (0 -/+ end_mouseX)
+            it will activate one of two mouseDragfunc's (swipeLeft/swipeRight)
+    */
 }
 
 // not working... in progress.
@@ -298,87 +318,4 @@ class ScalableContainer extends Container{
             }
         }
     }
-}
-
-class TicTacToeSpace extends Container{
-    constructor(parameterObject){
-        super(parameterObject)
-        this.currentSymbol = new NullIcon({parent: this})
-        this.symbols = [new NullIcon({parent: this}), new X({parent: this}), new O({parent: this})]
-        this.symbolIndex = 0;
-
-        this.mouseClickfunc = this.getSymbol
-    }
-
-    incrementSymbol(){
-        this.symbolIndex < 2 ? this.symbolIndex++ : this.symbolIndex = 0
-        this.currentSymbol = this.symbols[this.symbolIndex]
-    }
-
-    getSymbol(){
-        this.incrementSymbol();
-
-        const LOOKUP = {'00':0, '01':1, '02':2,
-                  '10':3, '11':4, '12':5,
-                  '20':6, '21':7, '22':8}
-
-        let boardIndex = str(this.parent.index) + str(this.index)
-
-        return [LOOKUP[boardIndex], this.currentSymbol.name]
-    }
-
-    setSymbol(symbol){
-        const LOOKUP = {'!':0,
-                        'x':1,
-                        'o':2}
-
-        symbol ? this.symbolIndex = LOOKUP[symbol] : this.symbolIndex = 0
-    }
-
-    userDrag(){}
-
-    draw() {
-        super.draw()
-        // draw symbol / icon
-        this.symbols[this.symbolIndex].draw()
-    }
-
-}
-
-class TicTacToePlayerTurnSelector extends TicTacToeSpace{
-    constructor(parameterObject){
-        super(parameterObject)
-        this.currentSymbol = new X({parent: this})
-        this.symbols = [new X({parent: this}), new O({parent: this})]
-        this.symbolIndex = 0;
-
-        this.mouseClickfunc = this.getSymbol
-    }
-
-    incrementSymbol(){
-        this.symbolIndex < 1 ? this.symbolIndex++ : this.symbolIndex = 0
-        this.currentSymbol = this.symbols[this.symbolIndex]
-    }
-
-    getSymbol(){
-        this.incrementSymbol();
-
-        return this.currentSymbol.name
-    }
-
-    setSymbol(symbol){
-        const LOOKUP = {'x':0,
-                        'o':1}
-
-        symbol ? this.symbolIndex = LOOKUP[symbol] : this.symbolIndex = 0
-    }
-
-    userDrag(){}
-
-    draw() {
-        super.draw()
-        // draw symbol / icon
-        this.symbols[this.symbolIndex].draw()
-    }
-
 }

@@ -72,21 +72,18 @@ function drawRecursive(uiElement){
 // p5.js built-in method
 function mousePressed() {
     returnValueFromViews = clickRecursive(views[view_i])
-    // the state of the app is stored in the top-level 'sketch.js'
-    if (returnValueFromViews){
-        setTopLevelVariables(returnValueFromViews)
-    }
-    // no longer works...
+    if (returnValueFromViews){ setTopLevelVariables(returnValueFromViews) }
+
     if (menuButton.testForClick() && !doneOnce){
         menuButton.performClickFunctionality();
     }
+
     if (!doneOnce){
         doneOnce = true;
     }
 }
 
 function clickRecursive(uiElement){
-    // check to see we're at a leaf. if we're not...
     if (uiElement.uiElements) {
         for (let i = 0; i < uiElement.uiElements.length; i++){
             clickRecursive(uiElement.uiElements[i])
@@ -94,7 +91,6 @@ function clickRecursive(uiElement){
     }
     if (uiElement.testForClick){
         if (uiElement.testForClick()){
-            uiElement.isDragging = true;
             if (uiElement.performClickFunctionality){
                 returnValueFromViews = uiElement.performClickFunctionality()
                 return returnValueFromViews
@@ -106,21 +102,19 @@ function clickRecursive(uiElement){
 // 'doneOnce' is reset with mouseReleased() function.
 // p5.js built-in method
 function mouseReleased() {
-    returnValueFromViews = clickReleasedRecrusive(views[view_i])
+    returnValueFromViews = clickReleasedRecursive(views[view_i])
     if (returnValueFromViews){setTopLevelVariables(returnValueFromViews)}
-    doneOnce = false;
+    // doneOnce = false;
 }
 
-function clickReleasedRecrusive(uiElement){
-    // check to see we're at a leaf. if we're not...
+function clickReleasedRecursive(uiElement){
     if (uiElement.uiElements) {
         for (let i = 0; i < uiElement.uiElements.length; i++){
-            clickReleasedRecrusive(uiElement.uiElements[i])
+            clickReleasedRecursive(uiElement.uiElements[i])
         }
     }
     if (uiElement.isDragging){
-        returnValueFromViews = uiElement.performDragFunctionality() // need to change this to performDragFunctionality
-        uiElement.isDragging = false;
+        returnValueFromViews = uiElement.performDragFunctionality();
         return returnValueFromViews
     }
 }

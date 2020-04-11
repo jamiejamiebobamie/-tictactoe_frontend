@@ -111,7 +111,7 @@ class UIElement{
                 this.y = offsetY;
             }
         }
-
+        this.uiElements = []
         // used for translating the UIElements along the x axis.
             // TESTING.
             // may be redundant to 'offsetX'.
