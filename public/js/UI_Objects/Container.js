@@ -1,9 +1,7 @@
 class Container extends UIElement{
     constructor(parameterObject) {
         super(parameterObject);
-
-
-     this.mouseClickfunc = () => {console.log('test')}
+         // this.mouseClickfunc = () => {console.log('test')}
     }
 
     // containers can be clicked
@@ -23,9 +21,13 @@ class Container extends UIElement{
     }
 
     draw() {
-        stroke(30);
-        this.color ? fill(this.color) : noFill();
-        rect(this.x,this.y,this.width,this.height)
+        push();
+            translate(this.translateXAmount,0)
+            stroke(30);
+            this.color ? fill(this.color) : noFill();
+            rect(this.x,this.y,this.width,this.height)
+        pop();
+
     }
 }
 
@@ -40,21 +42,26 @@ class ImageContainer extends Container{
 
         // maybe change. the placement of the image is reliant on the parent's
             // dimensions and centers the image in the middle of the parent
-            // height and width.
+            // height and width. makes more sense to be centered in the middle of its own container...
         this.imageX = this.parent ? this.parent.x + this.parent.width/2 : windowWidth/2
         this.imageY = this.parent ? this.parent.y + this.parent.height/2 : windowHeight/2
     }
-    // images can exceed the bounds of the container
+    // images can exceed the bounds of their container
     setImageProps(loadedImg,imageWidth,imageHeight){
         this.loadedImg = loadedImg
         this.imageWidth = imageWidth
         this.imageHeight = imageHeight
     }
     // needs to be called every frame.
-    redrawImage(){
-        image(this.loadedImg, this.imageX, this.imageY, this.imageWidth, this.imageHeight);
+    redrawImage() { image(this.loadedImg, this.imageX, this.imageY, this.imageWidth, this.imageHeight); }
+    draw() {
+        push();
+            translate(this.translateXAmount,0)
+            if (this.loadedImg){
+                this.redrawImage()
+            }
+        pop();
     }
-    draw() { if (this.loadedImg) { this.redrawImage() } }
 }
 
 class TextBox extends Container{
@@ -104,7 +111,12 @@ class TextBox extends Container{
             text(this.text, this.x, this.y, this.width, this.height)
         }
     }
-    draw() { this.row ? this.drawNormalTextBox() : this.drawRotatedTextBox() }
+    draw() {
+        push();
+            translate(this.translateXAmount,0)
+            this.row ? this.drawNormalTextBox() : this.drawRotatedTextBox()
+        pop();
+    }
 }
 
 class DraggableContainer extends Container{
@@ -195,10 +207,19 @@ class DraggableContainer extends Container{
     }
 
     draw(){
-        super.draw()
         if (this.isDragging){
             this.userDrag();
         }
+
+        push();
+            translate(this.translateXAmount,0)
+            super.draw()
+        pop();
+        // i might be confused... thought i didn't need to do this:
+        // for (let i = 0; i < this.uiElements.length; i++){
+        //     this.uiElements[i].draw();
+        // }
+        // ^
     }
 }
 
@@ -306,16 +327,18 @@ class ScalableContainer extends Container{
     draw(){
         stroke(100);
         noFill();
-        super.draw();
-        fill(256);
-        for (let i = 0; i < this.uiElements.length; i++){
-            this.uiElements[i].draw();
-            let hey = this.uiElements[i].performClickFunctionality()
-            if (hey){
-                console.log(hey)
-                // this.uiElements[i].performClickFunctionality()
-                // this.uiElements[i].isDragging = false;
+        push();
+            translate(this.translateXAmount,0)
+            fill(256);
+            for (let i = 0; i < this.uiElements.length; i++){
+                this.uiElements[i].draw();
+                // let hey = this.uiElements[i].performClickFunctionality()
+                // if (hey){
+                //     console.log(hey)
+                //     // this.uiElements[i].performClickFunctionality()
+                //     // this.uiElements[i].isDragging = false;
+                // }
             }
-        }
+        pop()
     }
 }

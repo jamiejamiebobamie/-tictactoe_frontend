@@ -65,8 +65,12 @@ class Button extends UIElement{
     }
 
     draw() {
+        push();
+            translate(this.translateXAmount,this.y)
         // this.mouseOver ? fill(this.mouseOverColor) : fill(this.color);
-        ellipse(this.x, this.y, this.width)
+            ellipse(this.x, this.y, this.width)
+        pop();
+
     }
 }
 

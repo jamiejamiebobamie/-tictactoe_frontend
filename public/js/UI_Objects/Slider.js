@@ -4,46 +4,33 @@ class Slider extends UIElement{
 
         this.parent ? this.parent : this.parent = new Container({row: this.row, width:this.width, height: this.height})
         this.width = 20;
-        this.mouseOver = false;
+        // this.mouseOver = false;
+
         this.isDragging = false;
         this.userDragButtonAmount = 0;
 
         // testing
         this.color = 'black';
-        this.mouseOverColor = 'blue';
+        // this.mouseOverColor = 'blue';
 
         // the placement of the button on the canvas based on the orientation
             //  and the bounds of the container.
-        let widthOfContainer = this.parent ? this.parent.width : windowWidth;
-        let heightOfContainer = this.parent ? this.parent.height : windowHeight;
-        let userDragButton;
-
         if (this.row){
-
-            this.offset = widthOfContainer/10
-
-            this.buttonX = userDragButton || this.offset + this.parent.x
-            this.buttonY = heightOfContainer/(this.len*2) + this.index * heightOfContainer / this.len + this.parent.y
-
-            this.sliderX = this.offset
-            this.sliderY = this.buttonY - 2
-
-            this.sliderWidth = widthOfContainer - this.offset*2;
-            this.sliderHeight = this.width/4;
-
-        } else {
-
-            this.offset = heightOfContainer/10
-
-            this.buttonX = widthOfContainer/(this.len*2) + this.index * widthOfContainer / this.len + this.parent.x;
-            this.buttonY = userDragButton | this.offset + this.parent.y;
-
+            this.offset = this.parent.width/10
+            this.buttonX = this.offset + this.parent.x
+            this.buttonY = this.parent.height/(this.len*2) + this.index * this.parent.height / this.len + this.parent.y
             this.sliderX = this.buttonX
-            this.sliderY = this.offset
-
+            this.sliderY = this.buttonY - 2
+            this.sliderWidth = this.parent.width - this.offset*2;
+            this.sliderHeight = this.width/4;
+        } else {
+            this.offset = this.parent.height/10
+            this.buttonX = this.parent.width/(this.len*2) + this.index * this.parent.width / this.len + this.parent.x;
+            this.buttonY = this.offset + this.parent.y;
+            this.sliderX = this.buttonX - 2
+            this.sliderY = this.buttonY
             this.sliderWidth = this.width/4;
-            this.sliderHeight = heightOfContainer - heightOfContainer/10 - this.offset;
-
+            this.sliderHeight = this.parent.height - this.parent.height/10 - this.offset;
         }
     }
 
@@ -56,31 +43,38 @@ class Slider extends UIElement{
         }
     }
 
-    testForMouseOver(mouseX, mouseY){
-        if (mouseX > this.buttonX - this.width/2
-            && mouseX < this.buttonX + this.width/2
-            && mouseY > this.buttonY - this.width/2
-            && mouseY < this.width/2 + this.buttonY){
-                return true
-        } else {
-            return false
-        }
-    }
+    // testForMouseOver(mouseX, mouseY){
+    //     if (mouseX > this.buttonX - this.width/2
+    //         && mouseX < this.buttonX + this.width/2
+    //         && mouseY > this.buttonY - this.width/2
+    //         && mouseY < this.width/2 + this.buttonY){
+    //             return true
+    //     } else {
+    //         return false
+    //     }
+    // }
 
     userDrag(){
-        let portrait = true;
-            if (this.row == portrait){
-                if ( this.offset < mouseX && mouseX < this.sliderWidth+this.offset){
+            if (this.row){
+                if ( this.sliderX < mouseX && mouseX < this.sliderWidth+this.sliderX){
                         this.buttonX = mouseX;
                 }
             } else {
-                if ( this.offset - 5 < mouseY && mouseY < this.sliderHeight+this.offset){
+                if ( this.sliderY - 5 < mouseY && mouseY < this.sliderHeight+this.sliderY){
                 this.buttonY = mouseY;
             }
         }
     }
 
+    // a slider within a draggable container isn't going to work...
+    performClickFunctionality(){
+        this.isDragging = true;
+    }
+
+    // on mouseReleased(), stop dragging the container, update the ratio,
+        // reset the dragOffsets, and return the ratio to be stored on the top-level.
     performDragFunctionality(){
+        // this.isDragging = false;
         if(this.mouseDragfunc){
             return this.mouseDragfunc();
         }
@@ -90,13 +84,15 @@ class Slider extends UIElement{
         if (this.isDragging){
             this.userDrag();
         }
-
-        stroke(90);
-        fill(256);
-        // slider groove
-        rect(this.sliderX, this.sliderY, this.sliderWidth, this.sliderHeight, 30);
-        // slider button
-        ellipse(this.buttonX, this.buttonY, this.width);
+        push();
+            translate(this.translateXAmount,0)
+            stroke(90);
+            fill(256);
+            // slider groove
+            rect(this.sliderX, this.sliderY, this.sliderWidth, this.sliderHeight, 30);
+            // slider button
+            ellipse(this.buttonX, this.buttonY, this.width);
+        pop();
     }
 
 }

@@ -5,7 +5,7 @@ class View extends UIElement{
         this.redrawElements();
     }
     // abstract method
-    redrawElements(){}
+    redrawElements(parameterObject){}
     draw(){
         for (let i = 0; i < this.uiElements.length; i++){
             this.uiElements[i].draw();
@@ -16,26 +16,39 @@ class View extends UIElement{
 class TestView1 extends View{
     constructor(parameterObject){
         super(parameterObject)
-        this.redrawElements()
+        this.redrawElements(parameterObject)
     }
 
-    redrawElements(){
+    redrawElements(parameterObject){
+        this.uiElements = []
         let baseContainer = new SwipableContainer()
         let contentParams = {row:false, len:7, index:0,width:windowWidth*6/7, color:'orange', parent:baseContainer}
         let container = new Container(contentParams)
+        if (parameterObject){
+            container.setTranslateXAmount(parameterObject.transitionAmount)
+        }
         this.uiElements.push(container)
 
         let textbox = new TextBox({row:false, len:7, index:6, color:'green', parent:baseContainer})
         textbox.setString('SWIPE LEFT FOR SUGGESTION')
         textbox.setTextColor('orange')
+        if (parameterObject){
+            textbox.setTranslateXAmount(parameterObject.transitionAmount)
+        }
         this.uiElements.push(textbox)
 
         let params = {row: false,  offsetX:105, offsetY:105, width: 200, height: 300, color: 'red', parent:baseContainer}
         let cont = new DraggableContainer(params)
+        if (parameterObject){
+            cont.setTranslateXAmount(parameterObject.transitionAmount)
+        }
         this.uiElements.push(cont)
 
         params = {row: false, parent:cont}
         let slider = new Slider(params)
+        if (parameterObject){
+            slider.setTranslateXAmount(parameterObject.transitionAmount)
+        }
         this.uiElements.push(slider)
     }
 }
@@ -47,24 +60,43 @@ class TestView2 extends View{
         this.redrawElements()
     }
 
-    redrawElements(){
+    redrawElements(parameterObject){
+        this.uiElements = []
         let baseContainer = new SwipableContainer()
-
         let contentParams = {row:false, len:7, index:0,width:windowWidth*6/7, color:'orange', parent:baseContainer}
         let container = new Container(contentParams)
+        if (parameterObject){
+            container.setTranslateXAmount(parameterObject.transitionAmount)
+        }
         this.uiElements.push(container)
 
         let textbox = new TextBox({row:false, len:7, index:6, color:'green', parent:baseContainer})
-        textbox.setString('SWIPE LEFT TO PLAY')
+        textbox.setString('SWIPE LEFT FOR SUGGESTION')
         textbox.setTextColor('orange')
+        if (parameterObject){
+            textbox.setTranslateXAmount(parameterObject.transitionAmount)
+        }
         this.uiElements.push(textbox)
 
-        let params = {row: false,  offsetX:5, offsetY:5, width: 200, height: 300, color: 'blue', parent:baseContainer}
+        let params = {row: false,  offsetX:105, offsetY:105, width: 200, height: 300, color: 'red', parent:baseContainer}
         let cont = new DraggableContainer(params)
+        if (parameterObject){
+            cont.setTranslateXAmount(parameterObject.transitionAmount)
+        }
         this.uiElements.push(cont)
 
+        params = {row: false, parent:cont}
+        let slider = new Slider(params)
+        if (parameterObject){
+            slider.setTranslateXAmount(parameterObject.transitionAmount)
+        }
+
+        this.uiElements.push(slider)
         let image = new ImageContainer();
         image.setImageProps(this.img, 382, 279)
+        if (parameterObject){
+            image.setTranslateXAmount(parameterObject.transitionAmount)
+        }
         this.uiElements.push(image)
     }
 }
