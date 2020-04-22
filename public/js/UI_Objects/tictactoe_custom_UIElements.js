@@ -73,7 +73,7 @@ class SuggestionView extends View{
         let submitBoardButtonAnchor = new Container(submitBoardButtonAnchorParams)
         this.uiElements.push(submitBoardButtonAnchor)
 
-        let submitBoardButtonParams = {row: true, parent:submitBoardButtonAnchor, mouseClickfunc:this.suggestMove}
+        let submitBoardButtonParams = {row: true, parent:submitBoardButtonAnchor, mouseClickfunc:this.aiMove}
         let submitBoardButton = new Button(submitBoardButtonParams)
         this.uiElements.push(submitBoardButton)
     }
@@ -81,7 +81,7 @@ class SuggestionView extends View{
     // mouse click functions.
     // can't set 'this' member variables without binding this,
     // which I'm not sure can be done outside of React.
-    suggestMove(){ return 'suggestMove'}
+    aiMove(){return 'aiMove'}
     setTurnToX(){ return 'x' }
     setTurnToO(){ return 'o' }
 }
@@ -152,10 +152,8 @@ class PlayView extends View{
         }
     }
 
-    // mouse click functions.
-    // can't set 'this' member variables without binding this,
-    // which I'm not sure can be done outside of React.
-    suggestMove(){return 'suggestMove'}
+    aiMove(){return 'aiMove'}
+    randMove(){return 'randMove'}
     setTurnToX(){ return 'x' }
     setTurnToO(){ return 'o' }
 }
