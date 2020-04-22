@@ -81,9 +81,9 @@ class SuggestionView extends View{
     // mouse click functions.
     // can't set 'this' member variables without binding this,
     // which I'm not sure can be done outside of React.
-    aiMove(){return 'aiMove'}
-    setTurnToX(){ return 'x' }
-    setTurnToO(){ return 'o' }
+    aiMove(){ return ['aiMove'] }
+    setTurnToX(){ return ['x'] }
+    setTurnToO(){ return ['o'] }
 }
 
 class PlayView extends View{
@@ -152,10 +152,10 @@ class PlayView extends View{
         }
     }
 
-    aiMove(){return 'aiMove'}
-    randMove(){return 'randMove'}
-    setTurnToX(){ return 'x' }
-    setTurnToO(){ return 'o' }
+    aiMove(){ return ['aiMove'] }
+    randMove(){ return ['randMove'] }
+    setTurnToX(){ return ['x'] }
+    setTurnToO(){ return ['o'] }
 }
 
 
@@ -183,7 +183,7 @@ class TicTacToeSpace extends Container{
 
         let boardIndex = str(this.parent.index) + str(this.index)
 
-        return [LOOKUP[boardIndex], this.currentSymbol.name]
+        return [ [LOOKUP[boardIndex], this.currentSymbol.name] ]
     }
 
     setSymbol(symbol){
@@ -222,7 +222,7 @@ class TicTacToePlayerTurnSelector extends TicTacToeSpace{
     getSymbol(){
         this.incrementSymbol();
 
-        return this.currentSymbol.name
+        return [ this.currentSymbol.name ]
     }
 
     setSymbol(symbol){

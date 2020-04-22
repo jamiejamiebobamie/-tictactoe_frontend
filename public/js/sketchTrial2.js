@@ -7,14 +7,6 @@ let menuButton;
 // the return value from functions nested UIElements.
 let returnValueFromViews;
 
-// parameterObject to pass in to redrawElements() method to set the states
-// to its previous states. states are lost on window resize.
-let stateObject = { boardArray:["!","!","!","!","!","!","!","!","!"],
-                    turn:'x',
-                    aiDifficulty:13, // slider range: 13 to 113
-                    gameOver:false
-                            }
-
 // url parameters to query the backend
 let boardString = "!!!!!!!!!"
 let turn = 'x';
@@ -27,11 +19,13 @@ let apiReturnValue = null;
 let startExitAnimation = false
 let startEntranceAnimation = false
 
+// parameterObject to pass in to redrawElements() method to set the states
+// to its previous states. states are lost on window resize.
 let parameterObject = {transitionAmount: 0,
                        boardArray:["!","!","!","!","!","!","!","!","!"],
                        turn:'x',
                        aiDifficulty:13, // slider range: 13 to 113
-                       gameOver:false}
+                       winner:null}
 
 // p5.js built-in method
 function setup() {
@@ -113,7 +107,8 @@ function draw(){
     }
 
     if (apiReturnValue != null){
-        setBoardAndTurn(apiReturnValue)
+        parameterObject.winner = apiReturnValue.winner
+        setBoardAndTurn(apiReturnValue.board)
         redrawn(parameterObject);
         console.log(parameterObject)
         isWaitingForResponse = false;
@@ -217,42 +212,48 @@ function setBoardAndTurn(apiReturnValue){
 function setTopLevelVariables(returnValueFromViews){
     let queryAIMove;
     let queryRandMove;
-
     if (!isWaitingForResponse){
-        switch (returnValueFromViews) {
-            case 'x':
-                turn = 'x'
-                parameterObject.turn = turn
-                break;
-            case 'o':
-                turn = 'o'
-                parameterObject.turn = turn
-                break;
-            case 'aiMove':
-                boardString = parameterObject.boardArray.toString().replace(/,/g, '')
-                queryAIMove = "https://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString
+        // returnValueFromViews is an array of commands.
+        while (returnValueFromViews.length){
+            // some buttons return multiple commands that are iterated through
+                // from back to front. (this might not work async.)
+            console.log(returnValueFromViews)
+            command = returnValueFromViews.pop()
+            switch (command) {
+                case 'x':
+                    turn = 'x'
+                    parameterObject.turn = turn
+                    break;
+                case 'o':
+                    turn = 'o'
+                    parameterObject.turn = turn
+                    break;
+                case 'aiMove':
+                    boardString = parameterObject.boardArray.toString().replace(/,/g, '')
+                    queryAIMove = "https://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString
 
-                isWaitingForResponse = true;
-                // sets the 'apiReturnValue' top-level variable
-                queryBackend(queryRandMove);
-                break;
-            case 'randMove':
-                boardString = parameterObject.boardArray.toString().replace(/,/g, '')
-                queryRandMove = "https://play-tictactoe-ai.herokuapp.com/api/v1/rand/turn/"+turn+"/board/"+boardString
+                    isWaitingForResponse = true;
+                    // sets the 'apiReturnValue' top-level variable
+                    queryBackend(queryAIMove);
+                    break;
+                case 'randMove':
+                    boardString = parameterObject.boardArray.toString().replace(/,/g, '')
+                    queryRandMove = "https://play-tictactoe-ai.herokuapp.com/api/v1/rand/turn/"+turn+"/board/"+boardString
 
-                isWaitingForResponse = true;
-                // sets the 'apiReturnValue' top-level variable
-                queryBackend(queryRandMove);
-                break;
-            default:
-             if(typeof(returnValueFromViews) === typeof(100)){
-                 parameterObject.aiDifficulty = returnValueFromViews
-             } else if (typeof(returnValueFromViews) === typeof([0,'x'])){
-                     index = returnValueFromViews[0]
-                     val = returnValueFromViews[1]
-                     parameterObject.boardArray[index] = val
+                    isWaitingForResponse = true;
+                    // sets the 'apiReturnValue' top-level variable
+                    queryBackend(queryRandMove);
+                    break;
+                default:
+                 if(typeof(returnValueFromViews) === typeof(100)){
+                     parameterObject.aiDifficulty = returnValueFromViews
+                 } else if (typeof(returnValueFromViews) === typeof([0,'x'])){
+                         index = returnValueFromViews[0]
+                         val = returnValueFromViews[1]
+                         parameterObject.boardArray[index] = val
+                }
+                    break;
             }
-                break;
         }
     }
 }
@@ -281,7 +282,7 @@ function queryBackend(url){
     if (response.ok) {
       apiError = false;
       result = await response.json();
-      apiReturnValue = result.board
+      apiReturnValue = { board: result.board, winner: result.winner}
     } else {
       apiError = true;
     }
