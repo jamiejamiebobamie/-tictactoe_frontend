@@ -21,11 +21,15 @@ class Container extends UIElement{
     }
 
     draw() {
+
         push();
             translate(this.translateXAmount,0)
             stroke(30);
             this.color ? fill(this.color) : noFill();
             rect(this.x,this.y,this.width,this.height)
+            for (let i = 0; i < this.uiElements.length; i++){
+                this.uiElements[i].draw();
+            }
         pop();
 
     }
@@ -119,6 +123,8 @@ class TextBox extends Container{
     }
 }
 
+// at the moment the only ui_Objects that can be contained by a draggable
+    // container are other DraggableContainers...
 class DraggableContainer extends Container{
     constructor(parameterObject){
         super(parameterObject)
@@ -209,6 +215,9 @@ class DraggableContainer extends Container{
     draw(){
         if (this.isDragging){
             this.userDrag();
+            for (let i = 0; i < this.uiElements.length; i++){
+                this.uiElements[i].userDrag();
+            }
         }
 
         push();
