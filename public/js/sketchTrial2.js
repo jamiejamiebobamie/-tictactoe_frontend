@@ -42,7 +42,6 @@ function setup() {
 
 function redrawn(parameterObject){
     views = [];
-    // console.log(parameterObject)
     let playWithAI = new SuggestionView()
     views.push(playWithAI)
 
@@ -110,10 +109,23 @@ function draw(){
         parameterObject.winner = apiReturnValue.winner
         setBoardAndTurn(apiReturnValue.board)
         redrawn(parameterObject);
-        // console.log(parameterObject)
         isWaitingForResponse = false;
         apiReturnValue = null;
     }
+    if (parameterObject.winner != "None"){
+        // TEMPORARY...
+        resetParameterObject();
+        redrawn(parameterObject);
+        // SPAWN REPLAY WINDOW / MENU WITH OPTION TO REPLAY
+    }
+}
+
+function resetParameterObject(){
+    parameterObject = {transitionAmount: 0,
+                           boardArray:["!","!","!","!","!","!","!","!","!"],
+                           turn:'x',
+                           aiDifficulty:13, // slider range: 13 to 113
+                           winner:"None"}
 }
 
 function startAnimations(){
@@ -274,6 +286,8 @@ function queryBackend(){
       apiError = false;
       result = await response.json();
         apiReturnValue = { board: result.board, winner: result.winner}
+        console.log(apiReturnValue)
+
     } else {
         apiError = true;
     }

@@ -78,9 +78,6 @@ class SuggestionView extends View{
         this.uiElements.push(submitBoardButton)
     }
 
-    // mouse click functions.
-    // can't set 'this' member variables without binding this,
-    // which I'm not sure can be done outside of React.
     aiMove(){ return ['queryBackend'] }
     setTurnToX(){ return ['x'] }
     setTurnToO(){ return ['o'] }
@@ -153,13 +150,7 @@ class PlayView extends View{
             }
         }
     }
-
-    // aiMove(){ return ['aiMove'] }
-    // randMove(){ return ['randMove'] }
-    // setTurnToX(){ return ['x'] }
-    // setTurnToO(){ return ['o'] }
 }
-
 
 class TicTacToeSpace extends Container{
     constructor(parameterObject){
@@ -212,12 +203,21 @@ class TicTacToeSpacePlay extends TicTacToeSpace{
         this.symbols = [new NullIcon({parent: this}), new X({parent: this}), new O({parent: this})]
         this.symbolIndex = 0;
 
-        this.boardState = []
+        this.boardState = ["!","!","!", "!","!","!", "!","!","!"]
 
         this.mouseClickfunc = this.playTurn
     }
 
     playTurn(){
+
+        const LOOKUP = {'00':0, '01':1, '02':2,
+                  '10':3, '11':4, '12':5,
+                  '20':6, '21':7, '22':8}
+        let key = str(this.parent.index) + str(this.index)
+        let boardIndex = LOOKUP[key]
+
+        // check to make sure the player has clicked on a valid space.
+        if (this.boardState[boardIndex] == "!"){
         // commands are pushed into the array in reverse order that they occur
         let commands = []
 
@@ -230,30 +230,16 @@ class TicTacToeSpacePlay extends TicTacToeSpace{
         commands.push(command)
 
         // user 'X' picks tictactoe square
-        command = this.getSymbol()
+        command = this.getSymbol(boardIndex)
         commands.push(command)
-
-        let moveBoardIndex = command[0]
-
-        // check to make sure the player has clicked on a valid space.
-            // this only works if clicking on a past X move, but still overwrites
-            // O.
-        let index = moveBoardIndex
-        console.log(index, this.boardState)
-        if (this.boardState[index] == "!"){
-            return commands
+        return commands
         }
     }
 
-    // need to set the spaces symbol after checking that O hasn't gone there
-    getSymbol(){
+    getSymbol(boardIndex){
         this.symbolIndex = 1
         this.currentSymbol = this.symbols[this.symbolIndex]
-        const LOOKUP = {'00':0, '01':1, '02':2,
-                  '10':3, '11':4, '12':5,
-                  '20':6, '21':7, '22':8}
-        let boardIndex = str(this.parent.index) + str(this.index)
-        return [LOOKUP[boardIndex], this.currentSymbol.name]
+        return [boardIndex, this.currentSymbol.name]
     }
 
     setBoardState(boardState){
