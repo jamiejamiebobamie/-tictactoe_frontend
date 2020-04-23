@@ -1,26 +1,33 @@
 // the p5.js canvas
 let canvas;
+
+// top level ui components.
 let views = []
 let view_i = 0;
 let menuButton;
 
-// the return value from functions nested UIElements.
+// the return value from functions of nested UIElements.
 let returnValueFromViews;
 
 // url parameters to query the backend
 let boardString = "!!!!!!!!!"
 let turn = 'x';
 
+// mousePressed boolean.
 let doneOnce = false;
+
+// to stop player input while waiting for a response from backend.
 let isWaitingForResponse = false;
 
+// api returns board and winner variables.
 let apiReturnValue = null;
 
+// animation booleans
 let startExitAnimation = false
 let startEntranceAnimation = false
 
 // parameterObject to pass in to redrawElements() method to set the states
-// to its previous states. states are lost on window resize.
+    // to its previous states. states are lost on window resize.
 let parameterObject = {transitionAmount: 0,
                        boardArray:["!","!","!","!","!","!","!","!","!"],
                        turn:'x',
@@ -30,18 +37,23 @@ let parameterObject = {transitionAmount: 0,
 // p5.js built-in method
 function setup() {
     canvas = createCanvas(windowWidth, windowHeight);
-    // parent the canvas to the DOM element 'sketch-holder'
+    // p5.js built-in method. parents the canvas to the DOM element 'sketch-holder'
     canvas.parent('sketch-holder');
 
+    // p5.js built-in method. sets the framerate. improves performance.
     frameRate(24);
+
     menuButton = new Container({width:100, height:100, mouseClickfunc: startAnimations})
-    // centers the canvas
+
+    // p5.js built-in method. centers the canvas and all drawn objects.
     imageMode(CENTER);
+
     redrawn(parameterObject);
 }
 
 function redrawn(parameterObject){
     views = [];
+
     let playWithAI = new SuggestionView()
     views.push(playWithAI)
 
@@ -55,6 +67,7 @@ function redrawn(parameterObject){
 function windowResized() {
     // p5.js built-in method
     resizeCanvas(windowWidth, windowHeight);
+
     redrawn(parameterObject);
 }
 
@@ -101,6 +114,7 @@ function draw(){
     if (startExitAnimation){
         exitAnimation()
     }
+
     if (startEntranceAnimation){
         entranceAnimation();
     }
@@ -126,7 +140,7 @@ function resetParameterObject(){
     parameterObject = {transitionAmount: 0,
                            boardArray:["!","!","!","!","!","!","!","!","!"],
                            turn:'x',
-                          aiDifficulty:saveDifficulty, // slider range: 13 to 113
+                           aiDifficulty:saveDifficulty, // slider range: 13 to 113
                            winner:"None"}
 }
 
@@ -167,13 +181,14 @@ function drawRecursive(uiElement){
     }
 }
 
-// the built-in p5.js function mouseClicked() does not work on mobile.
-// must use mousePressed() for all mouse events.
-// mousePressed() is called repeatedly each frame,
-// 'doneOnce' controls which events are called repeatedly (drag events)
-// and which are called once (click events).
+
 // p5.js built-in method
 function mousePressed() {
+    // the built-in p5.js function mouseClicked() does not work on mobile.
+    // must use mousePressed() for all mouse events.
+    // mousePressed() is called repeatedly each frame,
+    // 'doneOnce' controls which events are called repeatedly (drag events)
+    // and which are called once (click events).
     returnValueFromViews = clickRecursive(views[view_i]) || returnValueFromViews
 
     if (returnValueFromViews){ setTopLevelVariables(returnValueFromViews) }
@@ -201,11 +216,12 @@ function clickRecursive(uiElement){
     }
 }
 
-// 'doneOnce' is reset with mouseReleased() function.
 // p5.js built-in method
 function mouseReleased() {
     returnValueFromViews = clickReleasedRecursive(views[view_i]) || returnValueFromViews
     if (returnValueFromViews){setTopLevelVariables(returnValueFromViews)}
+
+    // 'doneOnce' is reset with mouseReleased() function.
     doneOnce = false;
 }
 
@@ -239,7 +255,7 @@ function setTopLevelVariables(returnValueFromViews){
         // returnValueFromViews is an array of commands.
         while (returnValueFromViews.length > 0){
             // some buttons return multiple commands that are iterated through
-                // from back to front. (this might not work async.)
+                // from back to front.
             command = returnValueFromViews.pop()
             switch (command) {
                 case 'x':
@@ -280,9 +296,9 @@ function queryBackend(){
     // check slider amount and generate a random number that must be higher
         // than the aiDifficulty to use the AI
         // (so aiDifficulty is harder the lower the slider score is...)
-    let useAI = mustBeAboveDifficultyToUseAI > parameterObject.aiDifficulty;
     let suggestMoveView = view_i == 0;
-    if (useAI || suggestMoveView) {
+    let useAI = mustBeAboveDifficultyToUseAI > parameterObject.aiDifficulty || suggestMoveView;
+    if (useAI) {
         console.log('ai used.')
         url = "https://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString
     } else {
