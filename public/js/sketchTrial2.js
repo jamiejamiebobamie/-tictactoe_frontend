@@ -25,7 +25,7 @@ let parameterObject = {transitionAmount: 0,
                        boardArray:["!","!","!","!","!","!","!","!","!"],
                        turn:'x',
                        aiDifficulty:13, // slider range: 13 to 113
-                       winner:"None"}
+                       winner:null}
 
 // p5.js built-in method
 function setup() {
@@ -111,20 +111,22 @@ function draw(){
         redrawn(parameterObject);
         isWaitingForResponse = false;
         apiReturnValue = null;
-    }
-    if (parameterObject.winner != "None"){
-        // TEMPORARY...
-        resetParameterObject();
-        redrawn(parameterObject);
-        // SPAWN REPLAY WINDOW / MENU WITH OPTION TO REPLAY
+        let isPlayView = view_i == 1;
+        if (parameterObject.winner != null && isPlayView){
+            // TEMPORARY...
+            resetParameterObject();
+            redrawn(parameterObject);
+            // SPAWN REPLAY WINDOW / MENU WITH OPTION TO REPLAY
+        }
     }
 }
 
 function resetParameterObject(){
+    let saveDifficulty = parameterObject.aiDifficulty;
     parameterObject = {transitionAmount: 0,
                            boardArray:["!","!","!","!","!","!","!","!","!"],
                            turn:'x',
-                           aiDifficulty:13, // slider range: 13 to 113
+                          aiDifficulty:saveDifficulty, // slider range: 13 to 113
                            winner:"None"}
 }
 
@@ -143,6 +145,14 @@ function cycleViews(){
     }
     views[view_i].redrawElements(parameterObject);
     startEntranceAnimation = true;
+
+    let isPlayView = view_i == 1;
+    if (parameterObject.winner != null && isPlayView){
+        // TEMPORARY...
+        resetParameterObject();
+        redrawn(parameterObject);
+        // SPAWN REPLAY WINDOW / MENU WITH OPTION TO REPLAY
+    }
 }
 
 // these recursive functions allow uiElements to be nested.
