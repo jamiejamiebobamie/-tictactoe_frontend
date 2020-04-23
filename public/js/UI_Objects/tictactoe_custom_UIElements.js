@@ -81,7 +81,7 @@ class SuggestionView extends View{
     // mouse click functions.
     // can't set 'this' member variables without binding this,
     // which I'm not sure can be done outside of React.
-    aiMove(){ return ['aiMove'] }
+    aiMove(){ return ['queryBackend'] }
     setTurnToX(){ return ['x'] }
     setTurnToO(){ return ['o'] }
 }
@@ -110,6 +110,7 @@ class PlayView extends View{
         this.uiElements.push(sliderContainer)
         let sliderParams = {row: true, parent:sliderContainer}
         let slider = new DifficultySlider(sliderParams)
+        // console.log(previousStatesObject || "hey" )
         let difficulty = previousStatesObject ? previousStatesObject.aiDifficulty : 13;
         slider.setDifficulty(difficulty)
         this.uiElements.push(slider)
@@ -142,9 +143,10 @@ class PlayView extends View{
             for (let j = 0; j < 3; j++){
                 count % 2 ? spaceColor = blue : spaceColor = red;
                 let boardSpaceParams = {row: false, len: 3, index: j, color: spaceColor, parent:boardRow}
-                let boardSpace = new TicTacToeSpace(boardSpaceParams)
+                let boardSpace = new TicTacToeSpacePlay(boardSpaceParams)
                 if (previousStatesObject){
                     boardSpace.setSymbol(previousStatesObject.boardArray[count])
+                    boardSpace.setBoardState(previousStatesObject.boardArray)
                 }
                 this.uiElements.push(boardSpace)
                 count++;
@@ -152,10 +154,10 @@ class PlayView extends View{
         }
     }
 
-    aiMove(){ return ['aiMove'] }
-    randMove(){ return ['randMove'] }
-    setTurnToX(){ return ['x'] }
-    setTurnToO(){ return ['o'] }
+    // aiMove(){ return ['aiMove'] }
+    // randMove(){ return ['randMove'] }
+    // setTurnToX(){ return ['x'] }
+    // setTurnToO(){ return ['o'] }
 }
 
 
@@ -201,7 +203,62 @@ class TicTacToeSpace extends Container{
         // draw symbol / icon
         this.symbols[this.symbolIndex].draw()
     }
+}
 
+class TicTacToeSpacePlay extends TicTacToeSpace{
+    constructor(parameterObject){
+        super(parameterObject)
+        this.currentSymbol = new NullIcon({parent: this})
+        this.symbols = [new NullIcon({parent: this}), new X({parent: this}), new O({parent: this})]
+        this.symbolIndex = 0;
+
+        this.boardState = []
+
+        this.mouseClickfunc = this.playTurn
+    }
+
+    playTurn(){
+        // commands are pushed into the array in reverse order that they occur
+        let commands = []
+
+        // query the backend to either generate a random move or an ai move
+        let command = 'queryBackend'
+        commands.push(command)
+
+        // the ai player 'O' gets to go.
+        command = 'o'
+        commands.push(command)
+
+        // user 'X' picks tictactoe square
+        command = this.getSymbol()
+        commands.push(command)
+
+        let moveBoardIndex = command[0]
+
+        // check to make sure the player has clicked on a valid space.
+            // this only works if clicking on a past X move, but still overwrites
+            // O.
+        let index = moveBoardIndex
+        console.log(index, this.boardState)
+        if (this.boardState[index] == "!"){
+            return commands
+        }
+    }
+
+    // need to set the spaces symbol after checking that O hasn't gone there
+    getSymbol(){
+        this.symbolIndex = 1
+        this.currentSymbol = this.symbols[this.symbolIndex]
+        const LOOKUP = {'00':0, '01':1, '02':2,
+                  '10':3, '11':4, '12':5,
+                  '20':6, '21':7, '22':8}
+        let boardIndex = str(this.parent.index) + str(this.index)
+        return [LOOKUP[boardIndex], this.currentSymbol.name]
+    }
+
+    setBoardState(boardState){
+        this.boardState = boardState
+    }
 }
 
 class TicTacToePlayerTurnSelector extends TicTacToeSpace{
@@ -314,6 +371,6 @@ class DifficultySlider extends Slider{
         let difficulty = this.row ? this.buttonX / this.sliderWidth : this.buttonY / this.sliderHeight
         difficulty *= 100 // the slider is shifted up by 13 so the range needs to be adjusted to 0-100
         // scale of 0 to 10
-        return int(difficulty);
+        return [int(difficulty)];
     }
 }

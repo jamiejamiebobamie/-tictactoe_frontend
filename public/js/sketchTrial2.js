@@ -25,7 +25,7 @@ let parameterObject = {transitionAmount: 0,
                        boardArray:["!","!","!","!","!","!","!","!","!"],
                        turn:'x',
                        aiDifficulty:13, // slider range: 13 to 113
-                       winner:null}
+                       winner:"None"}
 
 // p5.js built-in method
 function setup() {
@@ -37,12 +37,12 @@ function setup() {
     menuButton = new Container({width:100, height:100, mouseClickfunc: startAnimations})
     // centers the canvas
     imageMode(CENTER);
-    redrawn();
+    redrawn(parameterObject);
 }
 
 function redrawn(parameterObject){
     views = [];
-
+    // console.log(parameterObject)
     let playWithAI = new SuggestionView()
     views.push(playWithAI)
 
@@ -110,7 +110,7 @@ function draw(){
         parameterObject.winner = apiReturnValue.winner
         setBoardAndTurn(apiReturnValue.board)
         redrawn(parameterObject);
-        console.log(parameterObject)
+        // console.log(parameterObject)
         isWaitingForResponse = false;
         apiReturnValue = null;
     }
@@ -201,6 +201,7 @@ function clickReleasedRecursive(uiElement){
 }
 
 function setBoardAndTurn(apiReturnValue){
+    // console.log(apiReturnValue)
     const OPPONENT_LOOKUP = {'x':'o', 'o':'x'}
     for (let i = 0; i < apiReturnValue.length; i++){
         parameterObject.boardArray[i] = apiReturnValue[i]
@@ -214,10 +215,9 @@ function setTopLevelVariables(returnValueFromViews){
     let queryRandMove;
     if (!isWaitingForResponse){
         // returnValueFromViews is an array of commands.
-        while (returnValueFromViews.length){
+        while (returnValueFromViews.length > 0){
             // some buttons return multiple commands that are iterated through
                 // from back to front. (this might not work async.)
-            console.log(returnValueFromViews)
             command = returnValueFromViews.pop()
             switch (command) {
                 case 'x':
@@ -228,63 +228,54 @@ function setTopLevelVariables(returnValueFromViews){
                     turn = 'o'
                     parameterObject.turn = turn
                     break;
-                case 'aiMove':
+                case 'queryBackend':
                     boardString = parameterObject.boardArray.toString().replace(/,/g, '')
-                    queryAIMove = "https://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString
-
                     isWaitingForResponse = true;
-                    // sets the 'apiReturnValue' top-level variable
-                    queryBackend(queryAIMove);
-                    break;
-                case 'randMove':
-                    boardString = parameterObject.boardArray.toString().replace(/,/g, '')
-                    queryRandMove = "https://play-tictactoe-ai.herokuapp.com/api/v1/rand/turn/"+turn+"/board/"+boardString
 
-                    isWaitingForResponse = true;
                     // sets the 'apiReturnValue' top-level variable
-                    queryBackend(queryRandMove);
+                    queryBackend();
                     break;
                 default:
-                 if(typeof(returnValueFromViews) === typeof(100)){
-                     parameterObject.aiDifficulty = returnValueFromViews
-                 } else if (typeof(returnValueFromViews) === typeof([0,'x'])){
-                         index = returnValueFromViews[0]
-                         val = returnValueFromViews[1]
-                         parameterObject.boardArray[index] = val
+                 if(typeof(command) === typeof(100)){
+                     parameterObject.aiDifficulty = command
+                     console.log(parameterObject)
+                 } else if (typeof(command) === typeof([0,'x'])){
+                     index = command[0]
+                     val = command[1]
+                     parameterObject.boardArray[index] = val
+                     break;
                 }
-                    break;
+                break;
             }
         }
     }
 }
 
-// function queryBackend(){
-//     let result;
-//     // fetch("http://127.0.0.1:5000/api/v1/turn/"+turn+"/board/"+boardString, {
-//     fetch("https://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString, {
-//         headers: { "Content-Type": "application/json" }
-//     }).then(async response => {
-//     if (response.ok) {
-//       apiError = false;
-//       result = await response.json();
-//       apiReturnValue = result.board
-//     } else {
-//       apiError = true;
-//     }
-//   }).catch(() => (apiError = true));
-// }
-
-function queryBackend(url){
+function queryBackend(){
     let result;
+    let url;
+    let mustBeAboveDifficultyToUseAI = Math.random()*113 + 13;
+    // check slider amount and generate a random number that must be higher
+        // than the aiDifficulty to use the AI
+        // (so aiDifficulty is harder the lower the slider score is...)
+    let useAI = mustBeAboveDifficultyToUseAI > parameterObject.aiDifficulty;
+    let suggestMoveView = view_i == 0;
+    if (useAI || suggestMoveView) {
+        console.log('ai used.')
+        url = "https://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString
+    } else {
+        console.log('random move.')
+        url = "https://play-tictactoe-ai.herokuapp.com/api/v1/rand/turn/"+turn+"/board/"+boardString
+    }
     fetch(url, {
         headers: { "Content-Type": "application/json" }
     }).then(async response => {
     if (response.ok) {
       apiError = false;
       result = await response.json();
-      apiReturnValue = { board: result.board, winner: result.winner}
+        apiReturnValue = { board: result.board, winner: result.winner}
     } else {
-      apiError = true;
+        apiError = true;
     }
   }).catch(() => (apiError = true));
 }
