@@ -54,7 +54,7 @@ class SuggestionView extends View{
         }
 
         let infoArea = turnAndSubmitButtonsContainer.uiElements[0]
-        let infoTextBoxParams = {row: true, offsetX: infoArea.width/4, width:infoArea.width/2, offsetY: infoArea.height/10, parent:infoArea}
+        let infoTextBoxParams = {row: true, offsetX: infoArea.width/6, width:infoArea.width*2/3, offsetY: infoArea.height/10, parent:infoArea}
         let infoSection = new TextBox(infoTextBoxParams)
         infoSection.setString("input turn and board to recieve a suggestion")
         infoSection.setTextColor(30)
@@ -62,7 +62,7 @@ class SuggestionView extends View{
 
         spaceColor = boardCount % 2 ? blue : red;
         let turnButtonArea = turnAndSubmitButtonsContainer.uiElements[1]
-        let chooseTurnParams = {row: false, color: spaceColor, offsetX:turnButtonArea.width/2-boardSpace.width/2, offsetY:boardSpace.height/5, width:boardSpace.width, height: boardSpace.height, parent:turnButtonArea}
+        let chooseTurnParams = {row: false, color: spaceColor, offsetX:turnButtonArea.width/2-boardSpace.width/2, offsetY:turnButtonArea.height/2-boardSpace.height/2, width:boardSpace.width, height: boardSpace.height, parent:turnButtonArea}
         let whosTurnButton = new TicTacToePlayerTurnSelector(chooseTurnParams)
         if (previousStatesObject){
             whosTurnButton.setSymbol(previousStatesObject.turn);
@@ -73,6 +73,7 @@ class SuggestionView extends View{
         let submitBoardButtonParams = {row: true, offsetX: submitButtonArea.width/4, offsetY: submitButtonArea.height/4, width:submitButtonArea.width/2, height:submitButtonArea.height/2, parent:submitButtonArea, mouseClickfunc:this.aiMove}
         let submitBoardButton = new TextBox(submitBoardButtonParams)
         submitBoardButton.setString("submit")
+        submitBoardButton.setTextColor(30)
         submitBoardButton.setStroke(true)
         this.uiElements.push(submitBoardButton)
     }
@@ -106,18 +107,12 @@ class PlayView extends View{
         this.uiElements.push(sliderContainer)
         let sliderParams = {row: true, parent:sliderContainer}
         let slider = new DifficultySlider(sliderParams)
-        // console.log(previousStatesObject || "hey" )
         let difficulty = previousStatesObject ? previousStatesObject.aiDifficulty : 13;
         slider.setDifficulty(difficulty)
         this.uiElements.push(slider)
 
         let boardContainer = this.uiElements[1]
-        let boardRowParams;// = {row: true, len:8, index:1, parent:boardContainer}
-        // let rowAnchor = new Container(boardRowParams)
-        // this.uiElements.push(rowAnchor)
-        // let boardColParams = {row: false, len:8, index:1, parent:rowAnchor}
-        // let columnAnchor = new Container(boardColParams)
-        // this.uiElements.push(columnAnchor)
+        let boardRowParams;
 
         let boardLength = 0;
         boardLength = boardContainer.height > boardContainer.width ? boardContainer.width/1.3 : boardContainer.height/1.3;
@@ -153,76 +148,6 @@ class PlayView extends View{
         }
     }
 }
-//
-// class PlayView extends View{
-//     constructor(parameterObject){
-//         super(parameterObject)
-//     }
-//
-//     redrawElements(previousStatesObject){
-//         let portrait = windowWidth < windowHeight;
-//
-//         this.uiElements = []
-//         for (let i = 0; i < 2; i++){
-//             let containerParams = {row: portrait, len:2, index:i}
-//             let container = new Container(containerParams)
-//             this.uiElements.push(container)
-//         }
-//
-//         let cartoonSliderContainer =  this.uiElements[0]
-//         let cartoonImageContainerParams = {row: true, len:3, index:0, height:cartoonSliderContainer.height*(2/3), parent:cartoonSliderContainer}
-//         let cartoonImageContainer = new Container(cartoonImageContainerParams)
-//         this.uiElements.push(cartoonImageContainer)
-//         let sliderContainerParams = {row: true, len:3, index:2, height:cartoonSliderContainer.height/3, parent:cartoonSliderContainer}
-//         let sliderContainer = new Container(sliderContainerParams)
-//         this.uiElements.push(sliderContainer)
-//         let sliderParams = {row: true, parent:sliderContainer}
-//         let slider = new DifficultySlider(sliderParams)
-//         // console.log(previousStatesObject || "hey" )
-//         let difficulty = previousStatesObject ? previousStatesObject.aiDifficulty : 13;
-//         slider.setDifficulty(difficulty)
-//         this.uiElements.push(slider)
-//
-//         let boardContainer = this.uiElements[1]
-//         let boardRowParams = {row: true, len:8, index:1, parent:boardContainer}
-//         let rowAnchor = new Container(boardRowParams)
-//         this.uiElements.push(rowAnchor)
-//         let boardColParams = {row: false, len:8, index:1, parent:rowAnchor}
-//         let columnAnchor = new Container(boardColParams)
-//         this.uiElements.push(columnAnchor)
-//
-//         let boardLength = 0;
-//         boardContainer.height > boardContainer.width ? boardLength = boardContainer.width/1.3 : boardLength = boardContainer.height/1.3;
-//
-//         let boardParams = {row: true,  height: boardLength, width: boardLength, parent:columnAnchor}
-//         let board = new Container(boardParams)
-//         this.uiElements.push(board)
-//
-//         let count = 0;
-//         let spaceColor;
-//         let blue = color(86,133,151)
-//         let red = color(165,67,68)
-//
-//         for (let i = 0; i < 3; i++){
-//             boardRowParams = {row: true, len: 3, index: i, parent:board}
-//             let boardRow = new Container(boardRowParams)
-//             this.uiElements.push(boardRow)
-//
-//             for (let j = 0; j < 3; j++){
-//                 count % 2 ? spaceColor = blue : spaceColor = red;
-//                 let boardSpaceParams = {row: false, len: 3, index: j, color: spaceColor, parent:boardRow}
-//                 let boardSpace = new TicTacToeSpacePlay(boardSpaceParams)
-//                 if (previousStatesObject){
-//                     boardSpace.setSymbol(previousStatesObject.boardArray[count])
-//                     boardSpace.setBoardState(previousStatesObject.boardArray)
-//                 }
-//                 this.uiElements.push(boardSpace)
-//                 count++;
-//             }
-//         }
-//     }
-// }
-
 
 class TicTacToeSpace extends Container{
     constructor(parameterObject){
@@ -408,6 +333,47 @@ class O extends TicTacToeIcon{
         ellipse(this.x, this.y, this.parent.width/1.5)
         fill(this.parent.color);
         ellipse(this.x, this.y, this.parent.width/2)
+    }
+}
+
+class MenuButton extends Container{
+    constructor(parameterObject){
+        super(parameterObject)
+        this.icon = new cycleViewIcon({parent:this})
+    }
+    draw(){
+        super.draw();
+        this.icon.draw()
+    }
+}
+
+class cycleViewIcon extends Icon{
+    constructor(parameterObject){
+        super(parameterObject)
+        this.test = 0;
+    }
+
+    draw(){
+        push()
+            translate(this.parent.width/2,this.parent.height/2)
+            push()
+                // rotate(radians(this.test+=frameRate()))
+                rotate(radians(this.translateXAmount))
+                translate(-17, -366);
+                stroke(30);
+                strokeWeight(3);
+                noFill();
+                arc(19, 367.3, 13, 13, QUARTER_PI + QUARTER_PI, 2*PI);//refresh circle
+                strokeWeight(1);
+                push();
+                    translate(-39, 302);
+                    rotate(radians(10));
+                    fill(30);
+                    triangle(75, 61, 70, 55, 80, 55); //refresh_triangle
+                pop();
+            pop();
+        pop();
+
     }
 }
 

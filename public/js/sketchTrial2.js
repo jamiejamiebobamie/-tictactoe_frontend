@@ -46,7 +46,8 @@ function setup() {
     // p5.js built-in method. sets the framerate. improves performance.
     frameRate(24);
 
-    menuButton = new Container({width:100, height:100, mouseClickfunc: startAnimations})
+    // cycleViewIcon
+    menuButton = new MenuButton({width:50, height:50, mouseClickfunc: startAnimations})
 
     // p5.js built-in method. centers the canvas and all drawn objects.
     imageMode(CENTER);
