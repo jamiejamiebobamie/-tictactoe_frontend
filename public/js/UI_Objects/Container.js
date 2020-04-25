@@ -1,7 +1,8 @@
 class Container extends UIElement{
     constructor(parameterObject) {
         super(parameterObject);
-         // this.mouseClickfunc = () => {console.log('test')}
+        this.hasStroke = false;
+        this.hasFill = false;
     }
 
     // containers can be clicked
@@ -20,11 +21,21 @@ class Container extends UIElement{
         }
     }
 
-    draw() {
+    setStroke(bool){
+        this.hasStroke = bool
+    }
 
+    setFill(bool){
+        this.hasFill = bool
+    }
+
+    draw() {
         push();
             translate(this.translateXAmount,0)
-            stroke(30);
+            this.hasStroke ? stroke(45) : noStroke();
+            this.hasFill ? fill(45) : noFill();
+            // stroke(45);
+            // fill(45);
             this.color ? fill(this.color) : noFill();
             rect(this.x,this.y,this.width,this.height)
             for (let i = 0; i < this.uiElements.length; i++){
@@ -79,9 +90,10 @@ class TextBox extends Container{
         // this.row determines the orientation of the font.
         // use the orientation of the parent container for aligning
             // normally-oriented text, vertically.
-        this.row ? this.textSize = this.width / 20 : this.textSize = this.height / 20
+        this.textSize = this.row ? this.width / 10 : this.height / 20
+        //
+        if (this.textSize * 2.5 > this.height && this.row){this.textSize = this.width / 20}
         textSize(this.textSize);
-
         // alignement options cannot be set after instantiation.
             // subclass to change the alignment:
             // ( horizAlign: LEFT, CENTER, or RIGHT,
@@ -117,6 +129,8 @@ class TextBox extends Container{
     }
     draw() {
         push();
+            // stroke(45);
+            // fill(45);
             translate(this.translateXAmount,0)
             this.row ? this.drawNormalTextBox() : this.drawRotatedTextBox()
         pop();

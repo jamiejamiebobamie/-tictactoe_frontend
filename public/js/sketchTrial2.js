@@ -34,6 +34,9 @@ let parameterObject = {transitionAmount: 0,
                        aiDifficulty:13, // slider range: 13 to 113
                        winner:null}
 
+let isPlayView;
+let playViewIndex;
+
 // p5.js built-in method
 function setup() {
     canvas = createCanvas(windowWidth, windowHeight);
@@ -54,11 +57,12 @@ function setup() {
 function redrawn(parameterObject){
     views = [];
 
-    let playWithAI = new SuggestionView()
-    views.push(playWithAI)
-
     let playAgainstAI = new PlayView()
     views.push(playAgainstAI)
+    playViewIndex = views.length - 1;
+
+    let playWithAI = new SuggestionView()
+    views.push(playWithAI)
 
     views[view_i].redrawElements(parameterObject)
 }
@@ -125,7 +129,7 @@ function draw(){
         redrawn(parameterObject);
         isWaitingForResponse = false;
         apiReturnValue = null;
-        let isPlayView = view_i == 1;
+        isPlayView = view_i == playViewIndex;
         if (parameterObject.winner != null && isPlayView){
             // TEMPORARY...
             resetParameterObject();
@@ -138,10 +142,10 @@ function draw(){
 function resetParameterObject(){
     let saveDifficulty = parameterObject.aiDifficulty;
     parameterObject = {transitionAmount: 0,
-                           boardArray:["!","!","!","!","!","!","!","!","!"],
-                           turn:'x',
-                           aiDifficulty:saveDifficulty, // slider range: 13 to 113
-                           winner:"None"}
+                           boardArray: ["!","!","!","!","!","!","!","!","!"],
+                           turn: 'x',
+                           aiDifficulty: saveDifficulty, // slider range: 13 to 113
+                           winner: null}
 }
 
 function startAnimations(){
