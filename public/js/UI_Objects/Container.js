@@ -39,7 +39,9 @@ class Container extends UIElement{
             this.color ? fill(this.color) : noFill();
             rect(this.x,this.y,this.width,this.height)
             for (let i = 0; i < this.uiElements.length; i++){
-                this.uiElements[i].draw();
+                if (this.uiElements[i].draw){
+                    this.uiElements[i].draw();
+                }
             }
         pop();
 

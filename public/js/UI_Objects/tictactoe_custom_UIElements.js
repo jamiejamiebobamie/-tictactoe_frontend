@@ -14,7 +14,7 @@ class SuggestionView extends View{
             this.uiElements.push(container)
         }
 
-        let boardContainer = this.uiElements[1]
+        let boardContainer = this.uiElements[0]
 
         let boardLength = boardContainer.height > boardContainer.width ? boardContainer.width/1.3 : boardContainer.height/1.3;
         let offsetX = boardContainer.width / 2 -  boardLength / 2
@@ -46,7 +46,7 @@ class SuggestionView extends View{
             }
         }
 
-        let turnAndSubmitButtonsContainer =  this.uiElements[0]
+        let turnAndSubmitButtonsContainer =  this.uiElements[1]
         for (let i = 0; i < 3; i++){
             let containerParams = {row: true, len:3, index:i, parent: turnAndSubmitButtonsContainer}
             let container = new Container(containerParams)
@@ -106,50 +106,166 @@ class PlayView extends View{
         // brainparts
         // https://github.com/jamiejamiebobamie/conway-gol/blob/6a9c8a80b3d6353af137a9569e3dc62e73b1ec86/public/js/sketch-playground.js
 
-        let sliderContainerParams = {row: true, len:3, index:2, height:cartoonSliderContainer.height/3, parent:cartoonSliderContainer}
-        let sliderContainer = new Container(sliderContainerParams)
-        this.uiElements.push(sliderContainer)
-        let sliderParams = {row: true, parent:sliderContainer}
-        let slider = new DifficultySlider(sliderParams)
-        let difficulty = previousStatesObject ? previousStatesObject.aiDifficulty : 13;
-        slider.setDifficulty(difficulty)
-        this.uiElements.push(slider)
-
-        let boardContainer = this.uiElements[1]
-        let boardRowParams;
-
-        let boardLength = 0;
-        boardLength = boardContainer.height > boardContainer.width ? boardContainer.width/1.3 : boardContainer.height/1.3;
-
-        let offsetX = boardContainer.width / 2 -  boardLength / 2
-        let offsetY = boardContainer.height / 2 -  boardLength / 2
-
-        let boardParams = {row: true, offsetX: offsetX, offsetY: offsetY, height: boardLength, width: boardLength, parent:boardContainer}
-        let board = new Container(boardParams)
-        this.uiElements.push(board)
-
-        let count = 0;
-        let spaceColor;
-        let blue = color(86,133,151)
-        let red = color(165,67,68)
-
-        for (let i = 0; i < 3; i++){
-            boardRowParams = {row: true, len: 3, index: i, parent:board}
-            let boardRow = new Container(boardRowParams)
-            this.uiElements.push(boardRow)
-
-            for (let j = 0; j < 3; j++){
-                count % 2 ? spaceColor = blue : spaceColor = red;
-                let boardSpaceParams = {row: false, len: 3, index: j, color: spaceColor, parent:boardRow}
-                let boardSpace = new TicTacToeSpacePlay(boardSpaceParams)
-                if (previousStatesObject){
-                    boardSpace.setSymbol(previousStatesObject.boardArray[count])
-                    boardSpace.setBoardState(previousStatesObject.boardArray)
-                }
-                this.uiElements.push(boardSpace)
-                count++;
+        // left-eyelid
+        let dumbPose = {
+                firstAnchorPoint:{x:55,y:109},
+                firstControlPoint:{x:142,y:7},
+                secondAnchorPoint:{x:243,y:54},
+                secondControlPoint:{x:309,y:247}
             }
+        let smartPose = {
+                firstAnchorPoint:{x:202,y:55},
+                firstControlPoint:{x:202,y:55},
+                secondAnchorPoint:{x:202,y:55},
+                secondControlPoint:{x:202,y:55}
+            }
+        // let translationCoords = {x:cartoonImageContainer.x, y:cartoonImageContainer.y}
+        // let brainPart_test = new BrainPart(dumbPose,smartPose,translationCoords)
+        let brainPart_testParams = {row:true,parent:cartoonImageContainer}
+        let brainPart_test = new BrainPart(brainPart_testParams)
+        brainPart_test.setPoses(dumbPose,smartPose)
+        brainPart_test.setBlendAmount(parameterObject.aiDifficulty)
+        brainPart_test.blend();
+        cartoonSliderContainer.uiElements.push(brainPart_test)
+
+
+        // --------------------------------------------------------------------
+
+        // let sliderContainerParams = {row: true, len:3, index:2, height:cartoonSliderContainer.height/3, parent:cartoonSliderContainer}
+        // let sliderContainer = new Container(sliderContainerParams)
+        // this.uiElements.push(sliderContainer)
+        // let sliderParams = {row: true, parent:sliderContainer}
+        // let slider = new DifficultySlider(sliderParams)
+        // let difficulty = previousStatesObject ? previousStatesObject.aiDifficulty : 13;
+        // slider.setDifficulty(difficulty)
+        // this.uiElements.push(slider)
+        //
+        // let boardContainer = this.uiElements[1]
+        // let boardRowParams;
+        //
+        // let boardLength = 0;
+        // boardLength = boardContainer.height > boardContainer.width ? boardContainer.width/1.3 : boardContainer.height/1.3;
+        //
+        // let offsetX = boardContainer.width / 2 -  boardLength / 2
+        // let offsetY = boardContainer.height / 2 -  boardLength / 2
+        //
+        // let boardParams = {row: true, offsetX: offsetX, offsetY: offsetY, height: boardLength, width: boardLength, parent:boardContainer}
+        // let board = new Container(boardParams)
+        // this.uiElements.push(board)
+        //
+        // let count = 0;
+        // let spaceColor;
+        // let blue = color(86,133,151)
+        // let red = color(165,67,68)
+        //
+        // for (let i = 0; i < 3; i++){
+        //     boardRowParams = {row: true, len: 3, index: i, parent:board}
+        //     let boardRow = new Container(boardRowParams)
+        //     this.uiElements.push(boardRow)
+        //
+        //     for (let j = 0; j < 3; j++){
+        //         count % 2 ? spaceColor = blue : spaceColor = red;
+        //         let boardSpaceParams = {row: false, len: 3, index: j, color: spaceColor, parent:boardRow}
+        //         let boardSpace = new TicTacToeSpacePlay(boardSpaceParams)
+        //         if (previousStatesObject){
+        //             boardSpace.setSymbol(previousStatesObject.boardArray[count])
+        //             boardSpace.setBoardState(previousStatesObject.boardArray)
+        //         }
+        //         this.uiElements.push(boardSpace)
+        //         count++;
+        //     }
+        // }
+    }
+}
+
+class BrainPart extends UIElement{
+    constructor(parameterObject){
+        super(parameterObject)
+        this.pose1 = undefined;
+        this.pose2 = undefined;
+        this.blendAmount = 0;
+        this.poseIsSet = false;
+
+        if (this.pose1 && this.pose2){
+            this.firstAnchorPointX = (this.blendAmount * (this.pose2.firstAnchorPoint.x - this.pose1.firstAnchorPoint.x) + this.pose1.firstAnchorPoint.x)
+            this.firstAnchorPointY = (this.blendAmount * (this.pose2.firstAnchorPoint.y - this.pose1.firstAnchorPoint.y) + this.pose1.firstAnchorPoint.y)
+
+            this.firstControlPointX = (this.blendAmount * (this.pose2.firstControlPoint.x - this.pose1.firstControlPoint.x) + this.pose1.firstControlPoint.x)
+            this.firstControlPointY = (this.blendAmount * (this.pose2.firstControlPoint.y - this.pose1.firstControlPoint.y) + this.pose1.firstControlPoint.y)
+
+            this.secondAnchorPointX = (this.blendAmount * (this.pose2.secondAnchorPoint.x - this.pose1.secondAnchorPoint.x) + this.pose1.secondAnchorPoint.x)
+            this.secondAnchorPointY = (this.blendAmount * (this.pose2.secondAnchorPoint.y - this.pose1.secondAnchorPoint.y) + this.pose1.secondAnchorPoint.y)
+
+            this.secondControlPointX = (this.blendAmount * (this.pose2.secondControlPoint.x - this.pose1.secondControlPoint.x) + this.pose1.secondControlPoint.x)
+            this.secondControlPointY = (this.blendAmount * (this.pose2.secondControlPoint.y - this.pose1.secondControlPoint.y) + this.pose1.secondControlPoint.y)
+            // console.log(this.firstAnchorPointX, this.firstAnchorPointY,
+            //         this.firstControlPointX, this.firstControlPointY,
+            //         this.secondAnchorPointX, this.secondAnchorPointY,
+            //         this.secondControlPointX, this.secondControlPointY)
+            }
+            // use the smaller edge of the containing rectangle to scale the brainPart by some fraction
+            this.scaleAmount = this.width < this.height ? this.width / (this.height)*.1 : this.height / (this.width)*.1;
+            console.log(this.scaleAmount, this.width, this.height)
+            // 1300 to 300
+            // -300 / 1000
+    }
+
+    setPoses(dumbPose,smartPose){
+        this.pose1 = smartPose;
+        this.pose2 = dumbPose;
+        this.poseIsSet = true;
+    }
+
+    setBlendAmount(blendAmount){
+        this.blendAmount = blendAmount;
+    }
+
+    blend(){
+        this.firstAnchorPointX = (this.blendAmount * (this.pose2.firstAnchorPoint.x - this.pose1.firstAnchorPoint.x) + this.pose1.firstAnchorPoint.x)
+        this.firstAnchorPointY = (this.blendAmount * (this.pose2.firstAnchorPoint.y - this.pose1.firstAnchorPoint.y) + this.pose1.firstAnchorPoint.y)
+
+        this.firstControlPointX = (this.blendAmount * (this.pose2.firstControlPoint.x - this.pose1.firstControlPoint.x) + this.pose1.firstControlPoint.x)
+        this.firstControlPointY = (this.blendAmount * (this.pose2.firstControlPoint.y - this.pose1.firstControlPoint.y) + this.pose1.firstControlPoint.y)
+
+        this.secondAnchorPointX = (this.blendAmount * (this.pose2.secondAnchorPoint.x - this.pose1.secondAnchorPoint.x) + this.pose1.secondAnchorPoint.x)
+        this.secondAnchorPointY = (this.blendAmount * (this.pose2.secondAnchorPoint.y - this.pose1.secondAnchorPoint.y) + this.pose1.secondAnchorPoint.y)
+
+        this.secondControlPointX = (this.blendAmount * (this.pose2.secondControlPoint.x - this.pose1.secondControlPoint.x) + this.pose1.secondControlPoint.x)
+        this.secondControlPointY = (this.blendAmount * (this.pose2.secondControlPoint.y - this.pose1.secondControlPoint.y) + this.pose1.secondControlPoint.y)
+    }
+
+    draw(){
+        push();
+        stroke(0)
+        fill(0)
+        translate(this.parent.x,this.parent.y)
+        // translate(0,0)
+        // scale(.1);
+
+        scale(this.scaleAmount);
+        if (this.poseIsSet){
+            bezier(this.firstAnchorPointX, this.firstAnchorPointY,
+                    this.firstControlPointX, this.firstControlPointY,
+                    this.secondAnchorPointX, this.secondAnchorPointY,
+                    this.secondControlPointX, this.secondControlPointY)
         }
+        pop();
+    }
+}
+
+// for brain matter that isn't part of the face.
+class Shape{
+    constructor(x,y,width,height){
+        this.width = width;
+        this.height = height;
+        this.x = x;
+        this.y = y;
+    }
+    draw(){
+        stroke(0);
+        strokeWeight(1)
+        noFill();
+        ellipse(this.x,this.y,this.width)
     }
 }
 
