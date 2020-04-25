@@ -131,50 +131,50 @@ class PlayView extends View{
 
         // --------------------------------------------------------------------
 
-        // let sliderContainerParams = {row: true, len:3, index:2, height:cartoonSliderContainer.height/3, parent:cartoonSliderContainer}
-        // let sliderContainer = new Container(sliderContainerParams)
-        // this.uiElements.push(sliderContainer)
-        // let sliderParams = {row: true, parent:sliderContainer}
-        // let slider = new DifficultySlider(sliderParams)
-        // let difficulty = previousStatesObject ? previousStatesObject.aiDifficulty : 13;
-        // slider.setDifficulty(difficulty)
-        // this.uiElements.push(slider)
-        //
-        // let boardContainer = this.uiElements[1]
-        // let boardRowParams;
-        //
-        // let boardLength = 0;
-        // boardLength = boardContainer.height > boardContainer.width ? boardContainer.width/1.3 : boardContainer.height/1.3;
-        //
-        // let offsetX = boardContainer.width / 2 -  boardLength / 2
-        // let offsetY = boardContainer.height / 2 -  boardLength / 2
-        //
-        // let boardParams = {row: true, offsetX: offsetX, offsetY: offsetY, height: boardLength, width: boardLength, parent:boardContainer}
-        // let board = new Container(boardParams)
-        // this.uiElements.push(board)
-        //
-        // let count = 0;
-        // let spaceColor;
-        // let blue = color(86,133,151)
-        // let red = color(165,67,68)
-        //
-        // for (let i = 0; i < 3; i++){
-        //     boardRowParams = {row: true, len: 3, index: i, parent:board}
-        //     let boardRow = new Container(boardRowParams)
-        //     this.uiElements.push(boardRow)
-        //
-        //     for (let j = 0; j < 3; j++){
-        //         count % 2 ? spaceColor = blue : spaceColor = red;
-        //         let boardSpaceParams = {row: false, len: 3, index: j, color: spaceColor, parent:boardRow}
-        //         let boardSpace = new TicTacToeSpacePlay(boardSpaceParams)
-        //         if (previousStatesObject){
-        //             boardSpace.setSymbol(previousStatesObject.boardArray[count])
-        //             boardSpace.setBoardState(previousStatesObject.boardArray)
-        //         }
-        //         this.uiElements.push(boardSpace)
-        //         count++;
-        //     }
-        // }
+        let sliderContainerParams = {row: true, len:3, index:2, height:cartoonSliderContainer.height/3, parent:cartoonSliderContainer}
+        let sliderContainer = new Container(sliderContainerParams)
+        this.uiElements.push(sliderContainer)
+        let sliderParams = {row: true, parent:sliderContainer}
+        let slider = new DifficultySlider(sliderParams)
+        let difficulty = previousStatesObject ? previousStatesObject.aiDifficulty : 13;
+        slider.setDifficulty(difficulty)
+        this.uiElements.push(slider)
+
+        let boardContainer = this.uiElements[1]
+        let boardRowParams;
+
+        let boardLength = 0;
+        boardLength = boardContainer.height > boardContainer.width ? boardContainer.width/1.3 : boardContainer.height/1.3;
+
+        let offsetX = boardContainer.width / 2 -  boardLength / 2
+        let offsetY = boardContainer.height / 2 -  boardLength / 2
+
+        let boardParams = {row: true, offsetX: offsetX, offsetY: offsetY, height: boardLength, width: boardLength, parent:boardContainer}
+        let board = new Container(boardParams)
+        this.uiElements.push(board)
+
+        let count = 0;
+        let spaceColor;
+        let blue = color(86,133,151)
+        let red = color(165,67,68)
+
+        for (let i = 0; i < 3; i++){
+            boardRowParams = {row: true, len: 3, index: i, parent:board}
+            let boardRow = new Container(boardRowParams)
+            this.uiElements.push(boardRow)
+
+            for (let j = 0; j < 3; j++){
+                count % 2 ? spaceColor = blue : spaceColor = red;
+                let boardSpaceParams = {row: false, len: 3, index: j, color: spaceColor, parent:boardRow}
+                let boardSpace = new TicTacToeSpacePlay(boardSpaceParams)
+                if (previousStatesObject){
+                    boardSpace.setSymbol(previousStatesObject.boardArray[count])
+                    boardSpace.setBoardState(previousStatesObject.boardArray)
+                }
+                this.uiElements.push(boardSpace)
+                count++;
+            }
+        }
     }
 }
 

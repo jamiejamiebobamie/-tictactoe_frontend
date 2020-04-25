@@ -138,6 +138,17 @@ function draw(){
             // SPAWN REPLAY WINDOW / MENU WITH OPTION TO REPLAY
         }
     }
+
+    // i should rename this variable for clarity.
+    if (doneOnce){
+        // need to take in slider values as the user is sliding, not just once
+            // he is finished....
+            
+        // console.log(frameRate())
+        // if (frameCount%12 == 0){
+        //     redrawn(parameterObject);
+        // }
+    }
 }
 
 function resetParameterObject(){
@@ -224,7 +235,7 @@ function clickRecursive(uiElement){
 // p5.js built-in method
 function mouseReleased() {
     returnValueFromViews = clickReleasedRecursive(views[view_i]) || returnValueFromViews
-    if (returnValueFromViews){setTopLevelVariables(returnValueFromViews)}
+    if (returnValueFromViews){setTopLevelVariables(returnValueFromViews);}
 
     // 'doneOnce' is reset with mouseReleased() function.
     doneOnce = false;
