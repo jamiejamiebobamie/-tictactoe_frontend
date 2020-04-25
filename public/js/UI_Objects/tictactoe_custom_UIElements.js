@@ -102,6 +102,10 @@ class PlayView extends View{
         let cartoonImageContainerParams = {row: true, len:3, index:0, height:cartoonSliderContainer.height*(2/3), parent:cartoonSliderContainer}
         let cartoonImageContainer = new Container(cartoonImageContainerParams)
         this.uiElements.push(cartoonImageContainer)
+
+        // brainparts
+        // https://github.com/jamiejamiebobamie/conway-gol/blob/6a9c8a80b3d6353af137a9569e3dc62e73b1ec86/public/js/sketch-playground.js
+
         let sliderContainerParams = {row: true, len:3, index:2, height:cartoonSliderContainer.height/3, parent:cartoonSliderContainer}
         let sliderContainer = new Container(sliderContainerParams)
         this.uiElements.push(sliderContainer)

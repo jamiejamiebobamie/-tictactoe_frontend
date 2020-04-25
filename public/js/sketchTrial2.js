@@ -297,16 +297,18 @@ function setTopLevelVariables(returnValueFromViews){
 function queryBackend(){
     let result;
     let url;
-    let mustBeAboveDifficultyToUseAI = Math.random()*113 + 13;
+    let mustBeAboveDifficultyToUseAI = Math.random()*113+13;
     // check slider amount and generate a random number that must be higher
         // than the aiDifficulty to use the AI
         // (so aiDifficulty is harder the lower the slider score is...)
-    let suggestMoveView = view_i == 0;
+    let suggestMoveView = view_i == 1;
     let useAI = mustBeAboveDifficultyToUseAI > parameterObject.aiDifficulty || suggestMoveView;
     if (useAI) {
+        console.log(mustBeAboveDifficultyToUseAI, parameterObject.aiDifficulty)
         console.log('ai used.')
         url = "https://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString
     } else {
+        console.log(mustBeAboveDifficultyToUseAI, parameterObject.aiDifficulty)
         console.log('random move.')
         url = "https://play-tictactoe-ai.herokuapp.com/api/v1/rand/turn/"+turn+"/board/"+boardString
     }
