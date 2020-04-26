@@ -252,7 +252,7 @@ class BrainPart extends UIElement{
         push();
         stroke(0);
         // i need the strokeWeight to decrease as I scale up the this.blendAmount
-        strokeWeight(this.blendAmount*50+35);
+        strokeWeight(this.blendAmount*50+45);
 
         // only fill in the bezier curve if dumb pose (i.e. if mouth is open)
         if (this.blendAmount < .5){
