@@ -86,6 +86,8 @@ class SuggestionView extends View{
 class PlayView extends View{
     constructor(parameterObject){
         super(parameterObject)
+
+        this.loadedImage = loadImage('../imgs/brain_base.png')
     }
 
     redrawElements(previousStatesObject){
@@ -103,11 +105,17 @@ class PlayView extends View{
         let cartoonImageContainer = new Container(cartoonImageContainerParams)
         this.uiElements.push(cartoonImageContainer)
 
+        let brainImageParams = {row:true, parent:cartoonSliderContainer}
+        let brainImage = new ImageContainer(brainImageParams)
+
+        brainImage.setImageProps(this.loadedImage,382,279)
+        cartoonSliderContainer.uiElements.push(brainImage)
+
         // brainparts
         // https://github.com/jamiejamiebobamie/conway-gol/blob/6a9c8a80b3d6353af137a9569e3dc62e73b1ec86/public/js/sketch-playground.js
 
         let bottomLipParams = {row:true,parent:cartoonImageContainer}
-        let bottomLip = new BrainPart(bottomLipParams)
+        let bottomLip = new BrainPartBezier(bottomLipParams)
         let dumbPose, smartPose;
 
         dumbPose = {
@@ -142,11 +150,18 @@ class PlayView extends View{
         let topLipBezierCurves = {dumbPose:dumbPose,smartPose:smartPose}
 
         let topLipParams = {row:true,parent:cartoonImageContainer}
-        let topLip = new BrainPart(topLipParams)
+        let topLip = new BrainPartBezier(topLipParams)
         topLip.setPoses(topLipBezierCurves.dumbPose,topLipBezierCurves.smartPose)
         topLip.setBlendAmount(parameterObject.aiDifficulty)
         topLip.blend();
         cartoonSliderContainer.uiElements.push(topLip)
+
+        let eyeParams = {row:true, parent:cartoonSliderContainer}
+        let eyeTest = new BrainPartEllipse(eyeParams)
+        eyeTest.setPoses({x:10,y:-5}, {x:-10,y:0})
+        eyeTest.setBlendAmount(parameterObject.aiDifficulty)
+        eyeTest.blend();
+        cartoonSliderContainer.uiElements.push(eyeTest)
 
 
         // --------------------------------------------------------------------
@@ -205,6 +220,61 @@ class BrainPart extends UIElement{
         this.pose2 = undefined;
         this.blendAmount = 0;
         this.poseIsSet = false;
+        // use the smaller edge of the containing rectangle to scale the brainPart by some fraction
+        this.scaleAmount = this.parent.width < this.parent.height ? this.parent.width / (this.parent.height) : this.parent.height / (this.parent.width);
+    }
+
+    setPoses(dumbPose,smartPose){
+        this.pose1 = smartPose;
+        this.pose2 = dumbPose;
+        this.poseIsSet = true;
+    }
+
+    setBlendAmount(blendAmount){
+        this.blendAmount = blendAmount/113;
+    }
+
+    blend(){}
+    draw(){}
+}
+
+class BrainPartEllipse extends BrainPart{
+    constructor(parameterObject){
+        super(parameterObject)
+        // this.ellipseScelera = ellipse(this.x,this.y,50)
+        // this.ellipsePupil = ellipse(this.x,this.y,30)
+        this.sceleraX = 0
+        this.sceleraY = 0
+    }
+
+    // use lerp()
+    blend(){
+        this.sceleraX += (this.pose2.x - this.pose1.x) * this.blendAmount + this.pose1.x
+        this.sceleraY += (this.pose2.y - this.pose1.y) * this.blendAmount + this.pose1.y
+        console.log(this.pose1, this.pose2, this.blendAmount)
+    }
+
+    // use lerp()
+    thinking(){
+
+    }
+
+    draw(){
+        push();
+        translate(this.x+this.parent.width/10,this.y+this.parent.height/3)
+        scale(this.scaleAmount);
+        fill(230)
+        ellipse(this.x,this.y,50)
+        fill(30)
+        ellipse(this.x+this.sceleraX,this.y+this.sceleraY,30)
+        pop();
+
+    }
+}
+
+class BrainPartBezier extends BrainPart{
+    constructor(parameterObject){
+        super(parameterObject)
 
         if (this.pose1 && this.pose2){
             this.firstAnchorPointX = (this.blendAmount * (this.pose2.firstAnchorPoint.x - this.pose1.firstAnchorPoint.x) + this.pose1.firstAnchorPoint.x)
@@ -218,20 +288,7 @@ class BrainPart extends UIElement{
 
             this.secondControlPointX = (this.blendAmount * (this.pose2.secondControlPoint.x - this.pose1.secondControlPoint.x) + this.pose1.secondControlPoint.x)
             this.secondControlPointY = (this.blendAmount * (this.pose2.secondControlPoint.y - this.pose1.secondControlPoint.y) + this.pose1.secondControlPoint.y)
-
-            }
-            // use the smaller edge of the containing rectangle to scale the brainPart by some fraction
-            this.scaleAmount = this.parent.width < this.parent.height ? this.parent.width / (this.parent.height) : this.parent.height / (this.parent.width);
-    }
-
-    setPoses(dumbPose,smartPose){
-        this.pose1 = smartPose;
-        this.pose2 = dumbPose;
-        this.poseIsSet = true;
-    }
-
-    setBlendAmount(blendAmount){
-        this.blendAmount = blendAmount/113;
+        }
     }
 
     blend(){
@@ -253,17 +310,18 @@ class BrainPart extends UIElement{
         stroke(0);
         // i need the strokeWeight to decrease as I scale up the this.blendAmount
         strokeWeight(this.blendAmount*50+45);
-
         // only fill in the bezier curve if dumb pose (i.e. if mouth is open)
         if (this.blendAmount < .5){
+            strokeWeight(this.blendAmount*50+45);
             noFill();
         } else {
+            strokeWeight(70.22-70.22*this.blendAmount+30);
+            // console.log(70.22-70.22/(this.blendAmount*50+45))
             fill(0);
         }
-
-        // remove the +100's... testing.
-        translate(this.parent.x+100,this.parent.y+100)
-        scale(this.scaleAmount);
+        // testing
+        translate(this.x+this.parent.width/2-(this.secondAnchorPointX - this.firstAnchorPointX)*this.scaleAmount/4,this.parent.height*2/3)//this.y+this.parent.height/3)
+        scale(this.scaleAmount/4);
         if (this.poseIsSet){
             bezier(this.firstAnchorPointX, this.firstAnchorPointY,
                     this.firstControlPointX, this.firstControlPointY,
@@ -521,6 +579,7 @@ class cycleViewIcon extends Icon{
 class DifficultySlider extends Slider{
     constructor(parameterObject){
         super(parameterObject)
+        // this.mouseClickfunc = this.getDifficulty
         this.mouseDragfunc = this.getDifficulty
     }
 
@@ -534,8 +593,7 @@ class DifficultySlider extends Slider{
 
     getDifficulty(){
         let difficulty = this.row ? this.buttonX / this.sliderWidth : this.buttonY / this.sliderHeight
-        difficulty *= 100 // the slider is shifted up by 13 so the range needs to be adjusted to 0-100
-        // scale of 0 to 10
+        difficulty *= 100
         return [int(difficulty)];
     }
 }

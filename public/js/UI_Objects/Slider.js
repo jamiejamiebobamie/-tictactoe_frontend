@@ -69,6 +69,9 @@ class Slider extends UIElement{
     // a slider within a draggable container isn't going to work...
     performClickFunctionality(){
         this.isDragging = true;
+        if(this.mouseClickfunc){
+            return this.mouseClickfunc();
+        }
     }
 
     // on mouseReleased(), stop dragging the container, update the ratio,

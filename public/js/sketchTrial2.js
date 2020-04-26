@@ -141,6 +141,7 @@ function draw(){
 
     // i should rename this variable for clarity.
     if (doneOnce){
+        console.log('hi')
         // need to take in slider values as the user is sliding, not just once
             // he is finished....
 
@@ -148,6 +149,11 @@ function draw(){
         // if (frameCount%12 == 0){
         //     redrawn(parameterObject);
         // }
+
+        // temporary. for slider / brain parts.
+        // redrawn(parameterObject);
+
+
     }
 }
 
@@ -236,13 +242,11 @@ function clickRecursive(uiElement){
 function mouseReleased() {
     returnValueFromViews = clickReleasedRecursive(views[view_i]) || returnValueFromViews
     if (returnValueFromViews){setTopLevelVariables(returnValueFromViews);}
+    
+    redrawn(parameterObject);
 
     // 'doneOnce' is reset with mouseReleased() function.
     doneOnce = false;
-    
-    // temporary. for slider / brain parts.
-    redrawn(parameterObject);
-
 }
 
 function clickReleasedRecursive(uiElement){
