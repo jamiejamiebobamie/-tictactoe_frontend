@@ -106,27 +106,47 @@ class PlayView extends View{
         // brainparts
         // https://github.com/jamiejamiebobamie/conway-gol/blob/6a9c8a80b3d6353af137a9569e3dc62e73b1ec86/public/js/sketch-playground.js
 
-        // left-eyelid
-        let dumbPose = {
-                firstAnchorPoint:{x:55,y:109},
-                firstControlPoint:{x:142,y:7},
-                secondAnchorPoint:{x:243,y:54},
-                secondControlPoint:{x:309,y:247}
+        let bottomLipParams = {row:true,parent:cartoonImageContainer}
+        let bottomLip = new BrainPart(bottomLipParams)
+        let dumbPose, smartPose;
+
+        dumbPose = {
+            firstControlPoint:{x:130,y:211},
+            firstAnchorPoint:{x:50,y:50},
+            secondAnchorPoint:{x:366,y:143},
+            secondControlPoint:{x:244,y:50}
             }
-        let smartPose = {
-                firstAnchorPoint:{x:202,y:55},
-                firstControlPoint:{x:202,y:55},
-                secondAnchorPoint:{x:202,y:55},
-                secondControlPoint:{x:202,y:55}
+        smartPose = {
+                firstControlPoint:{x:50,y:209},
+                firstAnchorPoint:{x:50,y:50},
+                secondAnchorPoint:{x:350,y:209},
+                secondControlPoint:{x:350,y:50}
             }
-        // let translationCoords = {x:cartoonImageContainer.x, y:cartoonImageContainer.y}
-        // let brainPart_test = new BrainPart(dumbPose,smartPose,translationCoords)
-        let brainPart_testParams = {row:true,parent:cartoonImageContainer}
-        let brainPart_test = new BrainPart(brainPart_testParams)
-        brainPart_test.setPoses(dumbPose,smartPose)
-        brainPart_test.setBlendAmount(parameterObject.aiDifficulty)
-        brainPart_test.blend();
-        cartoonSliderContainer.uiElements.push(brainPart_test)
+
+        let bottomLipBezierCurves = {dumbPose:dumbPose,smartPose:smartPose}
+
+        bottomLip.setPoses(bottomLipBezierCurves.dumbPose,bottomLipBezierCurves.smartPose)
+        bottomLip.setBlendAmount(parameterObject.aiDifficulty)
+        bottomLip.blend();
+        cartoonSliderContainer.uiElements.push(bottomLip)
+
+        let yTranslation = 150
+        dumbPose = {
+            firstControlPoint:{x:4,y:125-yTranslation},
+            firstAnchorPoint:{x:54,y:209-yTranslation},
+            secondAnchorPoint:{x:366,y:143-yTranslation},
+            secondControlPoint:{x:198+47,y:199-yTranslation}
+            }
+
+        // bottom and top lips share the same smart pose.
+        let topLipBezierCurves = {dumbPose:dumbPose,smartPose:smartPose}
+
+        let topLipParams = {row:true,parent:cartoonImageContainer}
+        let topLip = new BrainPart(topLipParams)
+        topLip.setPoses(topLipBezierCurves.dumbPose,topLipBezierCurves.smartPose)
+        topLip.setBlendAmount(parameterObject.aiDifficulty)
+        topLip.blend();
+        cartoonSliderContainer.uiElements.push(topLip)
 
 
         // --------------------------------------------------------------------
@@ -198,16 +218,10 @@ class BrainPart extends UIElement{
 
             this.secondControlPointX = (this.blendAmount * (this.pose2.secondControlPoint.x - this.pose1.secondControlPoint.x) + this.pose1.secondControlPoint.x)
             this.secondControlPointY = (this.blendAmount * (this.pose2.secondControlPoint.y - this.pose1.secondControlPoint.y) + this.pose1.secondControlPoint.y)
-            // console.log(this.firstAnchorPointX, this.firstAnchorPointY,
-            //         this.firstControlPointX, this.firstControlPointY,
-            //         this.secondAnchorPointX, this.secondAnchorPointY,
-            //         this.secondControlPointX, this.secondControlPointY)
+
             }
             // use the smaller edge of the containing rectangle to scale the brainPart by some fraction
-            this.scaleAmount = this.width < this.height ? this.width / (this.height)*.1 : this.height / (this.width)*.1;
-            console.log(this.scaleAmount, this.width, this.height)
-            // 1300 to 300
-            // -300 / 1000
+            this.scaleAmount = this.parent.width < this.parent.height ? this.parent.width / (this.parent.height) : this.parent.height / (this.parent.width);
     }
 
     setPoses(dumbPose,smartPose){
@@ -217,7 +231,7 @@ class BrainPart extends UIElement{
     }
 
     setBlendAmount(blendAmount){
-        this.blendAmount = blendAmount;
+        this.blendAmount = blendAmount/113;
     }
 
     blend(){
@@ -236,12 +250,19 @@ class BrainPart extends UIElement{
 
     draw(){
         push();
-        stroke(0)
-        fill(0)
-        translate(this.parent.x,this.parent.y)
-        // translate(0,0)
-        // scale(.1);
+        stroke(0);
+        // i need the strokeWeight to decrease as I scale up the this.blendAmount
+        strokeWeight(this.blendAmount*50+35);
 
+        // only fill in the bezier curve if dumb pose (i.e. if mouth is open)
+        if (this.blendAmount < .5){
+            noFill();
+        } else {
+            fill(0);
+        }
+
+        // remove the +100's... testing.
+        translate(this.parent.x+100,this.parent.y+100)
         scale(this.scaleAmount);
         if (this.poseIsSet){
             bezier(this.firstAnchorPointX, this.firstAnchorPointY,

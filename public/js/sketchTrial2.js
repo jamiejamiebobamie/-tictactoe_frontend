@@ -143,7 +143,7 @@ function draw(){
     if (doneOnce){
         // need to take in slider values as the user is sliding, not just once
             // he is finished....
-            
+
         // console.log(frameRate())
         // if (frameCount%12 == 0){
         //     redrawn(parameterObject);
@@ -239,6 +239,10 @@ function mouseReleased() {
 
     // 'doneOnce' is reset with mouseReleased() function.
     doneOnce = false;
+    
+    // temporary. for slider / brain parts.
+    redrawn(parameterObject);
+
 }
 
 function clickReleasedRecursive(uiElement){
