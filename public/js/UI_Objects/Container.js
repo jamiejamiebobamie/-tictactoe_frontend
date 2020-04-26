@@ -62,6 +62,9 @@ class ImageContainer extends Container{
             // height and width. makes more sense to be centered in the middle of its own container...
         this.imageX = this.parent ? this.parent.x + this.parent.width/2 : windowWidth/2
         this.imageY = this.parent ? this.parent.y + this.parent.height/2 : windowHeight/2
+
+        this.offsetX = 0;
+        this.offsetY = 0;
     }
     // images can exceed the bounds of their container
     setImageProps(loadedImg,imageWidth,imageHeight){
@@ -69,8 +72,13 @@ class ImageContainer extends Container{
         this.imageWidth = imageWidth
         this.imageHeight = imageHeight
     }
+
+    setImageOffsets(offsetX,offsetY){
+        this.offsetX = offsetX;
+        this.offsetY = offsetY;
+    }
     // needs to be called every frame.
-    redrawImage() { image(this.loadedImg, this.imageX, this.imageY, this.imageWidth, this.imageHeight); }
+    redrawImage() { image(this.loadedImg, this.imageX+this.offsetX, this.imageY+this.offsetY, this.imageWidth, this.imageHeight); }
     draw() {
         push();
             translate(this.translateXAmount,0)

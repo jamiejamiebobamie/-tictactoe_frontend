@@ -105,10 +105,10 @@ class PlayView extends View{
         let cartoonImageContainer = new Container(cartoonImageContainerParams)
         this.uiElements.push(cartoonImageContainer)
 
-        let brainImageParams = {row:true, parent:cartoonSliderContainer}
+        let brainImageParams = {row:true, parent:cartoonSliderContainer, offsetY:-200}
         let brainImage = new ImageContainer(brainImageParams)
-
         brainImage.setImageProps(this.loadedImage,382,279)
+        brainImage.setImageOffsets(-120,-100)
         cartoonSliderContainer.uiElements.push(brainImage)
 
         // brainparts
@@ -146,7 +146,7 @@ class PlayView extends View{
             secondControlPoint:{x:198+47,y:199-yTranslation}
             }
 
-        // bottom and top lips share the same smart pose.
+        // bottom and top lips share the same smart pose :)
         let topLipBezierCurves = {dumbPose:dumbPose,smartPose:smartPose}
 
         let topLipParams = {row:true,parent:cartoonImageContainer}
@@ -156,12 +156,35 @@ class PlayView extends View{
         topLip.blend();
         cartoonSliderContainer.uiElements.push(topLip)
 
-        let eyeParams = {row:true, parent:cartoonSliderContainer}
-        let eyeTest = new BrainPartEllipse(eyeParams)
-        eyeTest.setPoses({x:10,y:-5}, {x:-10,y:0})
-        eyeTest.setBlendAmount(parameterObject.aiDifficulty)
-        eyeTest.blend();
-        cartoonSliderContainer.uiElements.push(eyeTest)
+        let eyeParams = {row:true, parent:cartoonSliderContainer, offsetX:-50, offsetY:-390}
+        // leftEye from viewer's perspective... brain's right eye...
+        let leftEye = new BrainPartEllipse(eyeParams)
+        smartPose = {x:-3,y:0}
+        dumbPose = {x:5,y:-3}
+        leftEye.setPoses(dumbPose, smartPose)
+        leftEye.setBlendAmount(parameterObject.aiDifficulty)
+        leftEye.blend();
+        cartoonSliderContainer.uiElements.push(leftEye)
+
+        // eyeParams = {row:true, parent:cartoonSliderContainer, offsetX:cartoonSliderContainer.width*.0005, offsetY:-390}
+        // // leftEye from viewer's perspective... brain's right eye...
+        // leftEye = new BrainPartEllipse(eyeParams)
+        // smartPose = {x:-3,y:0}
+        // dumbPose = {x:5,y:-3}
+        // leftEye.setPoses(dumbPose, smartPose)
+        // leftEye.setBlendAmount(parameterObject.aiDifficulty)
+        // leftEye.blend();
+        // cartoonSliderContainer.uiElements.push(leftEye)
+
+        eyeParams = {row:true, parent:cartoonSliderContainer, offsetX:15, offsetY:-390}
+        // brain's left eye
+        let rightEye = new BrainPartEllipse(eyeParams)
+        smartPose = {x:-4,y:0}
+        dumbPose = {x:-3,y:-3}
+        rightEye.setPoses(dumbPose, smartPose)
+        rightEye.setBlendAmount(parameterObject.aiDifficulty)
+        rightEye.blend();
+        cartoonSliderContainer.uiElements.push(rightEye)
 
 
         // --------------------------------------------------------------------
@@ -261,12 +284,12 @@ class BrainPartEllipse extends BrainPart{
 
     draw(){
         push();
-        translate(this.x+this.parent.width/10,this.y+this.parent.height/3)
+        translate(this.x+this.parent.width/2,this.parent.height*2/3)//this.y+this.parent.height/3)
         scale(this.scaleAmount);
         fill(230)
         ellipse(this.x,this.y,50)
         fill(30)
-        ellipse(this.x+this.sceleraX,this.y+this.sceleraY,30)
+        ellipse(this.x+this.sceleraX,this.y+this.sceleraY,27)
         pop();
 
     }
@@ -289,6 +312,8 @@ class BrainPartBezier extends BrainPart{
             this.secondControlPointX = (this.blendAmount * (this.pose2.secondControlPoint.x - this.pose1.secondControlPoint.x) + this.pose1.secondControlPoint.x)
             this.secondControlPointY = (this.blendAmount * (this.pose2.secondControlPoint.y - this.pose1.secondControlPoint.y) + this.pose1.secondControlPoint.y)
         }
+
+        this.scaleOffset = 7
     }
 
     blend(){
@@ -303,11 +328,13 @@ class BrainPartBezier extends BrainPart{
 
         this.secondControlPointX = (this.blendAmount * (this.pose2.secondControlPoint.x - this.pose1.secondControlPoint.x) + this.pose1.secondControlPoint.x)
         this.secondControlPointY = (this.blendAmount * (this.pose2.secondControlPoint.y - this.pose1.secondControlPoint.y) + this.pose1.secondControlPoint.y)
+
+        // this.scaleOffset = *-this.blendAmount + 7
     }
 
     draw(){
         push();
-        stroke(0);
+        stroke(35);
         // i need the strokeWeight to decrease as I scale up the this.blendAmount
         strokeWeight(this.blendAmount*50+45);
         // only fill in the bezier curve if dumb pose (i.e. if mouth is open)
@@ -316,12 +343,14 @@ class BrainPartBezier extends BrainPart{
             noFill();
         } else {
             strokeWeight(70.22-70.22*this.blendAmount+30);
-            // console.log(70.22-70.22/(this.blendAmount*50+45))
-            fill(0);
+            // fill(40);
+            fill(130,50,47);
+
         }
+
         // testing
-        translate(this.x+this.parent.width/2-(this.secondAnchorPointX - this.firstAnchorPointX)*this.scaleAmount/4,this.parent.height*2/3)//this.y+this.parent.height/3)
-        scale(this.scaleAmount/4);
+        translate(this.x+this.parent.width/2-(this.secondAnchorPointX - this.firstAnchorPointX)*this.scaleAmount/this.scaleOffset,this.parent.height*2/3)//this.y+this.parent.height/3)
+        scale(this.scaleAmount/this.scaleOffset);
         if (this.poseIsSet){
             bezier(this.firstAnchorPointX, this.firstAnchorPointY,
                     this.firstControlPointX, this.firstControlPointY,
