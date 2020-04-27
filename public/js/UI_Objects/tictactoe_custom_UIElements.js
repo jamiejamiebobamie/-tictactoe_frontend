@@ -105,11 +105,11 @@ class PlayView extends View{
         let cartoonImageContainer = new Container(cartoonImageContainerParams)
         this.uiElements.push(cartoonImageContainer)
 
-        let brainImageParams = {row:true, parent:cartoonSliderContainer, offsetY:-200}
-        let brainImage = new ImageContainer(brainImageParams)
-        brainImage.setImageProps(this.loadedImage,382,279)
-        brainImage.setImageOffsets(-120,-100)
-        cartoonSliderContainer.uiElements.push(brainImage)
+        // let brainImageParams = {row:true, parent:cartoonSliderContainer, offsetY:-200}
+        // let brainImage = new ImageContainer(brainImageParams)
+        // brainImage.setImageProps(this.loadedImage,382,279)
+        // brainImage.setImageOffsets(-120,-100)
+        // cartoonSliderContainer.uiElements.push(brainImage)
 
         // brainparts
         // https://github.com/jamiejamiebobamie/conway-gol/blob/6a9c8a80b3d6353af137a9569e3dc62e73b1ec86/public/js/sketch-playground.js
@@ -274,7 +274,6 @@ class BrainPartEllipse extends BrainPart{
         this.sceleraY = 0
 
         this.sceleraYAddition = 0
-
     }
 
     // use lerp()

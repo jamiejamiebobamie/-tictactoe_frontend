@@ -184,13 +184,16 @@ function cycleViews(){
     views[view_i].redrawElements(parameterObject);
     startEntranceAnimation = true;
 
-    let isPlayView = view_i == 1;
-    if (parameterObject.winner != null && isPlayView){
-        // TEMPORARY...
-        resetParameterObject();
-        redrawn(parameterObject);
-        // SPAWN REPLAY WINDOW / MENU WITH OPTION TO REPLAY
-    }
+    resetParameterObject();
+    redrawn(parameterObject);
+    
+    // let isPlayView = view_i == 1;
+    // if (parameterObject.winner != null && isPlayView){
+    //     // TEMPORARY...
+    //     resetParameterObject();
+    //     redrawn(parameterObject);
+    //     // SPAWN REPLAY WINDOW / MENU WITH OPTION TO REPLAY
+    // }
 }
 
 // these recursive functions allow uiElements to be nested.
