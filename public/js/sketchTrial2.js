@@ -16,9 +16,6 @@ let turn = 'x';
 // mousePressed boolean.
 let doneOnce = false;
 
-// to stop player input while waiting for a response from backend.
-let isWaitingForResponse = false;
-
 // api returns board and winner variables.
 let apiReturnValue = null;
 
@@ -28,11 +25,16 @@ let startEntranceAnimation = false
 
 // parameterObject to pass in to redrawElements() method to set the states
     // to its previous states. states are lost on window resize.
-let parameterObject = {transitionAmount: 0,
+let parameterObject = {
+                       transitionAmount: 0,
                        boardArray:["!","!","!","!","!","!","!","!","!"],
                        turn:'x',
-                       aiDifficulty:13, // slider range: 13 to 113
-                       winner:null}
+                       // slider range: 13 to 113
+                       aiDifficulty:13,
+                       winner:null,
+                       // to stop player input while waiting for a response from backend.
+                       isWaitingForResponse:false
+                   }
 
 let isPlayView;
 let playViewIndex;
@@ -127,8 +129,8 @@ function draw(){
     if (apiReturnValue != null){
         parameterObject.winner = apiReturnValue.winner
         setBoardAndTurn(apiReturnValue.board)
+        parameterObject.isWaitingForResponse = false;
         redrawn(parameterObject);
-        isWaitingForResponse = false;
         apiReturnValue = null;
         isPlayView = view_i == playViewIndex;
         if (parameterObject.winner != null && isPlayView){
@@ -242,7 +244,7 @@ function clickRecursive(uiElement){
 function mouseReleased() {
     returnValueFromViews = clickReleasedRecursive(views[view_i]) || returnValueFromViews
     if (returnValueFromViews){setTopLevelVariables(returnValueFromViews);}
-    
+
     redrawn(parameterObject);
 
     // 'doneOnce' is reset with mouseReleased() function.
@@ -275,7 +277,7 @@ function setBoardAndTurn(apiReturnValue){
 function setTopLevelVariables(returnValueFromViews){
     let queryAIMove;
     let queryRandMove;
-    if (!isWaitingForResponse){
+    if (!parameterObject.isWaitingForResponse){
         // returnValueFromViews is an array of commands.
         while (returnValueFromViews.length > 0){
             // some buttons return multiple commands that are iterated through
@@ -292,7 +294,7 @@ function setTopLevelVariables(returnValueFromViews){
                     break;
                 case 'queryBackend':
                     boardString = parameterObject.boardArray.toString().replace(/,/g, '')
-                    isWaitingForResponse = true;
+                    parameterObject.isWaitingForResponse = true;
 
                     // sets the 'apiReturnValue' top-level variable
                     queryBackend();

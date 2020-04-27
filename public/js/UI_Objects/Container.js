@@ -32,10 +32,10 @@ class Container extends UIElement{
     draw() {
         push();
             translate(this.translateXAmount,0)
-            this.hasStroke ? stroke(45) : noStroke();
-            this.hasFill ? fill(45) : noFill();
-            // stroke(45);
-            // fill(45);
+            // this.hasStroke ? stroke(45) : noStroke();
+            // this.hasFill ? fill(45) : noFill();
+            stroke(45);
+            fill(45);
             this.color ? fill(this.color) : noFill();
             rect(this.x,this.y,this.width,this.height)
             for (let i = 0; i < this.uiElements.length; i++){

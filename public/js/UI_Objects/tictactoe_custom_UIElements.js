@@ -54,9 +54,9 @@ class SuggestionView extends View{
         }
 
         let infoArea = turnAndSubmitButtonsContainer.uiElements[0]
-        let infoTextBoxParams = {row: true, offsetX: infoArea.width/6, width:infoArea.width*2/3, offsetY: infoArea.height/10, parent:infoArea}
+        let infoTextBoxParams = {row: true, offsetX: infoArea.width/6, width:infoArea.width*2/3, parent:infoArea}
         let infoSection = new TextBox(infoTextBoxParams)
-        infoSection.setString("input turn and board to recieve a suggestion")
+        infoSection.setString("Input whose turn it is and the state of the board to recieve a suggestion.")
         infoSection.setTextColor(30)
         this.uiElements.push(infoSection)
 
@@ -156,14 +156,16 @@ class PlayView extends View{
         topLip.blend();
         cartoonSliderContainer.uiElements.push(topLip)
 
-        let eyeParams = {row:true, parent:cartoonSliderContainer, offsetX:-50, offsetY:-390}
+        let eyeParams = {row:true, parent:cartoonSliderContainer, offsetX:cartoonSliderContainer.width/2.4, offsetY:cartoonSliderContainer.height/2.5}
         // leftEye from viewer's perspective... brain's right eye...
         let leftEye = new BrainPartEllipse(eyeParams)
-        smartPose = {x:-3,y:0}
+        smartPose = {x:-2,y:0}
         dumbPose = {x:5,y:-3}
         leftEye.setPoses(dumbPose, smartPose)
         leftEye.setBlendAmount(parameterObject.aiDifficulty)
         leftEye.blend();
+        let isThinking = parameterObject ? parameterObject.isWaitingForResponse : false;
+        leftEye.setThinking(isThinking);
         cartoonSliderContainer.uiElements.push(leftEye)
 
         // eyeParams = {row:true, parent:cartoonSliderContainer, offsetX:cartoonSliderContainer.width*.0005, offsetY:-390}
@@ -176,14 +178,16 @@ class PlayView extends View{
         // leftEye.blend();
         // cartoonSliderContainer.uiElements.push(leftEye)
 
-        eyeParams = {row:true, parent:cartoonSliderContainer, offsetX:15, offsetY:-390}
+        eyeParams = {row:true, parent:cartoonSliderContainer, offsetX:cartoonSliderContainer.width/1.9, offsetY:cartoonSliderContainer.height/2.5}//, offsetX:15, offsetY:-390}
         // brain's left eye
         let rightEye = new BrainPartEllipse(eyeParams)
-        smartPose = {x:-4,y:0}
+        smartPose = {x:-2,y:0}
         dumbPose = {x:-3,y:-3}
         rightEye.setPoses(dumbPose, smartPose)
         rightEye.setBlendAmount(parameterObject.aiDifficulty)
         rightEye.blend();
+        isThinking = parameterObject ? parameterObject.isWaitingForResponse : false;
+        rightEye.setThinking(isThinking);
         cartoonSliderContainer.uiElements.push(rightEye)
 
 
@@ -268,28 +272,30 @@ class BrainPartEllipse extends BrainPart{
         // this.ellipsePupil = ellipse(this.x,this.y,30)
         this.sceleraX = 0
         this.sceleraY = 0
+
+        this.sceleraYAddition = 0
+
     }
 
     // use lerp()
     blend(){
         this.sceleraX += (this.pose2.x - this.pose1.x) * this.blendAmount + this.pose1.x
         this.sceleraY += (this.pose2.y - this.pose1.y) * this.blendAmount + this.pose1.y
-        console.log(this.pose1, this.pose2, this.blendAmount)
+        // console.log(this.pose1, this.pose2, this.blendAmount)
     }
 
     // use lerp()
-    thinking(){
-
+    setThinking(isThinking){
+        this.sceleraYAddition = isThinking ? -4 : 0;
     }
 
     draw(){
         push();
-        translate(this.x+this.parent.width/2,this.parent.height*2/3)//this.y+this.parent.height/3)
-        scale(this.scaleAmount);
-        fill(230)
-        ellipse(this.x,this.y,50)
-        fill(30)
-        ellipse(this.x+this.sceleraX,this.y+this.sceleraY,27)
+            scale(this.scaleAmount);
+            fill(230)
+            ellipse(this.x/this.scaleAmount,this.y/this.scaleAmount,40)
+            fill(30)
+            ellipse((this.x+this.sceleraX)/this.scaleAmount,(this.y+this.sceleraY+this.sceleraYAddition)/this.scaleAmount,20)
         pop();
 
     }
