@@ -1,18 +1,11 @@
 class Slider extends UIElement{
     constructor(parameterObject){
         super(parameterObject);
-
         this.parent ? this.parent : this.parent = new Container({row: this.row, width:this.width, height: this.height})
         this.width = 20;
-        // this.mouseOver = false;
-
         this.isDragging = false;
         this.userDragButtonAmount = 0;
-
-        // testing
-        this.color = 'black';
-        // this.mouseOverColor = 'blue';
-
+        this.color = 0;
         // the placement of the button on the canvas based on the orientation
             //  and the bounds of the container.
         if (this.row){
@@ -33,7 +26,6 @@ class Slider extends UIElement{
             this.sliderHeight = this.parent.height - this.parent.height/10 - this.offset;
         }
     }
-
     testForClick(){
         if (mouseX > this.buttonX - this.width
             && mouseX < this.buttonX + this.width
@@ -42,18 +34,6 @@ class Slider extends UIElement{
             return true;
         }
     }
-
-    // testForMouseOver(mouseX, mouseY){
-    //     if (mouseX > this.buttonX - this.width/2
-    //         && mouseX < this.buttonX + this.width/2
-    //         && mouseY > this.buttonY - this.width/2
-    //         && mouseY < this.width/2 + this.buttonY){
-    //             return true
-    //     } else {
-    //         return false
-    //     }
-    // }
-
     userDrag(){
             if (this.row){
                 if ( this.sliderX < mouseX && mouseX < this.sliderWidth+this.sliderX){
@@ -65,7 +45,6 @@ class Slider extends UIElement{
             }
         }
     }
-
     // a slider within a draggable container isn't going to work...
     performClickFunctionality(){
         this.isDragging = true;
@@ -73,35 +52,45 @@ class Slider extends UIElement{
             return this.mouseClickfunc();
         }
     }
-
     // on mouseReleased(), stop dragging the container, update the ratio,
         // reset the dragOffsets, and return the ratio to be stored on the top-level.
     performDragFunctionality(){
-        // this.isDragging = false;
         if(this.mouseDragfunc){
             return this.mouseDragfunc();
         }
     }
-
     draw(){
         if (this.isDragging){
             this.userDrag();
         }
         push();
             translate(this.translateXAmount,0)
-            // stroke(90);
             noStroke();
-            // fill(256);
             fill(230);
-
             // slider groove
             rect(this.sliderX, this.sliderY, this.sliderWidth, this.sliderHeight, 30);
             // slider button
             stroke(90);
             fill(256);
-
             ellipse(this.buttonX, this.buttonY, this.width);
         pop();
     }
-
+}
+class DifficultySlider extends Slider{
+    constructor(parameterObject){
+        super(parameterObject)
+        this.mouseDragfunc = this.getDifficulty
+    }
+    setDifficulty(difficulty){
+        if (this.row){
+            this.buttonX = this.sliderWidth * float(difficulty/100)
+        } else {
+            this.buttonY = this.sliderHeight * float(difficulty/100)
+        }
+    }
+    getDifficulty(){
+        let difficulty = this.row ? this.buttonX / this.sliderWidth : this.buttonY / this.sliderHeight
+        difficulty *= 100
+        return [int(difficulty)];
+    }
 }
