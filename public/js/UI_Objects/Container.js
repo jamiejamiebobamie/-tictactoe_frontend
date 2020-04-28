@@ -330,7 +330,7 @@ class ScalableContainer extends Container{
         this.height=600// -= this.y - mouseY
         // this.x = mouseX
         // this.y = mouseY
-        console.log(this)
+        // console.log(this)
         // return 'hey'
     }
 

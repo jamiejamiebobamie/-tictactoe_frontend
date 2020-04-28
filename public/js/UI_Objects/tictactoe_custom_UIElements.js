@@ -298,7 +298,7 @@ class BrainPartEllipse extends BrainPart{
 
         this.sceleraYAddition = 0
         // use the smaller edge of the containing rectangle to scale the brainPart by some fraction
-        console.log("width",this.parent.width, "height",this.parent.height)
+        // console.log("width",this.parent.width, "height",this.parent.height)
         // this.scaleAmount = this.parent.width < this.parent.height ?  this.parent.width / 950 : this.parent.height / 1200;
         this.scaleAmount = this.parent.width < this.parent.height ? this.width / 950 : this.height / 950
 

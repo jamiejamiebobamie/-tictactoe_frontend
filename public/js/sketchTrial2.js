@@ -56,7 +56,7 @@ function setup() {
     frameRate(24);
 
     // cycleViewIcon
-    menuButton = new MenuButton({width:50, height:50, mouseClickfunc: startAnimations})
+    menuButton = new MenuButton({width:50, height:50, mouseClickfunc: cycleViews})//startAnimations})
 
     // p5.js built-in method. centers the canvas and all drawn objects.
     imageMode(CENTER);
@@ -229,7 +229,7 @@ function mousePressed() {
     // 'doneOnce' controls which events are called repeatedly (drag events)
     // and which are called once (click events).
     returnValueFromViews = clickRecursive(views[view_i]) || returnValueFromViews
-    console.log(returnValueFromViews)
+    // console.log(returnValueFromViews)
     if (returnValueFromViews){ setTopLevelVariables(returnValueFromViews) }
     if (menuButton.testForClick() && !doneOnce){
         menuButton.performClickFunctionality();
