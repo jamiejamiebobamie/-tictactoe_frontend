@@ -23,12 +23,18 @@ class SuggestionView extends View{
         this.uiElements = []
         for (let i = 0; i < 2; i++){
             let containerParams;
-            if (i == 1 && portrait){
-                // shift the turn_selector_button, the instructions, and the submit_button up if portrait mode.
-                containerParams = {row: portrait, len:2, index:i, offsetY:-windowWidth/12}
+            if (portrait){
+                if (i == 1){
+                    // shift the turn_selector_button, the instructions, and the submit_button up if portrait mode.
+                    containerParams = {row: portrait, len:2, index:i, offsetY:-windowWidth/24}
+                } else {
+                    // shift the board up if portrait mode.
+                    containerParams = {row: portrait, len:2, index:i, offsetY:windowWidth/24}
+                }
             } else {
                 containerParams = {row: portrait, len:2, index:i}
             }
+
             let container = new Container(containerParams)
             this.uiElements.push(container)
         }
