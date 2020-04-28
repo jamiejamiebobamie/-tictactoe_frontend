@@ -34,14 +34,16 @@ let parameterObject = {
                        winner:null,
                        // to stop player input while waiting for a response from backend.
                        isWaitingForResponse:false,
-                       font: undefined
+                       fontStyle: null,
+                       loadedImage: undefined
                    }
 
 let isPlayView;
 let playViewIndex;
 
 function preload(){
-    parameterObject.font = loadFont('fonts/ModernEdge.ttf');
+    parameterObject.loadedImage = loadImage('../imgs/brain_base.png');
+    parameterObject.fontStyle = loadFont('fonts/Quicksand-Bold.otf');
 }
 
 // p5.js built-in method
@@ -166,11 +168,16 @@ function draw(){
 
 function resetParameterObject(){
     let saveDifficulty = parameterObject.aiDifficulty;
+    let saveFont = parameterObject.fontStyle;
+    let saveImage = parameterObject.loadedImage;
     parameterObject = {transitionAmount: 0,
                            boardArray: ["!","!","!","!","!","!","!","!","!"],
                            turn: 'x',
                            aiDifficulty: saveDifficulty, // slider range: 13 to 113
-                           winner: null}
+                           winner: null,
+                           fontStyle:saveFont,
+                           loadedImage:saveImage
+                       }
 }
 
 function startAnimations(){

@@ -125,8 +125,8 @@ class TextBox extends Container{
                     fill(this.textColor)
                 }
                 if (parameterObject){
-                    if (parameterObject.font){
-                        textFont(parameterObject.font)
+                    if (parameterObject.fontStyle){
+                        textFont(parameterObject.fontStyle)
                     }
                 }
                 text(this.text, 0, -this.width, this.height, this.width)
@@ -140,8 +140,8 @@ class TextBox extends Container{
                 fill(this.textColor)
             }
             if (parameterObject){
-                if (parameterObject.font){
-                    textFont(parameterObject.font)
+                if (parameterObject.fontStyle){
+                    textFont(parameterObject.fontStyle)
                 }
             }
             text(this.text, this.x, this.y, this.width, this.height)

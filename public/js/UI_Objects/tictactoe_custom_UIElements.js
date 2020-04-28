@@ -56,7 +56,7 @@ class SuggestionView extends View{
         let infoArea = turnAndSubmitButtonsContainer.uiElements[0]
         let infoTextBoxParams = {row: true, offsetX: infoArea.width/6, width:infoArea.width*2/3, parent:infoArea}
         let infoSection = new TextBox(infoTextBoxParams)
-        infoSection.setString("Input whose turn it is and the state of the board to recieve a suggestion.")
+        infoSection.setString("input whose turn it is and the state of the board to recieve a suggestion")
         infoSection.setTextColor(30)
         this.uiElements.push(infoSection)
 
@@ -72,6 +72,11 @@ class SuggestionView extends View{
         let submitButtonArea = turnAndSubmitButtonsContainer.uiElements[2]
         let submitBoardButtonParams = {row: true, offsetX: submitButtonArea.width/4, offsetY: submitButtonArea.height/4, width:submitButtonArea.width/2, height:submitButtonArea.height/2, parent:submitButtonArea, mouseClickfunc:this.aiMove}
         let submitBoardButton = new TextBox(submitBoardButtonParams)
+        if (parameterObject){
+            if (parameterObject.fontStyle){
+                textFont(parameterObject.fontStyle)
+            }
+        }
         submitBoardButton.setString("submit")
         submitBoardButton.setTextColor(30)
         submitBoardButton.setStroke(true)
@@ -104,11 +109,17 @@ class PlayView extends View{
         let cartoonImageContainer = new Container(cartoonImageContainerParams)
         this.uiElements.push(cartoonImageContainer)
 
-        // let brainImageParams = {row:true, parent:cartoonSliderContainer, offsetY:-200}
-        // let brainImage = new ImageContainer(brainImageParams)
-        // brainImage.setImageProps(this.loadedImage,382,279)
-        // brainImage.setImageOffsets(-120,-100)
-        // cartoonSliderContainer.uiElements.push(brainImage)
+        let brainImageParams = {row:true, parent:cartoonSliderContainer, offsetY:-200}
+        let brainImage = new ImageContainer(brainImageParams)
+        if (parameterObject){
+            if (parameterObject.loadedImage){
+                let scaleAmount = cartoonSliderContainer.width < cartoonSliderContainer.height ? cartoonSliderContainer.width / 950 : cartoonSliderContainer.height / 950
+
+                brainImage.setImageProps(parameterObject.loadedImage,382*scaleAmount,279*scaleAmount)
+                brainImage.setImageOffsets(-120*scaleAmount,-100*scaleAmount)
+            }
+        }
+        cartoonSliderContainer.uiElements.push(brainImage)
 
         // brainparts
         // https://github.com/jamiejamiebobamie/conway-gol/blob/6a9c8a80b3d6353af137a9569e3dc62e73b1ec86/public/js/sketch-playground.js
@@ -192,7 +203,7 @@ class PlayView extends View{
 
         // --------------------------------------------------------------------
 
-        let sliderContainerParams = {row: true, len:3, index:2, height:cartoonSliderContainer.height/3, width:cartoonSliderContainer.width/1.5, offsetX: cartoonSliderContainer.width/6, parent:cartoonSliderContainer}
+        let sliderContainerParams = {row: true, len:3, index:2, height:cartoonSliderContainer.height/3, width:cartoonSliderContainer.width/1.5, offsetX: cartoonSliderContainer.width/6, offsetY:-cartoonSliderContainer.height/10, parent:cartoonSliderContainer}
         let sliderContainer = new Container(sliderContainerParams)
         this.uiElements.push(sliderContainer)
         let sliderParams = {row: true, parent:sliderContainer}
@@ -710,10 +721,10 @@ class ReplayWindow extends Container{
         let message;
         switch(parameterObject.winner){
             case 1:
-            message = "you won!";
+            message = "you won";
             break;
             case 0:
-            message = "the A.I. won.";
+            message = "the a.i. won.";
             break;
             case -1:
             message = "tie!";
@@ -726,7 +737,6 @@ class ReplayWindow extends Container{
     }
 
     playAgain(){
-        console.log('hi')
         return ["replay"]
     }
 
