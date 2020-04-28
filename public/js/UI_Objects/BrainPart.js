@@ -33,7 +33,7 @@ class BrainPartEllipse extends BrainPart{
         this.sceleraY += (this.pose2.y - this.pose1.y) * this.blendAmount + this.pose1.y
     }
     setThinking(isThinking){
-        this.sceleraYAddition = isThinking ? -4 : 0;
+        this.sceleraYAddition = isThinking ? -8*this.scaleAmount : 0;
     }
     draw(){
         push();

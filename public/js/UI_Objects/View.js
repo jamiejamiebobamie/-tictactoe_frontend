@@ -229,7 +229,8 @@ class PlayView extends View{
         boardLength = boardContainer.height > boardContainer.width ? boardContainer.width/1.3 : boardContainer.height/1.3;
 
         let offsetX = boardContainer.width / 2 -  boardLength / 2
-        let offsetY = boardContainer.height / 2 -  boardLength / 2
+        // shift the board up in portrait mode to be better spaced.
+        let offsetY = portrait ? boardContainer.height / 2 -  boardLength / 1.45 : boardContainer.height / 2 -  boardLength / 2
 
         let boardParams = {row: true, offsetX: offsetX, offsetY: offsetY, height: boardLength, width: boardLength, parent:boardContainer}
         let board = new Container(boardParams)
