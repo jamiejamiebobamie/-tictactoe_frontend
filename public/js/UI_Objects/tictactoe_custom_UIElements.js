@@ -724,10 +724,10 @@ class ReplayWindow extends Container{
             message = "you won";
             break;
             case 0:
-            message = "the a.i. won.";
+            message = "the a.i. won";
             break;
             case -1:
-            message = "tie!";
+            message = "tie";
             break;
             default:
             message = "wtf";
