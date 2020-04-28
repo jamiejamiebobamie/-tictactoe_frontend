@@ -9,7 +9,13 @@ class SuggestionView extends View{
 
         this.uiElements = []
         for (let i = 0; i < 2; i++){
-            let containerParams = {row: portrait, len:2, index:i}
+            let containerParams;
+            if (i == 1 && portrait){
+                // shift the turn_selector_button, the instructions, and the submit_button up if portrait mode.
+                containerParams = {row: portrait, len:2, index:i, offsetY:-windowWidth/12}
+            } else {
+                containerParams = {row: portrait, len:2, index:i}
+            }
             let container = new Container(containerParams)
             this.uiElements.push(container)
         }
@@ -109,14 +115,14 @@ class PlayView extends View{
         let cartoonImageContainer = new Container(cartoonImageContainerParams)
         this.uiElements.push(cartoonImageContainer)
 
-        let brainImageParams = {row:true, parent:cartoonSliderContainer, offsetY:-200}
+        let brainImageParams = {row:true, parent:cartoonSliderContainer, offsetY:-190}
         let brainImage = new ImageContainer(brainImageParams)
         if (parameterObject){
             if (parameterObject.loadedImage){
                 let scaleAmount = cartoonSliderContainer.width < cartoonSliderContainer.height ? cartoonSliderContainer.width / 950 : cartoonSliderContainer.height / 950
 
                 brainImage.setImageProps(parameterObject.loadedImage,382*scaleAmount,279*scaleAmount)
-                brainImage.setImageOffsets(-120*scaleAmount,-100*scaleAmount)
+                brainImage.setImageOffsets(-30*scaleAmount,-100*scaleAmount)
             }
         }
         cartoonSliderContainer.uiElements.push(brainImage)
@@ -124,7 +130,9 @@ class PlayView extends View{
         // brainparts
         // https://github.com/jamiejamiebobamie/conway-gol/blob/6a9c8a80b3d6353af137a9569e3dc62e73b1ec86/public/js/sketch-playground.js
 
-        let bottomLipParams = {row:true,parent:cartoonImageContainer}
+        let lipsOffsetX = 50 - 12*960/cartoonImageContainer.width;
+        console.log(lipsOffsetX,cartoonImageContainer.width)
+        let bottomLipParams = {row:true,parent:cartoonImageContainer, offsetX: lipsOffsetX}
         let bottomLip = new BrainPartBezier(bottomLipParams)
         let dumbPose, smartPose;
 
@@ -148,6 +156,7 @@ class PlayView extends View{
         bottomLip.blend();
         cartoonSliderContainer.uiElements.push(bottomLip)
 
+        // bottom lip's dumb pose needs to be shifted up.
         let yTranslation = 150
         dumbPose = {
             firstControlPoint:{x:4,y:125-yTranslation},
@@ -159,14 +168,14 @@ class PlayView extends View{
         // bottom and top lips share the same smart pose :)
         let topLipBezierCurves = {dumbPose:dumbPose,smartPose:smartPose}
 
-        let topLipParams = {row:true,parent:cartoonImageContainer}
+        let topLipParams = {row:true,parent:cartoonImageContainer, offsetX: lipsOffsetX}
         let topLip = new BrainPartBezier(topLipParams)
         topLip.setPoses(topLipBezierCurves.dumbPose,topLipBezierCurves.smartPose)
         topLip.setBlendAmount(parameterObject.aiDifficulty)
         topLip.blend();
         cartoonSliderContainer.uiElements.push(topLip)
 
-        let eyeParams = {row:true, parent:cartoonSliderContainer, offsetX:cartoonSliderContainer.width/2.4, offsetY:cartoonSliderContainer.height/2.5}
+        let eyeParams = {row:true, parent:cartoonSliderContainer, offsetX:cartoonSliderContainer.width/2.1, offsetY:cartoonSliderContainer.height/2.5}
         // leftEye from viewer's perspective... brain's right eye...
         let leftEye = new BrainPartEllipse(eyeParams)
         smartPose = {x:0,y:0}
@@ -188,7 +197,7 @@ class PlayView extends View{
         // leftEye.blend();
         // cartoonSliderContainer.uiElements.push(leftEye)
 
-        eyeParams = {row:true, parent:cartoonSliderContainer, offsetX:cartoonSliderContainer.width/1.9, offsetY:cartoonSliderContainer.height/2.5}//, offsetX:15, offsetY:-390}
+        eyeParams = {row:true, parent:cartoonSliderContainer, offsetX:cartoonSliderContainer.width/1.7-5, offsetY:cartoonSliderContainer.height/2.5}//, offsetX:15, offsetY:-390}
         // brain's left eye
         let rightEye = new BrainPartEllipse(eyeParams)
         smartPose = {x:0,y:0}
