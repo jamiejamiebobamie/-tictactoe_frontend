@@ -89,11 +89,17 @@ class Slider extends UIElement{
         }
         push();
             translate(this.translateXAmount,0)
-            stroke(90);
-            fill(256);
+            // stroke(90);
+            noStroke();
+            // fill(256);
+            fill(230);
+
             // slider groove
             rect(this.sliderX, this.sliderY, this.sliderWidth, this.sliderHeight, 30);
             // slider button
+            stroke(90);
+            fill(256);
+
             ellipse(this.buttonX, this.buttonY, this.width);
         pop();
     }

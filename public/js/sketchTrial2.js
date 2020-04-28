@@ -29,15 +29,20 @@ let parameterObject = {
                        transitionAmount: 0,
                        boardArray:["!","!","!","!","!","!","!","!","!"],
                        turn:'x',
-                       // slider range: 13 to 113
-                       aiDifficulty:13,
+                       // slider range: 44 to 144
+                       aiDifficulty:44,
                        winner:null,
                        // to stop player input while waiting for a response from backend.
-                       isWaitingForResponse:false
+                       isWaitingForResponse:false,
+                       font: undefined
                    }
 
 let isPlayView;
 let playViewIndex;
+
+function preload(){
+    parameterObject.font = loadFont('fonts/ModernEdge.ttf');
+}
 
 // p5.js built-in method
 function setup() {
@@ -135,7 +140,7 @@ function draw(){
         isPlayView = view_i == playViewIndex;
         if (parameterObject.winner != null && isPlayView){
             // TEMPORARY...
-            resetParameterObject();
+            // resetParameterObject();
             redrawn(parameterObject);
             // SPAWN REPLAY WINDOW / MENU WITH OPTION TO REPLAY
         }
@@ -143,7 +148,7 @@ function draw(){
 
     // i should rename this variable for clarity.
     if (doneOnce){
-        console.log('hi')
+        // console.log('hi')
         // need to take in slider values as the user is sliding, not just once
             // he is finished....
 
@@ -186,7 +191,7 @@ function cycleViews(){
 
     resetParameterObject();
     redrawn(parameterObject);
-    
+
     // let isPlayView = view_i == 1;
     // if (parameterObject.winner != null && isPlayView){
     //     // TEMPORARY...
@@ -217,7 +222,7 @@ function mousePressed() {
     // 'doneOnce' controls which events are called repeatedly (drag events)
     // and which are called once (click events).
     returnValueFromViews = clickRecursive(views[view_i]) || returnValueFromViews
-
+    console.log(returnValueFromViews)
     if (returnValueFromViews){ setTopLevelVariables(returnValueFromViews) }
     if (menuButton.testForClick() && !doneOnce){
         menuButton.performClickFunctionality();
@@ -268,7 +273,6 @@ function clickReleasedRecursive(uiElement){
 }
 
 function setBoardAndTurn(apiReturnValue){
-    // console.log(apiReturnValue)
     const OPPONENT_LOOKUP = {'x':'o', 'o':'x'}
     for (let i = 0; i < apiReturnValue.length; i++){
         parameterObject.boardArray[i] = apiReturnValue[i]
@@ -281,6 +285,7 @@ function setTopLevelVariables(returnValueFromViews){
     let queryAIMove;
     let queryRandMove;
     if (!parameterObject.isWaitingForResponse){
+        // console.log(returnValueFromViews)
         // returnValueFromViews is an array of commands.
         while (returnValueFromViews.length > 0){
             // some buttons return multiple commands that are iterated through
@@ -302,10 +307,17 @@ function setTopLevelVariables(returnValueFromViews){
                     // sets the 'apiReturnValue' top-level variable
                     queryBackend();
                     break;
+                case 'replay':
+                    resetParameterObject();
+                    redrawn(parameterObject);
+                    break;
+                case 'exit':
+                    window.location.href = "https://github.com/jamiejamiebobamie/tictactoe_frontend";
+                    break;
                 default:
                  if(typeof(command) === typeof(100)){
                      parameterObject.aiDifficulty = command
-                     console.log(parameterObject)
+                     // console.log(parameterObject)
                  } else if (typeof(command) === typeof([0,'x'])){
                      index = command[0]
                      val = command[1]
@@ -321,19 +333,19 @@ function setTopLevelVariables(returnValueFromViews){
 function queryBackend(){
     let result;
     let url;
-    let mustBeAboveDifficultyToUseAI = Math.random()*113+13;
+    let mustBeAboveDifficultyToUseAI = Math.random()*144+44;
     // check slider amount and generate a random number that must be higher
         // than the aiDifficulty to use the AI
         // (so aiDifficulty is harder the lower the slider score is...)
     let suggestMoveView = view_i == 1;
     let useAI = mustBeAboveDifficultyToUseAI > parameterObject.aiDifficulty || suggestMoveView;
     if (useAI) {
-        console.log(mustBeAboveDifficultyToUseAI, parameterObject.aiDifficulty)
-        console.log('ai used.')
+        // console.log(mustBeAboveDifficultyToUseAI, parameterObject.aiDifficulty)
+        // console.log('ai used.')
         url = "https://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString
     } else {
-        console.log(mustBeAboveDifficultyToUseAI, parameterObject.aiDifficulty)
-        console.log('random move.')
+        // console.log(mustBeAboveDifficultyToUseAI, parameterObject.aiDifficulty)
+        // console.log('random move.')
         url = "https://play-tictactoe-ai.herokuapp.com/api/v1/rand/turn/"+turn+"/board/"+boardString
     }
     fetch(url, {
@@ -343,7 +355,7 @@ function queryBackend(){
       apiError = false;
       result = await response.json();
         apiReturnValue = { board: result.board, winner: result.winner}
-        console.log(apiReturnValue)
+        // console.log(apiReturnValue)
 
     } else {
         apiError = true;

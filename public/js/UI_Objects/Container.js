@@ -124,6 +124,11 @@ class TextBox extends Container{
                 if (this.textColor){
                     fill(this.textColor)
                 }
+                if (parameterObject){
+                    if (parameterObject.font){
+                        textFont(parameterObject.font)
+                    }
+                }
                 text(this.text, 0, -this.width, this.height, this.width)
             }
         pop();
@@ -133,6 +138,11 @@ class TextBox extends Container{
         if (this.text){
             if (this.textColor){
                 fill(this.textColor)
+            }
+            if (parameterObject){
+                if (parameterObject.font){
+                    textFont(parameterObject.font)
+                }
             }
             text(this.text, this.x, this.y, this.width, this.height)
         }

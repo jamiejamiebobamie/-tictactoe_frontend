@@ -86,7 +86,6 @@ class SuggestionView extends View{
 class PlayView extends View{
     constructor(parameterObject){
         super(parameterObject)
-
         this.loadedImage = loadImage('../imgs/brain_base.png')
     }
 
@@ -159,7 +158,7 @@ class PlayView extends View{
         let eyeParams = {row:true, parent:cartoonSliderContainer, offsetX:cartoonSliderContainer.width/2.4, offsetY:cartoonSliderContainer.height/2.5}
         // leftEye from viewer's perspective... brain's right eye...
         let leftEye = new BrainPartEllipse(eyeParams)
-        smartPose = {x:-2,y:0}
+        smartPose = {x:0,y:0}
         dumbPose = {x:5,y:-3}
         leftEye.setPoses(dumbPose, smartPose)
         leftEye.setBlendAmount(parameterObject.aiDifficulty)
@@ -181,7 +180,7 @@ class PlayView extends View{
         eyeParams = {row:true, parent:cartoonSliderContainer, offsetX:cartoonSliderContainer.width/1.9, offsetY:cartoonSliderContainer.height/2.5}//, offsetX:15, offsetY:-390}
         // brain's left eye
         let rightEye = new BrainPartEllipse(eyeParams)
-        smartPose = {x:-2,y:0}
+        smartPose = {x:0,y:0}
         dumbPose = {x:-3,y:-3}
         rightEye.setPoses(dumbPose, smartPose)
         rightEye.setBlendAmount(parameterObject.aiDifficulty)
@@ -193,7 +192,7 @@ class PlayView extends View{
 
         // --------------------------------------------------------------------
 
-        let sliderContainerParams = {row: true, len:3, index:2, height:cartoonSliderContainer.height/3, parent:cartoonSliderContainer}
+        let sliderContainerParams = {row: true, len:3, index:2, height:cartoonSliderContainer.height/3, width:cartoonSliderContainer.width/1.5, offsetX: cartoonSliderContainer.width/6, parent:cartoonSliderContainer}
         let sliderContainer = new Container(sliderContainerParams)
         this.uiElements.push(sliderContainer)
         let sliderParams = {row: true, parent:sliderContainer}
@@ -237,6 +236,17 @@ class PlayView extends View{
                 count++;
             }
         }
+
+        // ------
+        if (parameterObject){
+            if (parameterObject.winner != null){
+                let replayWindowParams = {row:portrait}
+                let replayWindow = new ReplayWindow(replayWindowParams)
+                replayWindow.setContext(this.uiElements)
+                replayWindow.setMessage(parameterObject)
+                this.uiElements.push(replayWindow)
+            }
+        }
     }
 }
 
@@ -248,7 +258,9 @@ class BrainPart extends UIElement{
         this.blendAmount = 0;
         this.poseIsSet = false;
         // use the smaller edge of the containing rectangle to scale the brainPart by some fraction
-        this.scaleAmount = this.parent.width < this.parent.height ? this.parent.width / (this.parent.height) : this.parent.height / (this.parent.width);
+        // this.scaleAmount = this.parent.width < this.parent.height ? this.parent.width / (this.parent.height) : this.parent.height / (this.parent.width);
+        this.scaleAmount = this.width / 950
+
     }
 
     setPoses(dumbPose,smartPose){
@@ -258,7 +270,7 @@ class BrainPart extends UIElement{
     }
 
     setBlendAmount(blendAmount){
-        this.blendAmount = blendAmount/113;
+        this.blendAmount = (blendAmount-45)/100;
     }
 
     blend(){}
@@ -274,6 +286,12 @@ class BrainPartEllipse extends BrainPart{
         this.sceleraY = 0
 
         this.sceleraYAddition = 0
+        // use the smaller edge of the containing rectangle to scale the brainPart by some fraction
+        console.log("width",this.parent.width, "height",this.parent.height)
+        // this.scaleAmount = this.parent.width < this.parent.height ?  this.parent.width / 950 : this.parent.height / 1200;
+        this.scaleAmount = this.parent.width < this.parent.height ? this.width / 950 : this.height / 950
+
+
     }
 
     // use lerp()
@@ -294,7 +312,7 @@ class BrainPartEllipse extends BrainPart{
             fill(230)
             ellipse(this.x/this.scaleAmount,this.y/this.scaleAmount,40)
             fill(30)
-            ellipse((this.x+this.sceleraX)/this.scaleAmount,(this.y+this.sceleraY+this.sceleraYAddition)/this.scaleAmount,20)
+            ellipse((this.x+this.sceleraX*this.scaleAmount)/this.scaleAmount,(this.y+this.sceleraY*this.scaleAmount+this.sceleraYAddition)/this.scaleAmount,20)
         pop();
 
     }
@@ -627,7 +645,104 @@ class DifficultySlider extends Slider{
 
     getDifficulty(){
         let difficulty = this.row ? this.buttonX / this.sliderWidth : this.buttonY / this.sliderHeight
+        // console.log(difficulty)
         difficulty *= 100
         return [int(difficulty)];
+    }
+}
+
+
+class ReplayWindow extends Container{
+    constructor(parameterObject){
+        super(parameterObject)
+        this.message = undefined;
+        this.context = undefined
+        this.doOnce = true;
+    }
+
+    displayContent(){
+        let replayScreenParams = {row:true, width:parent.width/1.5, color: 'white', height:parent.height/1.5, offsetX: parent.width/6, offsetY: parent.height/6}
+        let replayScreen = new Container(replayScreenParams)
+        replayScreen.setStroke(true)
+        this.context.push(replayScreen)
+
+        let gameOverMessageParams = {row:true, height:replayScreen.height*2/3, parent:replayScreen}
+        let gameOverMessage = new TextBox(gameOverMessageParams)
+        gameOverMessage.setString(this.message)
+        gameOverMessage.setTextColor(30)
+        this.context.push(gameOverMessage)
+
+        let buttonsRowParams = {row:true, len:3, index:2, parent: replayScreen}
+        let buttonRow = new Container(buttonsRowParams)
+        this.context.push(buttonRow)
+
+        let replayButtonContainerParams;
+        let replayButtonContainer;
+        for (let i =0; i < 2; i++){
+            replayButtonContainerParams = {row:this.row, len:2, index:i, parent: buttonRow}
+            replayButtonContainer = new Container(replayButtonContainerParams)
+            this.context.push(replayButtonContainer)
+        }
+
+        let playAgainButtonContainer = this.context[this.context.length-2]
+        let exitButtonContainer = this.context[this.context.length-1]
+
+        let playAgainButtonParams = {row: true, offsetX: playAgainButtonContainer.width/6, offsetY: playAgainButtonContainer.height/4, width:playAgainButtonContainer.width/1.5, height:playAgainButtonContainer.height/2, parent:playAgainButtonContainer, mouseClickfunc:this.playAgain}
+        let playAgainButton = new TextBox(playAgainButtonParams)
+        playAgainButton.setString("play again")
+        playAgainButton.setTextColor(30)
+        playAgainButton.setStroke(true)
+        this.context.push(playAgainButton)
+
+        let exitButtonParams = {row: true, offsetX: exitButtonContainer.width/6, offsetY: exitButtonContainer.height/4, width:exitButtonContainer.width/1.5, height:exitButtonContainer.height/2, parent:exitButtonContainer, mouseClickfunc:this.exit}
+        let exitButton = new TextBox(exitButtonParams)
+        exitButton.setString("exit")
+        exitButton.setTextColor(30)
+        exitButton.setStroke(true)
+        this.context.push(exitButton)
+    }
+
+    setContext(context){
+        this.context = context
+    }
+
+    setMessage(parameterObject){
+        let message;
+        switch(parameterObject.winner){
+            case 1:
+            message = "you won!";
+            break;
+            case 0:
+            message = "the A.I. won.";
+            break;
+            case -1:
+            message = "tie!";
+            break;
+            default:
+            message = "wtf";
+            break;
+        }
+        this.message = message;
+    }
+
+    playAgain(){
+        console.log('hi')
+        return ["replay"]
+    }
+
+    exit(){
+        return ["exit"]
+    }
+
+    draw(){
+        super.draw();
+
+        if (this.doOnce && this.context){
+            this.displayContent()
+            this.doOnce = false;
+        }
+        for (let i = 0; i < this.uiElements.length; i++){
+             this.uiElements[i].draw()
+        }
     }
 }
