@@ -13,7 +13,7 @@ To allow for a scaling difficulty, the API also serves up random moves.
 
 An example query to receive a random move is: https://play-tictactoe-ai.herokuapp.com/api/v1/rand/turn/o/board/xox!o!!x!
 
-To make the website appealing on a variety of screen sizes, I used p5.js with custom UI elements that could be nested within one another.
+To make the website appealing on a variety of screen sizes, I used [p5.js](https://p5js.org) with custom UI elements that could be nested within one another.
 
 ## [Live Site](https://tictactoe-play.herokuapp.com)
 Please visit [the live site](https://tictactoe-play.herokuapp.com).
