@@ -1,15 +1,26 @@
+# Tic Tac Toe AI : Frontend
 
-## overview
-frontend experience for my tic tac toe ai using p5.js in place of React.js.
+This is a web app served with node.js/express that allows users to play Tic-Tac-Toe against an AI as well as receive suggestions as to where to go next.
 
-## app will allow users to:
-* play against an ai with scalable difficulty
-* receive suggestions for their "next move".
+The site queries [the backend](https://github.com/jamiejamiebobamie/tictactoe_backend), a public API that can be accessed by anyone. The API when returns a new board state with the suggested move and the winner (if there is one) in the form of JSON.
 
-### to-do:
-* implement scalable containers
-* implement swipable containers that move along
-    * x-only (slideshow)
-    * x and y (dating apps)
-* allow draggable containers to move as far as possible within the bounds of their parents (correct stopping behavior)
-* figure out how to implement javascript bind(this) to allow for nested states
+An example query to the API would be: https://play-tictactoe-ai.herokuapp.com/api/v1/turn/o/board/xox!o!!x!
+
+The public API serves up moves based on [a model](https://github.com/jamiejamiebobamie/tictactoe_ai) that has been trained with reinforcement learning.
+The web app allows the user to scale down the A.I.'s difficulty with a slider.
+To allow for a scaling difficulty, the API also serves up random moves.
+
+An example query to receive a random move would be: https://play-tictactoe-ai.herokuapp.com/api/v1/rand/turn/o/board/xox!o!!x!
+
+To make the website appealing on a variety of screen sizes, I used p5.js with custom UI elements that could be nested within one another.
+
+## [Live Site](https://tictactoe-play.herokuapp.com)
+Please visit [the live site](https://tictactoe-play.herokuapp.com).
+
+## Authors
+
+* **Jamie McCrory**
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
