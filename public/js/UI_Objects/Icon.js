@@ -1,20 +1,22 @@
+// abstract icon. icon's are the physical appearance of
+    // containers that act as buttons.
 class Icon extends UIElement{
     constructor(parameterObject){
         super(parameterObject);
     }
 }
-
+//abstract tictactoe icon
 class TicTacToeIcon extends Icon{
     constructor(parameterObject){
         super(parameterObject);
         this.name = 'abstract icon';
-        this.isSuggestion = false;
     }
     draw(){
-        this.isSuggestion ? fill(50) : fill(50);
+        // color all icons with a basic matte black.
+        fill(50);
     }
 }
-
+// used to mark empty spaces on the board.
 class NullIcon extends TicTacToeIcon{
     constructor(parameterObject){
         super(parameterObject);
@@ -23,7 +25,7 @@ class NullIcon extends TicTacToeIcon{
     draw(){
     }
 }
-
+// used to mark X spaces on the board.
 class X extends TicTacToeIcon{
     constructor(parameterObject){
         super(parameterObject);
@@ -36,8 +38,7 @@ class X extends TicTacToeIcon{
         rect(this.x,this.y,this.parent.width/1.35, this.parent.height/1.35)
     }
 }
-
-
+// used to mark O spaces on the board.
 class O extends TicTacToeIcon{
     constructor(parameterObject){
         super(parameterObject);
@@ -52,18 +53,15 @@ class O extends TicTacToeIcon{
         ellipse(this.x, this.y, this.parent.width/2)
     }
 }
-
+// the menu button icon.
 class cycleViewIcon extends Icon{
     constructor(parameterObject){
         super(parameterObject)
-        this.test = 0;
     }
-
     draw(){
         push()
             translate(this.parent.width/2,this.parent.height/2)
             push()
-                rotate(radians(this.translateXAmount))
                 translate(-17, -366);
                 stroke(30);
                 strokeWeight(3);
@@ -78,6 +76,5 @@ class cycleViewIcon extends Icon{
                 pop();
             pop();
         pop();
-
     }
 }

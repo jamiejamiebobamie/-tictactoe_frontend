@@ -15,22 +15,25 @@ let turn = 'x';
 let doneOnce = false;
 // api returns board and winner variables.
 let apiReturnValue = null;
-// parameterObject to pass in to redrawElements() method to set the states
-    // to its previous states. states are lost on window resize.
-let parameterObject = {
-                       boardArray:["!","!","!","!","!","!","!","!","!"],
-                       turn:'x',
-                       // slider range: 44 to 144
-                       aiDifficulty:44,
-                       winner:null,
-                       // to stop player input while waiting for a response from backend.
-                       isWaitingForResponse:false,
-                       fontStyle: null,
-                       loadedImage: undefined
-                   }
+// the gameState is used to keep track of the state of the game.
+    // uiElements lose their state each time they are redrawn
+    // so require the state to be passed in on re-initializtion.
+let gameState = {   boardArray:["!","!","!","!","!","!","!","!","!"],
+                    turn:'x',
+                    // slider range: 44 to 144
+                    aiDifficulty:44,
+                    winner:null,
+                    // to stop player input while waiting for a response from backend.
+                    isWaitingForResponse:false,
+                    fontStyle: null,
+                    loadedImage: undefined
+                 }
+// p5.js built-in method
 function preload(){
-    parameterObject.loadedImage = loadImage('../imgs/brain_base.png');
-    parameterObject.fontStyle = loadFont('fonts/Quicksand-Bold.otf');
+    gameState.loadedImage = loadImage('../imgs/brain_base.png');
+    gameState.fontStyle = loadFont('fonts/Quicksand-Bold.otf');
+    textFont(gameState.fontStyle)
+
 }
 // p5.js built-in method
 function setup() {
@@ -43,22 +46,24 @@ function setup() {
     menuButton = new MenuButton({width:50, height:50, mouseClickfunc: cycleViews})
     // p5.js built-in method. centers the canvas and all drawn objects.
     imageMode(CENTER);
-    redrawn(parameterObject);
+    redrawn(gameState);
 }
-function redrawn(parameterObject){
+// redraws the views based on the current dimensions
+    // of the screen (width and height) and the current gameState.
+function redrawn(gameState){
     views = [];
     let playAgainstAI = new PlayView()
     views.push(playAgainstAI)
     playViewIndex = views.length - 1;
     let playWithAI = new SuggestionView()
     views.push(playWithAI)
-    views[view_i].redrawElements(parameterObject)
+    views[view_i].redrawElements(gameState)
 }
 // p5.js built-in method
 function windowResized() {
     // p5.js built-in method
     resizeCanvas(windowWidth, windowHeight);
-    redrawn(parameterObject);
+    redrawn(gameState);
 }
 // p5.js built-in method
 function draw(){
@@ -66,36 +71,14 @@ function draw(){
     drawRecursive(views[view_i])
     menuButton.draw()
     if (apiReturnValue != null){
-        parameterObject.winner = apiReturnValue.winner
+        gameState.winner = apiReturnValue.winner
         setBoardAndTurn(apiReturnValue.board)
-        parameterObject.isWaitingForResponse = false;
-        redrawn(parameterObject);
+        gameState.isWaitingForResponse = false;
+        redrawn(gameState);
         apiReturnValue = null;
     }
 }
-function resetParameterObject(){
-    let saveDifficulty = parameterObject.aiDifficulty;
-    let saveFont = parameterObject.fontStyle;
-    let saveImage = parameterObject.loadedImage;
-    parameterObject = {    boardArray: ["!","!","!","!","!","!","!","!","!"],
-                           turn: 'x',
-                           aiDifficulty: saveDifficulty, // slider range: 43 to 143
-                           winner: null,
-                           fontStyle:saveFont,
-                           loadedImage:saveImage
-                       }
-}
-function cycleViews(){
-    if (view_i < views.length-1){
-        view_i++;
-    } else {
-        view_i = 0;
-    }
-    views[view_i].redrawElements(parameterObject);
-    resetParameterObject();
-    redrawn(parameterObject);
-}
-// these recursive functions allow uiElements to be nested.
+// recursive functions allow uiElements to be nested.
 function drawRecursive(uiElement){
     if (uiElement.uiElements) {
         for (let i = 0; i < uiElement.uiElements.length; i++){
@@ -106,7 +89,7 @@ function drawRecursive(uiElement){
         uiElement.draw();
     }
 }
-// p5.js built-in method
+// p5.js built-in method. called repeatedly as mouse click is held down.
 function mousePressed() {
     // the built-in p5.js function mouseClicked() does not work on mobile.
     // must use mousePressed() for all mouse events.
@@ -122,6 +105,7 @@ function mousePressed() {
         doneOnce = true;
     }
 }
+// recursive functions allow uiElements to be nested.
 function clickRecursive(uiElement){
     if (uiElement.uiElements) {
         for (let i = 0; i < uiElement.uiElements.length; i++){
@@ -137,14 +121,15 @@ function clickRecursive(uiElement){
         }
     }
 }
-// p5.js built-in method
+// p5.js built-in method. called when mouse click is release.
 function mouseReleased() {
     returnValueFromViews = clickReleasedRecursive(views[view_i]) || returnValueFromViews
     if (returnValueFromViews){setTopLevelVariables(returnValueFromViews);}
-    redrawn(parameterObject);
+    redrawn(gameState);
     // 'doneOnce' is reset with mouseReleased() function.
     doneOnce = false;
 }
+// recursive functions allow uiElements to be nested.
 function clickReleasedRecursive(uiElement){
     if (uiElement.uiElements) {
         for (let i = 0; i < uiElement.uiElements.length; i++){
@@ -157,18 +142,15 @@ function clickReleasedRecursive(uiElement){
         return returnValueFromViews
     }
 }
-function setBoardAndTurn(apiReturnValue){
-    const OPPONENT_LOOKUP = {'x':'o', 'o':'x'}
-    for (let i = 0; i < apiReturnValue.length; i++){
-        parameterObject.boardArray[i] = apiReturnValue[i]
-    }
-    turn = OPPONENT_LOOKUP[turn]
-    parameterObject.turn = turn
-}
+// sets the top level variables.
+    // all game logic and state is managed and stored in this file.
+    // nested UIElements send an array of string command(s)
+    // to this method to change the app's state based on user interacting with
+    // them
 function setTopLevelVariables(returnValueFromViews){
     let queryAIMove;
     let queryRandMove;
-    if (!parameterObject.isWaitingForResponse){
+    if (!gameState.isWaitingForResponse){
         // returnValueFromViews is an array of commands.
         while (returnValueFromViews.length > 0){
             // some buttons return multiple commands that are iterated through
@@ -177,32 +159,32 @@ function setTopLevelVariables(returnValueFromViews){
             switch (command) {
                 case 'x':
                     turn = 'x'
-                    parameterObject.turn = turn
+                    gameState.turn = turn
                     break;
                 case 'o':
                     turn = 'o'
-                    parameterObject.turn = turn
+                    gameState.turn = turn
                     break;
                 case 'queryBackend':
-                    boardString = parameterObject.boardArray.toString().replace(/,/g, '')
-                    parameterObject.isWaitingForResponse = true;
+                    boardString = gameState.boardArray.toString().replace(/,/g, '')
+                    gameState.isWaitingForResponse = true;
                     // sets the 'apiReturnValue' top-level variable
                     queryBackend();
                     break;
                 case 'replay':
-                    resetParameterObject();
-                    redrawn(parameterObject);
+                    resetGameState();
+                    redrawn(gameState);
                     break;
                 case 'exit':
                     window.location.href = "https://github.com/jamiejamiebobamie/tictactoe_frontend";
                     break;
                 default:
                  if(typeof(command) === typeof(100)){
-                     parameterObject.aiDifficulty = command
+                     gameState.aiDifficulty = command
                  } else if (typeof(command) === typeof([0,'x'])){
                      index = command[0]
                      val = command[1]
-                     parameterObject.boardArray[index] = val
+                     gameState.boardArray[index] = val
                      break;
                 }
                 break;
@@ -210,15 +192,16 @@ function setTopLevelVariables(returnValueFromViews){
         }
     }
 }
+// set the board and winner top level variables.
 function queryBackend(){
     let result;
     let url;
+    // generate a random number
     let mustBeAboveDifficultyToUseAI = Math.random()*144+44;
-    // check slider amount and generate a random number that must be higher
-        // than the aiDifficulty to use the AI
-        // (so aiDifficulty is harder the lower the slider score is...)
+    // always query the backend for the correct move if in suggestion view.
     let suggestMoveView = view_i == 1;
-    let useAI = mustBeAboveDifficultyToUseAI > parameterObject.aiDifficulty || suggestMoveView;
+    // ai is used more often the lower the slider score is.
+    let useAI = mustBeAboveDifficultyToUseAI > gameState.aiDifficulty || suggestMoveView;
     if (useAI) {
         url = "https://play-tictactoe-ai.herokuapp.com/api/v1/turn/"+turn+"/board/"+boardString
     } else {
@@ -235,4 +218,38 @@ function queryBackend(){
         apiError = true;
     }
   }).catch(() => (apiError = true));
+}
+function resetGameState(){
+    let saveDifficulty = gameState.aiDifficulty;
+    let saveFont = gameState.fontStyle;
+    let saveImage = gameState.loadedImage;
+    gameState = {    boardArray: ["!","!","!","!","!","!","!","!","!"],
+                           turn: 'x',
+                           aiDifficulty: saveDifficulty, // slider range: 43 to 143
+                           winner: null,
+                           fontStyle:saveFont,
+                           loadedImage:saveImage
+                       }
+}
+// the menu button's function.
+    // changes the view index, resets the parameter object,
+    // and redraws the board.
+function cycleViews(){
+    if (view_i < views.length-1){
+        view_i++;
+    } else {
+        view_i = 0;
+    }
+    views[view_i].redrawElements(gameState);
+    resetGameState();
+    redrawn(gameState);
+}
+// sets the next player's turn after recieving a response from the backend.
+function setBoardAndTurn(apiReturnValue){
+    const OPPONENT_LOOKUP = {'x':'o', 'o':'x'}
+    for (let i = 0; i < apiReturnValue.length; i++){
+        gameState.boardArray[i] = apiReturnValue[i]
+    }
+    turn = OPPONENT_LOOKUP[turn]
+    gameState.turn = turn
 }

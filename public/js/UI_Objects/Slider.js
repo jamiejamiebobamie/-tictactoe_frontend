@@ -45,15 +45,12 @@ class Slider extends UIElement{
             }
         }
     }
-    // a slider within a draggable container isn't going to work...
     performClickFunctionality(){
         this.isDragging = true;
         if(this.mouseClickfunc){
             return this.mouseClickfunc();
         }
     }
-    // on mouseReleased(), stop dragging the container, update the ratio,
-        // reset the dragOffsets, and return the ratio to be stored on the top-level.
     performDragFunctionality(){
         if(this.mouseDragfunc){
             return this.mouseDragfunc();
@@ -64,11 +61,11 @@ class Slider extends UIElement{
             this.userDrag();
         }
         push();
-            translate(this.translateXAmount,0)
+            // slider groove
             noStroke();
             fill(230);
-            // slider groove
             rect(this.sliderX, this.sliderY, this.sliderWidth, this.sliderHeight, 30);
+
             // slider button
             stroke(90);
             fill(256);

@@ -94,7 +94,6 @@ class BrainPartBezier extends BrainPart{
                 fill(130,50,47);
 
             }
-
             translate(this.x+this.parent.width/2-(this.secondAnchorPointX - this.firstAnchorPointX)*this.scaleAmount/this.scaleOffset,this.parent.height*2/3)//this.y+this.parent.height/3)
             scale(this.scaleAmount/this.scaleOffset);
             if (this.poseIsSet){

@@ -4,7 +4,6 @@ class Container extends UIElement{
         this.hasStroke = false;
         this.hasFill = false;
     }
-    // containers can be clicked
     testForClick(){
         if (mouseX > this.x
             && mouseX < this.x + this.width
@@ -21,36 +20,28 @@ class Container extends UIElement{
     setStroke(bool){
         this.hasStroke = bool
     }
-
     setFill(bool){
         this.hasFill = bool
     }
     draw() {
-        push();
-            translate(this.translateXAmount,0)
-            this.hasStroke ? stroke(45) : noStroke();
-            this.hasFill ? fill(45) : noFill();
-            this.color ? fill(this.color) : noFill();
-            rect(this.x,this.y,this.width,this.height)
-            for (let i = 0; i < this.uiElements.length; i++){
-                if (this.uiElements[i].draw){
-                    this.uiElements[i].draw();
-                }
+        this.hasStroke ? stroke(45) : noStroke();
+        this.hasFill ? fill(45) : noFill();
+        this.color ? fill(this.color) : noFill();
+        rect(this.x,this.y,this.width,this.height)
+        for (let i = 0; i < this.uiElements.length; i++){
+            if (this.uiElements[i].draw){
+                this.uiElements[i].draw();
             }
-        pop();
+        }
     }
 }
 
 class ImageContainer extends Container{
     constructor(paramsObject){
         super(paramsObject)
-        // set with member functions.
         this.loadedImg = undefined
         this.imageWidth = undefined
         this.imageHeight = undefined
-        // maybe change. the placement of the image is reliant on the parent's
-            // dimensions and centers the image in the middle of the parent
-            // height and width. makes more sense to be centered in the middle of its own container...
         this.imageX = this.parent ? this.parent.x + this.parent.width/2 : windowWidth/2
         this.imageY = this.parent ? this.parent.y + this.parent.height/2 : windowHeight/2
 
@@ -70,19 +61,15 @@ class ImageContainer extends Container{
     // needs to be called every frame.
     redrawImage() { image(this.loadedImg, this.imageX+this.offsetX, this.imageY+this.offsetY, this.imageWidth, this.imageHeight); }
     draw() {
-        push();
-            translate(this.translateXAmount,0)
-            if (this.loadedImg){
-                this.redrawImage()
-            }
-        pop();
+        if (this.loadedImg){
+            this.redrawImage()
+        }
     }
 }
 
 class TextBox extends Container{
     constructor(parameterObject){
         super(parameterObject)
-        // set with member functions.
         this.text = undefined
         this.textColor = undefined;
         // this.row determines the orientation of the font.
@@ -97,11 +84,13 @@ class TextBox extends Container{
             //   vertAlign:  TOP, BOTTOM, CENTER, or BASELINE )
         this.align = [CENTER,CENTER]
         textAlign(this.align[0],this.align[1]);
+        this.fontStyle = undefined
     }
     // call this after instantiating the object to set the text
     setString(s) { this.text = s }
     // call this after instantiating the object to set the text color
     setTextColor(color) { this.textColor = color }
+    setFontStyle(fontStyle){this.fontStyle=fontStyle}
     drawRotatedTextBox(){
         push();
             super.draw()
@@ -111,10 +100,8 @@ class TextBox extends Container{
                 if (this.textColor){
                     fill(this.textColor)
                 }
-                if (parameterObject){
-                    if (parameterObject.fontStyle){
-                        textFont(parameterObject.fontStyle)
-                    }
+                if (this.fontStyle){
+                    textFont(this.fontStyle)
                 }
                 text(this.text, 0, -this.width, this.height, this.width)
             }
@@ -126,22 +113,17 @@ class TextBox extends Container{
             if (this.textColor){
                 fill(this.textColor)
             }
-            if (parameterObject){
-                if (parameterObject.fontStyle){
-                    textFont(parameterObject.fontStyle)
-                }
+            if (this.fontStyle){
+                textFont(this.fontStyle)
             }
             text(this.text, this.x, this.y, this.width, this.height)
         }
     }
     draw() {
-        push();
-            translate(this.translateXAmount,0)
-            this.row ? this.drawNormalTextBox() : this.drawRotatedTextBox()
-        pop();
+        this.row ? this.drawNormalTextBox() : this.drawRotatedTextBox()
     }
 }
-
+// these make up the tictactoe board on the suggestion view.
 class TicTacToeSpace extends Container{
     constructor(parameterObject){
         super(parameterObject)
@@ -176,7 +158,7 @@ class TicTacToeSpace extends Container{
         this.symbols[this.symbolIndex].draw()
     }
 }
-
+// these make up the tictactoe board on the play view.
 class TicTacToeSpacePlay extends TicTacToeSpace{
     constructor(parameterObject){
         super(parameterObject)
@@ -217,7 +199,7 @@ class TicTacToeSpacePlay extends TicTacToeSpace{
         this.boardState = boardState
     }
 }
-
+// this is the button to change the player's turn on the suggestion view.
 class TicTacToePlayerTurnSelector extends TicTacToeSpace{
     constructor(parameterObject){
         super(parameterObject)
@@ -242,11 +224,10 @@ class TicTacToePlayerTurnSelector extends TicTacToeSpace{
     userDrag(){}
     draw() {
         super.draw()
-        // draw symbol / icon
         this.symbols[this.symbolIndex].draw()
     }
 }
-
+// this is the menu button is drawn in the main draw function in sketch.js
 class MenuButton extends Container{
     constructor(parameterObject){
         super(parameterObject)
@@ -257,8 +238,8 @@ class MenuButton extends Container{
         this.icon.draw()
     }
 }
-
-class ReplayWindow extends Container{
+// spawned in the play view when the parameterObject.winner is set to anything except null
+class ReplayWindow extends TextBox{
     constructor(parameterObject){
         super(parameterObject)
         this.message = undefined;
@@ -335,13 +316,9 @@ class ReplayWindow extends Container{
     }
     draw(){
         super.draw();
-
         if (this.doOnce && this.context){
             this.displayContent()
             this.doOnce = false;
-        }
-        for (let i = 0; i < this.uiElements.length; i++){
-             this.uiElements[i].draw()
         }
     }
 }

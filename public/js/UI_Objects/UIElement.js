@@ -101,10 +101,6 @@ class UIElement{
             }
         }
         this.uiElements = []
-        // used for translating the UIElements along the x axis.
-            // TESTING.
-            // may be redundant to 'offsetX'.
-        this.translateXAmount = 0;
     }
     // p5.js built-in methods
     mouseOver(){}
@@ -114,10 +110,6 @@ class UIElement{
     testForClick() {}
     testForMouseOver() {}
     performDragFunctionality(){}
-    performValuesResetAfterDrag(){}
-    setTranslateXAmount(amount){
-        this.translateXAmount = amount
-    }
     // incorrect. will edit when parameters are finalized.
     getParameterList(){
          let parameters = {

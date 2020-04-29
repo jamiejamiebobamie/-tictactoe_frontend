@@ -1,3 +1,4 @@
+// abstract View base-class
 class View extends UIElement{
     constructor(parameterObject){
         super(parameterObject)
@@ -5,19 +6,19 @@ class View extends UIElement{
         this.redrawElements();
     }
     // abstract method
-    redrawElements(parameterObject){}
+    redrawElements(state){}
     draw(){
         for (let i = 0; i < this.uiElements.length; i++){
             this.uiElements[i].draw();
         }
     }
 }
-
+// suggestion view for recieving suggestions
 class SuggestionView extends View{
     constructor(parameterObject){
         super(parameterObject)
     }
-    redrawElements(previousStatesObject){
+    redrawElements(state){
         let portrait = windowWidth < windowHeight;
 
         this.uiElements = []
@@ -28,7 +29,7 @@ class SuggestionView extends View{
                     // shift the turn_selector_button, the instructions, and the submit_button up if portrait mode.
                     containerParams = {row: portrait, len:2, index:i, offsetY:-windowWidth/24}
                 } else {
-                    // shift the board up if portrait mode.
+                    // shift the board down if portrait mode.
                     containerParams = {row: portrait, len:2, index:i, offsetY:windowWidth/24}
                 }
             } else {
@@ -63,8 +64,8 @@ class SuggestionView extends View{
                 boardCount % 2 ? spaceColor = blue : spaceColor = red;
                 let boardSpaceParams = {row: false, len: 3, index: j, color: spaceColor, parent:boardRow}
                 boardSpace = new TicTacToeSpace(boardSpaceParams)
-                if (previousStatesObject){
-                    boardSpace.setSymbol(previousStatesObject.boardArray[boardCount])
+                if (state){
+                    boardSpace.setSymbol(state.boardArray[boardCount])
                 }
                 this.uiElements.push(boardSpace)
                 boardCount++;
@@ -83,23 +84,28 @@ class SuggestionView extends View{
         let infoSection = new TextBox(infoTextBoxParams)
         infoSection.setString("input whose turn it is and the state of the board to recieve a suggestion")
         infoSection.setTextColor(30)
+        if (state){
+            if (state.fontStyle){
+                infoSection.setFontStyle(state.fontStyle)
+            }
+        }
         this.uiElements.push(infoSection)
 
         spaceColor = boardCount % 2 ? blue : red;
         let turnButtonArea = turnAndSubmitButtonsContainer.uiElements[1]
         let chooseTurnParams = {row: false, color: spaceColor, offsetX:turnButtonArea.width/2-boardSpace.width/2, offsetY:turnButtonArea.height/2-boardSpace.height/2, width:boardSpace.width, height: boardSpace.height, parent:turnButtonArea}
         let whosTurnButton = new TicTacToePlayerTurnSelector(chooseTurnParams)
-        if (previousStatesObject){
-            whosTurnButton.setSymbol(previousStatesObject.turn);
+        if (state){
+            whosTurnButton.setSymbol(state.turn);
         }
         this.uiElements.push(whosTurnButton)
 
         let submitButtonArea = turnAndSubmitButtonsContainer.uiElements[2]
         let submitBoardButtonParams = {row: true, offsetX: submitButtonArea.width/4, offsetY: submitButtonArea.height/4, width:submitButtonArea.width/2, height:submitButtonArea.height/2, parent:submitButtonArea, mouseClickfunc:this.aiMove}
         let submitBoardButton = new TextBox(submitBoardButtonParams)
-        if (parameterObject){
-            if (parameterObject.fontStyle){
-                textFont(parameterObject.fontStyle)
+        if (state){
+            if (state.fontStyle){
+                submitBoardButton.setFontStyle(state.fontStyle)
             }
         }
         submitBoardButton.setString("submit")
@@ -112,14 +118,14 @@ class SuggestionView extends View{
     setTurnToX(){ return ['x'] }
     setTurnToO(){ return ['o'] }
 }
-
+// play view for playing the ai
 class PlayView extends View{
     constructor(parameterObject){
         super(parameterObject)
         this.loadedImage = loadImage('../imgs/brain_base.png')
     }
 
-    redrawElements(previousStatesObject){
+    redrawElements(state){
         let portrait = windowWidth < windowHeight;
 
         this.uiElements = []
@@ -136,18 +142,16 @@ class PlayView extends View{
 
         let brainImageParams = {row:true, parent:cartoonSliderContainer, offsetY:-190}
         let brainImage = new ImageContainer(brainImageParams)
-        if (parameterObject){
-            if (parameterObject.loadedImage){
+        if (state){
+            if (state.loadedImage){
                 let scaleAmount = cartoonSliderContainer.width < cartoonSliderContainer.height ? cartoonSliderContainer.width / 950 : cartoonSliderContainer.height / 950
 
-                brainImage.setImageProps(parameterObject.loadedImage,382*scaleAmount,279*scaleAmount)
+                brainImage.setImageProps(state.loadedImage,382*scaleAmount,279*scaleAmount)
                 brainImage.setImageOffsets(-30*scaleAmount,-100*scaleAmount)
             }
         }
         cartoonSliderContainer.uiElements.push(brainImage)
 
-        // brainparts
-        // https://github.com/jamiejamiebobamie/conway-gol/blob/6a9c8a80b3d6353af137a9569e3dc62e73b1ec86/public/js/sketch-playground.js
         let lipsOffsetX = 50 - 12*960/cartoonImageContainer.width;
         let bottomLipParams = {row:true,parent:cartoonImageContainer, offsetX: lipsOffsetX}
         let bottomLip = new BrainPartBezier(bottomLipParams)
@@ -169,8 +173,12 @@ class PlayView extends View{
         let bottomLipBezierCurves = {dumbPose:dumbPose,smartPose:smartPose}
 
         bottomLip.setPoses(bottomLipBezierCurves.dumbPose,bottomLipBezierCurves.smartPose)
-        bottomLip.setBlendAmount(parameterObject.aiDifficulty)
-        bottomLip.blend();
+        if (state){
+            if (state.aiDifficulty){
+                bottomLip.setBlendAmount(state.aiDifficulty)
+                bottomLip.blend();
+            }
+        }
         cartoonSliderContainer.uiElements.push(bottomLip)
 
         // bottom lip's dumb pose needs to be shifted up.
@@ -188,8 +196,12 @@ class PlayView extends View{
         let topLipParams = {row:true,parent:cartoonImageContainer, offsetX: lipsOffsetX}
         let topLip = new BrainPartBezier(topLipParams)
         topLip.setPoses(topLipBezierCurves.dumbPose,topLipBezierCurves.smartPose)
-        topLip.setBlendAmount(parameterObject.aiDifficulty)
-        topLip.blend();
+        if (state){
+            if (state.aiDifficulty){
+                topLip.setBlendAmount(state.aiDifficulty)
+                topLip.blend();
+            }
+        }
         cartoonSliderContainer.uiElements.push(topLip)
 
         let eyeParams = {row:true, parent:cartoonSliderContainer, offsetX:cartoonSliderContainer.width/2.1, offsetY:cartoonSliderContainer.height/2.5}
@@ -198,9 +210,13 @@ class PlayView extends View{
         smartPose = {x:0,y:0}
         dumbPose = {x:5,y:-3}
         leftEye.setPoses(dumbPose, smartPose)
-        leftEye.setBlendAmount(parameterObject.aiDifficulty)
-        leftEye.blend();
-        let isThinking = parameterObject ? parameterObject.isWaitingForResponse : false;
+        if (state){
+            if (state.aiDifficulty){
+                leftEye.setBlendAmount(state.aiDifficulty)
+                leftEye.blend();
+            }
+        }
+        let isThinking = state ? state.isWaitingForResponse : false;
         leftEye.setThinking(isThinking);
         cartoonSliderContainer.uiElements.push(leftEye)
 
@@ -210,9 +226,13 @@ class PlayView extends View{
         smartPose = {x:0,y:0}
         dumbPose = {x:-3,y:-3}
         rightEye.setPoses(dumbPose, smartPose)
-        rightEye.setBlendAmount(parameterObject.aiDifficulty)
-        rightEye.blend();
-        isThinking = parameterObject ? parameterObject.isWaitingForResponse : false;
+        if (state){
+            if (state.aiDifficulty){
+                rightEye.setBlendAmount(state.aiDifficulty)
+                rightEye.blend();
+            }
+        }
+        isThinking = state ? state.isWaitingForResponse : false;
         rightEye.setThinking(isThinking);
         cartoonSliderContainer.uiElements.push(rightEye)
 
@@ -224,7 +244,7 @@ class PlayView extends View{
         this.uiElements.push(sliderContainer)
         let sliderParams = {row: true, parent:sliderContainer}
         let slider = new DifficultySlider(sliderParams)
-        let difficulty = previousStatesObject ? previousStatesObject.aiDifficulty : 13;
+        let difficulty = state ? state.aiDifficulty : 13;
         slider.setDifficulty(difficulty)
         this.uiElements.push(slider)
 
@@ -256,28 +276,31 @@ class PlayView extends View{
                 count % 2 ? spaceColor = blue : spaceColor = red;
                 let boardSpaceParams = {row: false, len: 3, index: j, color: spaceColor, parent:boardRow}
                 let boardSpace = new TicTacToeSpacePlay(boardSpaceParams)
-                if (previousStatesObject){
-                    boardSpace.setSymbol(previousStatesObject.boardArray[count])
-                    boardSpace.setBoardState(previousStatesObject.boardArray)
+                if (state){
+                    boardSpace.setSymbol(state.boardArray[count])
+                    boardSpace.setBoardState(state.boardArray)
                 }
                 this.uiElements.push(boardSpace)
                 count++;
             }
         }
-
         // ------
-        if (parameterObject){
-            if (parameterObject.winner != null){
-                setTimeout(displayReplayWindow, 700, this.uiElements, portrait);
+        if (state){
+            if (state.winner != null){
+                setTimeout(displayReplayWindow, 700, this.uiElements, portrait, state);
             }
         }
     }
 }
-
-function displayReplayWindow(array, portrait){
+function displayReplayWindow(array, portrait, state){
     let replayWindowParams = {row:portrait}
     let replayWindow = new ReplayWindow(replayWindowParams)
+    if (state){
+        if (state.fontStyle){
+            replayWindow.setFontStyle(state.fontStyle)
+        }
+    }
     replayWindow.setContext(array)
-    replayWindow.setMessage(parameterObject)
+    replayWindow.setMessage(state)
     array.push(replayWindow)
 }
