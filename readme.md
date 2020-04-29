@@ -4,7 +4,7 @@ This is a web app that allows users to play Tic-Tac-Toe against an AI.
 
 The site queries [the backend](https://github.com/jamiejamiebobamie/tictactoe_backend), a public API that can be accessed by anyone. The API returns a new board state with the suggested move and the winner (if there is one) in the form of JSON.
 
-An example query to the API is: https://play-tictactoe-ai.herokuapp.com/api/v1/turn/o/board/xox!o!!x!
+An example query to the API is: https://play-tictactoe-ai.herokuapp.com/api/v1/turn/o/board/xox!o!!x
 
 The public API serves up moves based on [a model](https://github.com/jamiejamiebobamie/tictactoe_ai) that has been trained with reinforcement learning.
 
